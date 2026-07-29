@@ -1,0 +1,5 @@
+# Configuración de Netlify para el sitio de Pupi
+# La carpeta netlify/functions contiene la función que mantiene viva la base de Supabase
+
+[functions]
+  directory = "netlify/functions"

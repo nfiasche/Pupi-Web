@@ -1574,6 +1574,18 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
       <span class="svc-guardado-ok" id="cfgOk" style="margin-left:12px">&#10003; Guardado</span>
 
       <div class="panel" style="margin-top:32px;margin-bottom:20px">
+        <div class="panel-title">Pol&iacute;tica de cancelaciones</div>
+        <p class="cfg-ayuda">Este texto es el que ve cualquiera al reservar, en "Ver pol&iacute;tica completa" dentro del paso de pago. Escrib&iacute;lo como quieras que lo lea un paciente &mdash; se muestra tal cual, un p&aacute;rrafo por l&iacute;nea.</p>
+        <div class="nt-field" style="margin-bottom:0">
+          <label>Texto completo</label>
+          <textarea id="cfgPolitica" rows="6" placeholder="Tolerancia de 15 minutos..."></textarea>
+        </div>
+        <div class="nt-error" id="cfgPoliticaError"></div>
+        <button class="btn-nt-guardar" style="max-width:280px;margin-top:16px" onclick="guardarPolitica()">Guardar pol&iacute;tica</button>
+        <span class="svc-guardado-ok" id="cfgPoliticaOk">&#10003; Guardado</span>
+      </div>
+
+      <div class="panel" style="margin-top:32px;margin-bottom:20px">
         <div class="panel-title">C&oacute;mo se ve el panel</div>
         <p class="cfg-ayuda">Ajust&aacute; el panel para que sea c&oacute;modo de leer. Los cambios se aplican al instante y quedan guardados en este dispositivo (pod&eacute;s tener letra grande en el celular y normal en la compu).</p>
         <div class="nt-row2">
@@ -7197,7 +7209,7 @@ let cfgId=null;
 
 async function cargarConfig(){
   try{
-    const{data,error}=await sb.from('configuracion').select('id,whatsapp,email_contacto,reserva_min_horas,reserva_max_dias').limit(1).single();
+    const{data,error}=await sb.from('configuracion').select('id,whatsapp,email_contacto,reserva_min_horas,reserva_max_dias,politica_cancelacion').limit(1).single();
     if(error)throw error;
     cfgId=data.id;
     // Los campos de contacto están en Configuración; los de reglas, en Disponibilidad.
@@ -7207,6 +7219,7 @@ async function cargarConfig(){
     set('cfgEmail',data.email_contacto||'');
     set('cfgMinHoras',data.reserva_min_horas??24);
     set('cfgMaxDias',data.reserva_max_dias??60);
+    set('cfgPolitica',data.politica_cancelacion||'');
   }catch(err){
     console.error(err);
     mostrarAlerta('No pudimos cargar la configuraci\u00f3n. Recarg\u00e1 la p\u00e1gina.');
@@ -7262,6 +7275,29 @@ async function guardarReglasReserva(){
   }catch(err){
     console.error(err);
     errBox.textContent='No pudimos guardar las reglas. Intent\u00e1 de nuevo.';
+    errBox.style.display='block';
+  }
+}
+
+// Guarda el texto de la política de cancelaciones (lo que ve el público al reservar)
+async function guardarPolitica(){
+  const errBox=document.getElementById('cfgPoliticaError');
+  errBox.style.display='none';
+  const texto=document.getElementById('cfgPolitica').value.trim();
+
+  if(!texto){errBox.textContent='El texto no puede quedar vacío — si no querés política, escribí algo como "Sin política de cancelaciones".';errBox.style.display='block';return;}
+
+  try{
+    const{error}=await sb.from('configuracion').update({
+      politica_cancelacion:texto
+    }).eq('id',cfgId);
+    if(error)throw error;
+    const ok=document.getElementById('cfgPoliticaOk');
+    ok.style.display='inline';
+    setTimeout(()=>{ok.style.display='none';},2500);
+  }catch(err){
+    console.error(err);
+    errBox.textContent='No pudimos guardar la política. Intentá de nuevo.';
     errBox.style.display='block';
   }
 }

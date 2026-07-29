@@ -245,3 +245,27 @@ function poblarP3(){
   document.getElementById('m-pv').textContent=fmt(pr);
 }
 
+
+
+/* ── Política de cancelaciones (editable por Pupi desde el panel) ── */
+async function cargarPoliticaCancelacion(){
+  const cont=document.getElementById('cancelPoliticaFull');
+  if(!cont||!sb)return;
+  try{
+    const{data,error}=await sb.rpc('obtener_politica_cancelacion');
+    if(error)throw error;
+    cont.innerHTML='<p>'+esc(data||'').replace(/\n/g,'<br>')+'</p>';
+  }catch(err){
+    console.error(err);
+    cont.innerHTML='<p>No pudimos cargar el texto completo. Escrib\u00ednos si ten\u00e9s dudas sobre cancelaciones.</p>';
+  }
+}
+
+function togglePoliticaCancel(btn){
+  const box=document.getElementById('cancelPoliticaFull');
+  if(!box)return;
+  const abierta=box.style.display!=='none';
+  box.style.display=abierta?'none':'block';
+  btn.textContent=abierta?'Ver pol\u00edtica completa':'Ocultar';
+  btn.setAttribute('aria-expanded',String(!abierta));
+}

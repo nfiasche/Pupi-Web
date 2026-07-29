@@ -249,6 +249,8 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .cancel-modal-box{background:var(--bg3);border:1px solid var(--bd);border-left:2px solid var(--rust);padding:16px 18px;margin-bottom:16px}
 .cancel-modal-titulo{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--rust);margin-bottom:8px}
 .cancel-modal-box p{font-size:11.5px;color:var(--crd);line-height:1.6;margin-bottom:10px}
+.cancel-modal-toggle{background:none;border:none;padding:0;margin-left:2px;color:var(--stone);font-size:11.5px;text-decoration:underline;cursor:pointer;font-family:inherit}
+.cancel-modal-toggle:hover{color:var(--gold)}
 .cancel-modal-check{display:flex;align-items:flex-start;gap:8px;font-size:11.5px;color:var(--cr);cursor:pointer;line-height:1.4}
 .cancel-modal-check input{margin-top:2px;flex-shrink:0;accent-color:var(--rust)}
 
@@ -334,6 +336,9 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .m-btn-next:hover{opacity:.85}
 
 .p2-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.p3-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.modal.p3-wide{max-width:760px}
+@media(max-width:760px){.p3-grid{grid-template-columns:1fr}}
 .p2-col-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--crd);margin-bottom:12px}
 .cal-nav2{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cal-nav2 button{background:none;border:1px solid var(--bd);color:var(--crd);width:24px;height:24px;cursor:pointer;font-size:13px;font-family:'Montserrat',sans-serif}
@@ -764,33 +769,39 @@ footer a:hover{color:var(--gold)}
       </div>
       <!-- Paso 3: datos y pago -->
       <div class="modal-slide" id="mP3">
-        <div class="p3-resumen" id="m-resumen3"></div>
-        <span class="campo-label">Tus datos</span>
-        <div class="frow">
-          <input type="text" id="m-nombre-i" placeholder="Nombre" oninput="validarNombreEnVivo()">
-          <input type="email" id="m-email-i" placeholder="Mail" oninput="chkT()">
-        </div>
-        <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
-        <div class="tav" id="m-tav"></div>
+        <div class="p3-grid">
+          <div>
+            <span class="campo-label">Tus datos</span>
+            <div class="frow">
+              <input type="text" id="m-nombre-i" placeholder="Nombre" oninput="validarNombreEnVivo()">
+              <input type="email" id="m-email-i" placeholder="Mail" oninput="chkT()">
+            </div>
+            <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
+            <div class="tav" id="m-tav"></div>
 
-        <div class="cancel-modal-box">
-          <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
-          <p>Tolerancia de 15 minutos; pasado ese tiempo, la sesi&oacute;n se pierde sin excepci&oacute;n. Reprogramaciones con 24 hs de anticipaci&oacute;n &mdash; pasado ese plazo se retiene el 50% del pago. Si la cancelaci&oacute;n es de mi parte, recib&iacute;s un recurso extra o un descuento en tu pr&oacute;xima sesi&oacute;n.</p>
-          <label class="cancel-modal-check">
-            <input type="checkbox" id="m-acepto-cancel" onchange="document.getElementById('m-pagar').disabled=!this.checked;document.getElementById('m-btn-asignar-sinpago').disabled=!this.checked">
-            Le&iacute; y acepto la pol&iacute;tica de cancelaciones y reprogramaciones
-          </label>
-        </div>
-
-        <div class="pago-opciones">
-          <label class="pago-opcion"><input type="radio" name="tipoPago" value="sena" checked onchange="aplicarTipoPagoAPrecio()"> Se&ntilde;a (50%)</label>
-          <label class="pago-opcion"><input type="radio" name="tipoPago" value="completo" onchange="aplicarTipoPagoAPrecio()"> Pago completo</label>
-        </div>
-        <div class="precio-final"><div><div class="precio-label" id="m-pv-label">Se&ntilde;a a pagar ahora</div><div class="precio-val" id="m-pv"></div></div></div>
-        <button class="m-btn-pagar" id="m-pagar" onclick="confirmar()" disabled>Pagar se&ntilde;a con Mercado Pago &nearr;</button>
-        <div class="asignar-box">
-          <div class="asignar-divider"><span>o si prefer&iacute;s</span></div>
-          <button class="m-btn-reservar" id="m-btn-asignar-sinpago" onclick="mostrarInfoAsignar()" disabled>Asignar turno sin pagar ahora</button>
+            <div class="cancel-modal-box">
+              <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
+              <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver pol&iacute;tica completa</button></p>
+              <div class="cancel-modal-full" id="cancelPoliticaFull" style="display:none"><p>Cargando&hellip;</p></div>
+              <label class="cancel-modal-check">
+                <input type="checkbox" id="m-acepto-cancel" onchange="document.getElementById('m-pagar').disabled=!this.checked;document.getElementById('m-btn-asignar-sinpago').disabled=!this.checked">
+                Le&iacute; y acepto la pol&iacute;tica de cancelaciones y reprogramaciones
+              </label>
+            </div>
+          </div>
+          <div>
+            <div class="p3-resumen" id="m-resumen3"></div>
+            <div class="pago-opciones">
+              <label class="pago-opcion"><input type="radio" name="tipoPago" value="sena" checked onchange="aplicarTipoPagoAPrecio()"> Se&ntilde;a (50%)</label>
+              <label class="pago-opcion"><input type="radio" name="tipoPago" value="completo" onchange="aplicarTipoPagoAPrecio()"> Pago completo</label>
+            </div>
+            <div class="precio-final"><div><div class="precio-label" id="m-pv-label">Se&ntilde;a a pagar ahora</div><div class="precio-val" id="m-pv"></div></div></div>
+            <button class="m-btn-pagar" id="m-pagar" onclick="confirmar()" disabled>Pagar se&ntilde;a con Mercado Pago &nearr;</button>
+            <div class="asignar-box">
+              <div class="asignar-divider"><span>o si prefer&iacute;s</span></div>
+              <button class="m-btn-reservar" id="m-btn-asignar-sinpago" onclick="mostrarInfoAsignar()" disabled>Asignar turno sin pagar ahora</button>
+            </div>
+          </div>
         </div>
         <div style="margin-top:12px;text-align:center"><button class="m-btn-back" onclick="irP(2)" style="width:auto">&#8592; Volver</button></div>
       </div>
@@ -909,6 +920,7 @@ let MS={svc:{nombre:'Sesiones para el alma',tipo:'sesion_individual',precio:PREC
 
 rdy(async()=>{
   sb=window.supabase.createClient(SB_URL,SB_KEY);
+  cargarPoliticaCancelacion();
   const{data}=await sb.from('servicios').select('id,precio,duracion_min').ilike('nombre','%alma%').maybeSingle();
   if(data){
     svcId=data.id;MS.svc.id=data.id;
@@ -1003,6 +1015,7 @@ function aplicarTipoPagoAPrecio(){
 function irP(n){
   if(n===3&&(!MS.fecha||!MS.hora))return;
   mSlides.style.transform=`translateX(-${(n-1)*33.333}%)`;
+  document.getElementById('modal').classList.toggle('p3-wide',n===3);
   [1,2,3].forEach(i=>{
     const el=document.getElementById('step'+i);
     el.classList.toggle('active',i===n);
@@ -1090,11 +1103,13 @@ async function confirmar(soloAsignar=false){
     // El turno siempre nace "pendiente" — recién pasa a confirmado/pagado
     // cuando corresponde (WhatsApp lo confirma a mano, o Mercado Pago avisa
     // el pago real por su cuenta). Nunca se marca solo por haber llegado hasta acá.
-    const{data:turnoIns,error:eTurno}=await sb.from('turnos').insert({
-      paciente_id:pac.id,servicio_id:svcId,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
+    const turnoIdGenerado=crypto.randomUUID();
+    const{error:eTurno}=await sb.from('turnos').insert({
+      id:turnoIdGenerado,paciente_id:pac.id,servicio_id:svcId,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
       estado:'pendiente',precio_cobrado:0,precio_original:s.precio
-    }).select('id').single();
+    });
     if(eTurno)throw eTurno;
+    const turnoIns={id:turnoIdGenerado};
 
     if(!soloAsignar){
       // Pagar con Mercado Pago: pedimos el link real y nos vamos para allá.
@@ -1112,7 +1127,7 @@ async function confirmar(soloAsignar=false){
         window.location.href=datosPago.init_point;
         return;
       }catch(errPago){
-        await sb.from('turnos').delete().eq('id',turnoIns.id);
+        await sb.rpc('liberar_turno_pendiente',{p_turno_id:turnoIns.id});
         throw errPago;
       }
     }

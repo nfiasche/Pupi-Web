@@ -23,8 +23,12 @@ exports.handler = async (event) => {
     const esPagoCompleto = tipo_pago === "completo";
 
     const resTurno = await fetch(
-      `${SB_URL}/rest/v1/turnos?id=eq.${turno_id}&select=id,estado,precio_original,servicios(nombre)`,
-      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+      `${SB_URL}/rest/v1/rpc/obtener_turno_para_pago`,
+      {
+        method: "POST",
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_turno_id: turno_id }),
+      }
     );
     if (!resTurno.ok) {
       console.error("Error al buscar el turno:", await resTurno.text());
@@ -60,7 +64,7 @@ exports.handler = async (event) => {
     if (referer) {
       try { paginaOrigen = new URL(referer).pathname || "/"; } catch (_) {}
     }
-    const nombreServicio = (turno.servicios && turno.servicios.nombre) || "Sesión";
+    const nombreServicio = turno.nombre_servicio || "Sesión";
 
     const prefRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",

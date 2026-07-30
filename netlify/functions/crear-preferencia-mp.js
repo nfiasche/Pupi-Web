@@ -52,6 +52,21 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "No pudimos calcular el monto a pagar" }) };
     }
 
+    // Le damos 30 minutos para volver y pagar — pasado ese plazo, el horario
+    // se libera solo (lo hace horarios_ocupados_en_fecha en cada consulta,
+    // no hace falta ningún proceso corriendo en segundo plano). Si esto
+    // falla no cortamos el pago por eso, solo lo dejamos en el log.
+    try {
+      const resVence = await fetch(`${SB_URL}/rest/v1/rpc/marcar_turno_esperando_pago`, {
+        method: "POST",
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_turno_id: turno_id, p_minutos: 30 }),
+      });
+      if (!resVence.ok) console.error("No pudimos marcar el vencimiento del turno:", await resVence.text());
+    } catch (errVence) {
+      console.error("Error al marcar el vencimiento del turno:", errVence);
+    }
+
     const MP_TOKEN = process.env.MP_ACCESS_TOKEN;
     if (!MP_TOKEN) {
       console.error("Falta configurar MP_ACCESS_TOKEN en las variables de entorno de Netlify");

@@ -262,6 +262,7 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 .badge-pendiente{color:#e0c469;border:1px solid rgba(201,168,75,.5);background:rgba(201,168,75,.16)}
 .badge-confirmado{color:#9dbd8f;border:1px solid rgba(122,155,110,.5);background:rgba(122,155,110,.16)}
 .badge-pagado{color:#e0a765;border:1px solid rgba(201,138,75,.5);background:rgba(201,138,75,.16)}
+.badge-señado{color:#8fa8d6;border:1px solid rgba(122,146,201,.5);background:rgba(122,146,201,.16)}
 /* Completado: es el estado FINAL. Se distingue con brillo y borde dorado. */
 .badge-completado{color:#0f1a0d;border:1px solid #7fc96a;background:linear-gradient(135deg,#8fd47a,#6fb85c);font-weight:700;box-shadow:0 0 10px rgba(127,201,106,.28)}
 .badge-cancelado{color:#d67e68;border:1px solid rgba(201,97,75,.45);background:rgba(201,97,75,.14)}
@@ -478,6 +479,9 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 /* Desplegables compactos (Período, Asistencia) */
 .filtro-drop{position:relative}
 .filtro-drop-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg4);border:1px solid var(--bd);color:var(--crd);padding:9px 13px;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .16s;white-space:nowrap}
+.prefs-gear-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--bg4);border:1px solid var(--bd);color:var(--crd);width:34px;height:34px;border-radius:8px;cursor:pointer;transition:all .16s;flex-shrink:0}
+.prefs-gear-btn:hover{border-color:var(--gold);color:var(--gold)}
+.prefs-gear-btn svg{width:16px;height:16px}
 .filtro-drop-btn:hover{border-color:var(--crd);color:var(--cr)}
 .filtro-drop-btn.con-filtro{border-color:var(--gold);color:var(--gold)}
 .drop-arrow{font-size:9px;opacity:.7}
@@ -1015,6 +1019,11 @@ body.texto-claro{--crd:#d6ccc0;--crf:#a89c8e}
 .td-head-new{display:flex;justify-content:space-between;align-items:flex-start;padding:24px 28px 20px;border-bottom:1px solid var(--bds)}
 .td-head-left{display:flex;flex-direction:column}
 .td-cols{display:grid;grid-template-columns:1fr 320px;gap:0}
+.td-tabs{margin:0 28px 4px}
+.td-tab-panel{animation:none}
+.td-leyenda-estados{margin-top:14px;padding-top:12px;border-top:1px solid var(--bds);display:flex;flex-direction:column;gap:7px}
+.td-leyenda-item{display:flex;align-items:center;gap:9px}
+.td-leyenda-desc{font-size:11px;color:var(--crf)}
 .td-col{padding:24px 28px}
 .td-col-datos{border-right:1px solid var(--bds)}
 .td-col-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -1774,6 +1783,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
             <button class="chip-filtro active" data-estado="todos">Todos <span class="chip-count" data-count="todos">0</span></button>
             <button class="chip-filtro chip-pendiente" data-estado="pendiente">Pendientes <span class="chip-count" data-count="pendiente">0</span></button>
             <button class="chip-filtro" data-estado="confirmado">Confirmados <span class="chip-count" data-count="confirmado">0</span></button>
+            <button class="chip-filtro" data-estado="señado">Señados <span class="chip-count" data-count="señado">0</span></button>
             <button class="chip-filtro" data-estado="pagado">Pagados <span class="chip-count" data-count="pagado">0</span></button>
             <button class="chip-filtro" data-estado="cancelado">Cancelados <span class="chip-count" data-count="cancelado">0</span></button>
           </div>
@@ -1810,6 +1820,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
             </div>
 
             <input type="text" id="turnosBusqueda" placeholder="Buscar&hellip;" class="turnos-search">
+
+            <button class="prefs-gear-btn" title="Guardar estos filtros como los que quiero ver siempre acá (en este dispositivo)" onclick="guardarPrefsVista('turnos')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -2470,9 +2484,19 @@ function fmt(n){return'$ '+Number(n||0).toLocaleString('es-AR');}
 // Muestra visualmente en qué etapa del ciclo está:
 //   Pendiente → Confirmado → Pagado → Completado (pagado + asistió)
 // La asistencia es un eje aparte: si faltó, lo marcamos sin romper el progreso.
+// Qué significa cada estado, en una línea — se usa como leyenda y como
+// tooltip en los botones de "forzar estado" del detalle del turno.
+const ESTADOS_INFO={
+  pendiente:{label:'Pendiente',desc:'Reci\u00e9n reservado \u2014 todav\u00eda no lo confirmaste'},
+  confirmado:{label:'Confirmado',desc:'Vas a dar la sesi\u00f3n, pero todav\u00eda no cobraste nada'},
+  'señado':{label:'Se\u00f1ado',desc:'Cobraste una parte (se\u00f1a) \u2014 falta el resto'},
+  pagado:{label:'Pagado',desc:'Cobraste el total'},
+  cancelado:{label:'Cancelado',desc:'No va a pasar \u2014 el horario queda libre'}
+};
+
 function progresoTurno(t,opts){
   opts=opts||{};
-  const ETAPAS=['Pendiente','Confirmado','Pagado','Completado'];
+  const ETAPAS=['Pendiente','Confirmado','Se\u00f1ado','Pagado','Completado'];
 
   // Cancelado: no tiene progreso, es una salida del ciclo
   if(t.estado==='cancelado'){
@@ -2482,12 +2506,13 @@ function progresoTurno(t,opts){
     </div>`;
   }
 
-  // Etapa actual (0 a 3)
+  // Etapa actual (0 a 4)
   let etapa=0;
   if(t.estado==='confirmado')etapa=1;
-  else if(t.estado==='pagado')etapa=t.asistencia==='asistio'?3:2;
+  else if(t.estado==='señado')etapa=2;
+  else if(t.estado==='pagado')etapa=t.asistencia==='asistio'?4:3;
 
-  const pct=[25,50,75,100][etapa];
+  const pct=[20,40,60,80,100][etapa];
   const ausente=t.asistencia==='ausente';
   const nombreEtapa=ETAPAS[etapa];
 
@@ -2502,7 +2527,7 @@ function progresoTurno(t,opts){
       <span class="prog-hito h3"></span>
     </div>
     ${opts.mini?'':`<div class="prog-labels">
-      <span class="prog-txt">${nombreEtapa}${etapa<3?` &middot; falta ${ETAPAS[etapa+1].toLowerCase()}`:''}</span>
+      <span class="prog-txt">${nombreEtapa}${etapa<4?` &middot; falta ${ETAPAS[etapa+1].toLowerCase()}`:''}</span>
       ${notaAusente}
     </div>`}
   </div>`;
@@ -2516,6 +2541,9 @@ function badgeTurno(t,opts){
   if(t.estado==='pagado'&&t.asistencia==='asistio'){
     clase='completado';
     texto='&#10003; Completado';
+  } else if(t.estado==='señado'){
+    const saldo=Math.max((t.precio_original||0)-(t.precio_cobrado||0),0);
+    texto=`Se\u00f1a \u00b7 falta ${fmt(saldo)}`;
   } else {
     texto={
       pendiente:'Pendiente',
@@ -2525,6 +2553,14 @@ function badgeTurno(t,opts){
     }[t.estado]||t.estado;
   }
   return`<span class="badge-estado badge-${clase}${opts.extra?' '+opts.extra:''}">${texto}</span>`;
+}
+
+// Cuánto falta cobrar de un turno (nunca negativo). Reemplaza el cálculo
+// repetido en varios lugares que usaba precio_cobrado como si fuera lo
+// pendiente — funcionaba mientras solo existía "pagado o nada", pero con
+// señas (pago parcial) precio_cobrado es justamente lo que YA se cobró.
+function montoPendiente(t){
+  return Math.max(Number(t.precio_original||0)-Number(t.precio_cobrado||0),0);
 }
 
 function fmtConDescuento(precioCobrado,precioOriginal){
@@ -2618,7 +2654,7 @@ function cambiarVista(vista){
   document.getElementById('viewUsuarios').style.display=vista==='usuarios'?'block':'none';
   document.getElementById('viewPacientes').style.display=vista==='pacientes'?'block':'none';
   document.getElementById('viewTurnos').style.display=vista==='turnos'?'block':'none';
-  if(vista==='turnos'){actualizarContadoresTurnos();mostrarVistaTurnos();}
+  if(vista==='turnos'){actualizarContadoresTurnos();mostrarVistaTurnos();aplicarPrefsVista('turnos');}
   if(vista==='servicios')cargarServicios();
   if(vista==='tarifas')cargarTarifas();
   if(vista==='finanzas'){
@@ -2642,6 +2678,83 @@ function cambiarMesCalTurnos(delta){
   if(turnosCalMes>11){turnosCalMes=0;turnosCalAnio++;}
   turnosCalSeleccionado=null;
   cargarCalendarioTurnos();
+}
+
+// ══ PREFERENCIAS DE VISTA (por dispositivo) ══
+// Cada sección con filtros puede tener una configuración "de fábrica" que se
+// guarda con el ícono de la ruedita. Vive en este dispositivo (localStorage),
+// no en la cuenta — cada computadora o celular tiene la suya propia.
+// Para sumar una sección nueva, alcanza con agregar su entrada acá: no hace
+// falta escribir lógica de filtrado de nuevo, se reusa la que ya existe
+// simulando el click en el botón correspondiente.
+const PREFS_VISTAS_CONFIG={
+  turnos:[
+    {grupo:'#turnosEstadoChips',boton:'.chip-filtro',atributo:'estado'},
+    {grupo:'#dropPeriodo .filtro-drop-menu',boton:'.drop-op',atributo:'periodo'},
+    {grupo:'#dropAsist .filtro-drop-menu',boton:'.drop-op',atributo:'asistencia'},
+    {grupo:'#turnosVistaTabs',boton:'.vista-toggle-btn',atributo:'vista'},
+  ]
+};
+
+function guardarPrefsVista(vista){
+  const grupos=PREFS_VISTAS_CONFIG[vista];
+  if(!grupos)return;
+  const prefs={};
+  grupos.forEach(g=>{
+    const cont=document.querySelector(g.grupo);
+    if(!cont)return;
+    const activo=cont.querySelector(g.boton+'.active');
+    if(activo)prefs[g.atributo]=activo.getAttribute('data-'+g.atributo);
+  });
+  localStorage.setItem('prefsVista_'+vista,JSON.stringify(prefs));
+  mostrarToastSimple('✓ Filtros guardados como predeterminados en este dispositivo');
+}
+
+function aplicarPrefsVista(vista){
+  const raw=localStorage.getItem('prefsVista_'+vista);
+  if(!raw)return;
+  let prefs;
+  try{prefs=JSON.parse(raw);}catch(_){return;}
+  const grupos=PREFS_VISTAS_CONFIG[vista];
+  if(!grupos)return;
+  grupos.forEach(g=>{
+    const valor=prefs[g.atributo];
+    if(valor===undefined||valor===null)return;
+    const cont=document.querySelector(g.grupo);
+    if(!cont)return;
+    const target=cont.querySelector(g.boton+'[data-'+g.atributo+'="'+CSS.escape(valor)+'"]');
+    if(target&&!target.classList.contains('active'))target.click();
+  });
+}
+
+let toastPrefsTimeout;
+function mostrarToastSimple(mensaje){
+  let toast=document.getElementById('toastPrefs');
+  if(!toast){
+    toast=document.createElement('div');
+    toast.id='toastPrefs';
+    toast.className='toast-deshacer';
+    document.body.appendChild(toast);
+  }
+  toast.textContent=mensaje;
+  toast.classList.add('visible');
+  clearTimeout(toastPrefsTimeout);
+  toastPrefsTimeout=setTimeout(()=>toast.classList.remove('visible'),3000);
+}
+
+// ══ DESCARTAR ITEMS DE "SIN PAGO" EN POR RESOLVER (por dispositivo) ══
+// No son turnos que cambien de estado — solo se le quitan de la vista una
+// vez que ya les escribió o decidió no hacerlo, así no se acumulan para siempre.
+function obtenerDescartadosResolver(){
+  try{
+    return new Set(JSON.parse(localStorage.getItem('resolverSinPagoDescartados')||'[]'));
+  }catch(_){return new Set();}
+}
+function descartarResolverItem(id){
+  const set=obtenerDescartadosResolver();
+  set.add(id);
+  localStorage.setItem('resolverSinPagoDescartados',JSON.stringify([...set]));
+  cargarListas();
 }
 
 let turnosCache={}; // caché compartido (lista + calendario) por id, para abrir el detalle sin re-consultar
@@ -2945,6 +3058,10 @@ function abrirDetalleTurno(id){
   } else if(t.estado==='confirmado'){
     accionPrincipal=`<button class="td-btn-primary td-btn-gold" onclick="accionTurnoDesdeModal('${t.id}','pagado')">$ Marcar como pagado</button>
                      <button class="td-btn-ghost td-btn-danger" onclick="accionTurnoDesdeModal('${t.id}','cancelado')">Cancelar</button>`;
+  } else if(t.estado==='señado'){
+    const saldoModal=Math.max((t.precio_original||0)-(t.precio_cobrado||0),0);
+    accionPrincipal=`<button class="td-btn-primary td-btn-gold" onclick="cobrarSaldoTurno('${t.id}')">$ Cobrar saldo (${fmt(saldoModal)})</button>
+                     <button class="td-btn-ghost td-btn-danger" onclick="accionTurnoDesdeModal('${t.id}','cancelado')">Cancelar</button>`;
   } else if(t.estado==='pagado'){
     accionPrincipal=`<div class="td-estado-ok">&#10003; Este turno est\u00e1 cobrado</div>
                      <button class="td-btn-ghost td-btn-danger" onclick="accionTurnoDesdeModal('${t.id}','cancelado')">Cancelar</button>`;
@@ -2968,83 +3085,95 @@ function abrirDetalleTurno(id){
     <!-- Progreso del turno: en qué etapa está y qué falta -->
     <div class="td-progreso">${progresoTurno(t)}</div>
 
-    <div class="td-cols">
-      <!-- COLUMNA IZQUIERDA: datos (ver / editar) -->
-      <div class="td-col td-col-datos">
-        <div class="td-col-header">
-          <span class="td-col-titulo">Datos del turno</span>
-          <button class="td-editar-toggle" id="tdEditarToggle" onclick="toggleEdicionTurno('${t.id}')">&#9998; Editar</button>
-        </div>
+    <div class="vista-toggle td-tabs" id="tdTabs">
+      <button class="vista-toggle-btn active" data-tdtab="datos" onclick="cambiarTdTab('datos')">Datos</button>
+      <button class="vista-toggle-btn" data-tdtab="estado" onclick="cambiarTdTab('estado')">Estado y pago</button>
+      <button class="vista-toggle-btn" data-tdtab="mas" onclick="cambiarTdTab('mas')">M&aacute;s acciones</button>
+    </div>
 
-        <!-- Vista solo-lectura -->
-        <div id="tdVista">
-          ${t.fecha_original?`<div class="td-reprog-aviso">&#128260; Reprogramado desde el ${parseInt(t.fecha_original.split('-')[2])}/${t.fecha_original.split('-')[1]}${t.hora_original?' a las '+t.hora_original.slice(0,5)+' hs':''}</div>`:''}
-          <div class="td-row"><span class="lbl">Paciente</span><span class="val">${esc(pac.nombre||'(sin nombre)')}</span></div>
-          <div class="td-row"><span class="lbl">Mail</span><span class="val">${esc(pac.email||'&mdash;')}</span></div>
-          <div class="td-row"><span class="lbl">Tel&eacute;fono</span><span class="val">${esc(pac.telefono||'&mdash;')}</span></div>
-          <div class="td-row"><span class="lbl">Fecha</span><span class="val">${parseInt(d)}/${m} &middot; ${t.hora_inicio?t.hora_inicio.slice(0,5):''} hs</span></div>
-          <div class="td-row"><span class="lbl">Servicio</span><span class="val">${esc(svc.nombre||'&mdash;')}</span></div>
-          <div class="td-row"><span class="lbl">Precio</span><span class="val">${fmtConDescuento(t.precio_cobrado,t.precio_original)}</span></div>
-          ${botonesContacto(t)}
-        </div>
+    <!-- PESTAÑA: Datos (ver / editar) -->
+    <div class="td-tab-panel td-col" id="tdPanelDatos">
+      <div class="td-col-header">
+        <span class="td-col-titulo">Datos del turno</span>
+        <button class="td-editar-toggle" id="tdEditarToggle" onclick="toggleEdicionTurno('${t.id}')">&#9998; Editar</button>
+      </div>
 
-        <!-- Formulario de edición (oculto hasta tocar Editar) -->
-        <div id="tdEdicion" style="display:none">
-          <div class="nt-field">
-            <label>Reasignar paciente</label>
-            <input type="text" id="tdPacBuscar" placeholder="Escrib\u00ed para buscar otro paciente&hellip;" autocomplete="off">
-            <div id="tdPacResultados"></div>
-            <div id="tdPacSeleccionado" style="margin-top:6px;font-size:11.5px;color:var(--ok)"></div>
-          </div>
-          <div class="nt-row2">
-            <div class="nt-field" style="margin-bottom:12px"><label for="tdEditFecha">Fecha</label><input type="date" id="tdEditFecha" value="${t.fecha}"></div>
-            <div class="nt-field" style="margin-bottom:12px"><label for="tdEditHora">Hora</label><input type="time" id="tdEditHora" value="${t.hora_inicio?t.hora_inicio.slice(0,5):''}"></div>
-          </div>
-          <div class="nt-row2">
-            <div class="nt-field" style="margin-bottom:12px"><label>Servicio</label><select id="tdEditServicio"><option value="">Cargando&hellip;</option></select></div>
-            <div class="nt-field" style="margin-bottom:12px"><label for="tdEditPrecio">Precio</label><input type="number" id="tdEditPrecio" value="${t.precio_cobrado||''}"><div id="tdPrecioAviso" class="td-precio-aviso"></div></div>
-          </div>
-          <div class="nt-error" id="tdEditError"></div>
-          <button class="btn-nt-guardar" id="tdEditGuardarBtn" onclick="guardarEdicionTurno('${t.id}')">Guardar cambios</button>
+      <!-- Vista solo-lectura -->
+      <div id="tdVista">
+        ${t.fecha_original?`<div class="td-reprog-aviso">&#128260; Reprogramado desde el ${parseInt(t.fecha_original.split('-')[2])}/${t.fecha_original.split('-')[1]}${t.hora_original?' a las '+t.hora_original.slice(0,5)+' hs':''}</div>`:''}
+        <div class="td-row"><span class="lbl">Paciente</span><span class="val">${esc(pac.nombre||'(sin nombre)')}</span></div>
+        <div class="td-row"><span class="lbl">Mail</span><span class="val">${esc(pac.email||'&mdash;')}</span></div>
+        <div class="td-row"><span class="lbl">Tel&eacute;fono</span><span class="val">${esc(pac.telefono||'&mdash;')}</span></div>
+        <div class="td-row"><span class="lbl">Fecha</span><span class="val">${parseInt(d)}/${m} &middot; ${t.hora_inicio?t.hora_inicio.slice(0,5):''} hs</span></div>
+        <div class="td-row"><span class="lbl">Servicio</span><span class="val">${esc(svc.nombre||'&mdash;')}</span></div>
+        <div class="td-row"><span class="lbl">Precio</span><span class="val">${fmtConDescuento(t.precio_cobrado,t.precio_original)}</span></div>
+        ${botonesContacto(t)}
+      </div>
+
+      <!-- Formulario de edición (oculto hasta tocar Editar) -->
+      <div id="tdEdicion" style="display:none">
+        <div class="nt-field">
+          <label>Reasignar paciente</label>
+          <input type="text" id="tdPacBuscar" placeholder="Escrib\u00ed para buscar otro paciente&hellip;" autocomplete="off">
+          <div id="tdPacResultados"></div>
+          <div id="tdPacSeleccionado" style="margin-top:6px;font-size:11.5px;color:var(--ok)"></div>
+        </div>
+        <div class="nt-row2">
+          <div class="nt-field" style="margin-bottom:12px"><label for="tdEditFecha">Fecha</label><input type="date" id="tdEditFecha" value="${t.fecha}"></div>
+          <div class="nt-field" style="margin-bottom:12px"><label for="tdEditHora">Hora</label><input type="time" id="tdEditHora" value="${t.hora_inicio?t.hora_inicio.slice(0,5):''}"></div>
+        </div>
+        <div class="nt-row2">
+          <div class="nt-field" style="margin-bottom:12px"><label>Servicio</label><select id="tdEditServicio"><option value="">Cargando&hellip;</option></select></div>
+          <div class="nt-field" style="margin-bottom:12px"><label for="tdEditPrecio">Precio</label><input type="number" id="tdEditPrecio" value="${t.precio_cobrado||''}"><div id="tdPrecioAviso" class="td-precio-aviso"></div></div>
+        </div>
+        <div class="nt-error" id="tdEditError"></div>
+        <button class="btn-nt-guardar" id="tdEditGuardarBtn" onclick="guardarEdicionTurno('${t.id}')">Guardar cambios</button>
+      </div>
+    </div>
+
+    <!-- PESTAÑA: Estado y pago -->
+    <div class="td-tab-panel td-col" id="tdPanelEstado" style="display:none">
+      <div class="td-accion-principal">${accionPrincipal}</div>
+
+      <div class="td-sep"></div>
+
+      <div class="td-bloque">
+        <span class="td-bloque-label">Forzar otro estado</span>
+        <input type="hidden" id="tdSelectEstado" value="${t.estado}">
+        <div class="nt-pac-tabs td-estado-tabs">
+          ${['pendiente','confirmado','señado','pagado','cancelado'].map(e=>
+            `<button type="button" class="nt-pac-tab${e===t.estado?' active':''}" data-estado="${e}" title="${esc(ESTADOS_INFO[e].desc)}" onclick="seleccionarEstadoForzado(this)">${ESTADOS_INFO[e].label}</button>`
+          ).join('')}
+        </div>
+        <button class="td-btn-ghost" style="margin-top:8px" onclick="cambiarEstadoLibre('${t.id}')">Aplicar</button>
+        <div class="td-leyenda-estados">
+          ${['pendiente','confirmado','señado','pagado','cancelado'].map(e=>
+            `<div class="td-leyenda-item"><span class="badge-estado badge-${e}">${ESTADOS_INFO[e].label}</span><span class="td-leyenda-desc">${ESTADOS_INFO[e].desc}</span></div>`
+          ).join('')}
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA: acciones -->
-      <div class="td-col td-col-acciones">
-        <div class="td-col-titulo">Acciones</div>
+      <div class="td-sep"></div>
 
-        ${(t.estado!=='cancelado'&&!(t.estado==='pagado'&&t.asistencia==='asistio'))?`<div class="td-bloque">
-          <span class="td-bloque-label">Mover de fecha</span>
-          <button class="td-btn-reprogramar" onclick="abrirReprogramar('${t.id}')">&#128260; Reprogramar turno</button>
-        </div>`:''}
-
-        <div class="td-bloque">
-          <span class="td-bloque-label">Forzar otro estado</span>
-          <input type="hidden" id="tdSelectEstado" value="${t.estado}">
-          <div class="nt-pac-tabs td-estado-tabs">
-            ${['pendiente','confirmado','pagado','cancelado'].map(e=>
-              `<button type="button" class="nt-pac-tab${e===t.estado?' active':''}" data-estado="${e}" onclick="seleccionarEstadoForzado(this)">${{pendiente:'Pendiente',confirmado:'Confirmado',pagado:'Pagado',cancelado:'Cancelado'}[e]}</button>`
-            ).join('')}
-          </div>
-          <button class="td-btn-ghost" style="margin-top:8px" onclick="cambiarEstadoLibre('${t.id}')">Aplicar</button>
+      <div class="td-bloque">
+        <span class="td-bloque-label">&#191;Vino a la sesi&oacute;n?</span>
+        <div class="td-asist-btns">
+          <button class="td-asist-b ${t.asistencia==='asistio'?'act-ok':''}" onclick="marcarAsistencia('${t.id}','${t.asistencia==='asistio'?'null':'asistio'}')">&#10003; Asisti&oacute;</button>
+          <button class="td-asist-b ${t.asistencia==='ausente'?'act-err':''}" onclick="marcarAsistencia('${t.id}','${t.asistencia==='ausente'?'null':'ausente'}')">&#10007; No asisti&oacute;</button>
         </div>
-
-        <div class="td-sep"></div>
-
-        <div class="td-bloque">
-          <span class="td-bloque-label">&#191;Vino a la sesi&oacute;n?</span>
-          <div class="td-asist-btns">
-            <button class="td-asist-b ${t.asistencia==='asistio'?'act-ok':''}" onclick="marcarAsistencia('${t.id}','${t.asistencia==='asistio'?'null':'asistio'}')">&#10003; Asisti&oacute;</button>
-            <button class="td-asist-b ${t.asistencia==='ausente'?'act-err':''}" onclick="marcarAsistencia('${t.id}','${t.asistencia==='ausente'?'null':'ausente'}')">&#10007; No asisti&oacute;</button>
-          </div>
-        </div>
-
-        <div class="td-accion-principal">${accionPrincipal}</div>
-
-        <div class="td-sep"></div>
-
-        <button class="td-eliminar-link" onclick="eliminarTurno('${t.id}')">&#128465; Eliminar del historial</button>
       </div>
+    </div>
+
+    <!-- PESTAÑA: Más acciones -->
+    <div class="td-tab-panel td-col" id="tdPanelMas" style="display:none">
+      ${(t.estado!=='cancelado'&&!(t.estado==='pagado'&&t.asistencia==='asistio'))?`<div class="td-bloque">
+        <span class="td-bloque-label">Mover de fecha</span>
+        <button class="td-btn-reprogramar" onclick="abrirReprogramar('${t.id}')">&#128260; Reprogramar turno</button>
+      </div>`:''}
+
+      <div class="td-sep"></div>
+
+      <button class="td-eliminar-link" onclick="eliminarTurno('${t.id}')">&#128465; Eliminar del historial</button>
     </div>`;
   document.getElementById('tdOverlay').classList.add('open');
 
@@ -3360,6 +3489,15 @@ async function guardarReprogramacion(){
 
 function cerrarDetalleTurno(){
   document.getElementById('tdOverlay').classList.remove('open');
+}
+
+// Cambia entre las 3 pestañas del detalle del turno (Datos / Estado y pago / Más acciones)
+function cambiarTdTab(tab){
+  ['datos','estado','mas'].forEach(k=>{
+    const panel=document.getElementById('tdPanel'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(panel)panel.style.display=k===tab?'block':'none';
+  });
+  document.querySelectorAll('#tdTabs .vista-toggle-btn').forEach(b=>b.classList.toggle('active',b.dataset.tdtab===tab));
 }
 
 let tdPacienteReasignado=null;
@@ -4008,13 +4146,13 @@ async function obtenerMetricasPeriodo(start,end){
   const{data:turnos,error}=await sb.from('turnos')
     .select('fecha,precio_cobrado,precio_original,estado,asistencia,paciente_id,servicio_id,pacientes(creado_en),servicios(nombre)')
     .gte('fecha',startStr).lte('fecha',endStr)
-    .in('estado',['pendiente','confirmado','pagado']);
+    .in('estado',['pendiente','confirmado','señado','pagado']);
   if(error)throw error;
-  const ingresos=turnos.filter(t=>t.estado==='pagado').reduce((s,t)=>s+Number(t.precio_cobrado||0),0);
-  // Lo que ya se ganó pero todavía no se cobró (asistió y no pagó)
+  const ingresos=turnos.filter(t=>t.estado==='pagado'||t.estado==='señado').reduce((s,t)=>s+Number(t.precio_cobrado||0),0);
+  // Lo que ya se ganó pero todavía no se cobró (asistió y no pagó del todo)
   const porCobrar=turnos
     .filter(t=>t.asistencia==='asistio'&&t.estado!=='pagado')
-    .reduce((s,t)=>s+Number((t.precio_cobrado&&Number(t.precio_cobrado)>0)?t.precio_cobrado:t.precio_original||0),0);
+    .reduce((s,t)=>s+montoPendiente(t),0);
   const capacidad=await calcularCapacidad(start,end);
   const ocupacion=capacidad>0?Math.round((turnos.length/capacidad)*100):null;
   return{turnos,ingresos,porCobrar,ocupacion,capacidad};
@@ -4175,7 +4313,7 @@ async function renderServicios(turnos){
   turnos.forEach(t=>{
     const nombre=(t.servicios&&t.servicios.nombre)||'Sin servicio';
     porCantidad[nombre]=(porCantidad[nombre]||0)+1;
-    if(t.estado==='confirmado'||t.estado==='pagado')porFact[nombre]=(porFact[nombre]||0)+Number(t.precio_cobrado||0);
+    if(t.estado==='confirmado'||t.estado==='señado'||t.estado==='pagado')porFact[nombre]=(porFact[nombre]||0)+Number(t.precio_cobrado||0);
   });
   cont.innerHTML=`
     <div class="donut-block">
@@ -4363,7 +4501,7 @@ function renderPacientes(turnos,start){
 async function cargarMejorPeorHorario(){
   const cont=document.getElementById('horariosPanel');
   try{
-    const{data,error}=await sb.from('turnos').select('hora_inicio').in('estado',['pendiente','confirmado','pagado']);
+    const{data,error}=await sb.from('turnos').select('hora_inicio').in('estado',['pendiente','confirmado','señado','pagado']);
     if(error)throw error;
     if(!data||data.length<3){cont.innerHTML='<div class="empty-state">Todav\u00eda no hay suficientes turnos para ver un patr\u00f3n.</div>';return;}
     const conteo={};
@@ -4383,20 +4521,24 @@ async function cargarListas(){
   document.getElementById('listaProximos').innerHTML='<div class="skel skel-line"></div>'.repeat(2);
   document.getElementById('listaPendientes').innerHTML='<div class="skel skel-line"></div>'.repeat(2);
   try{
-    // Las 5 consultas se lanzan en paralelo (antes iban en serie, una tras otra)
-    const [rPendientes, rProximos, rPasar, rCobrar, rVencidos, rPrecios] = await Promise.all([
+    // Las 6 consultas se lanzan en paralelo (antes iban en serie, una tras otra)
+    const [rPendientes, rProximos, rPasar, rCobrar, rVencidos, rPrecios, rSinPago] = await Promise.all([
       sb.from('turnos').select('id,fecha,hora_inicio,pacientes(nombre,email,telefono),servicios(nombre)')
         .eq('estado','pendiente').gte('fecha',hoyStr).order('fecha').order('hora_inicio'),
       sb.from('turnos').select('id,fecha,hora_inicio,estado,pacientes(nombre,email,telefono),servicios(nombre)')
-        .in('estado',['confirmado','pagado']).gte('fecha',hoyStr).lte('fecha',en7dias).order('fecha').order('hora_inicio'),
+        .in('estado',['confirmado','señado','pagado']).gte('fecha',hoyStr).lte('fecha',en7dias).order('fecha').order('hora_inicio'),
       sb.from('turnos').select('id,fecha,hora_inicio,hora_fin,estado,asistencia,paciente_id,precio_cobrado,precio_original,pacientes(nombre,email,telefono),servicios(nombre)')
-        .in('estado',['confirmado','pagado']).is('asistencia',null).lte('fecha',hoyStr).order('fecha',{ascending:false}).order('hora_inicio'),
+        .in('estado',['confirmado','señado','pagado']).is('asistencia',null).lte('fecha',hoyStr).order('fecha',{ascending:false}).order('hora_inicio'),
       sb.from('turnos').select('id,fecha,hora_inicio,estado,asistencia,servicio_id,precio_cobrado,precio_original,pacientes(nombre,email,telefono),servicios(nombre)')
         .eq('asistencia','asistio').neq('estado','pagado').neq('estado','cancelado').order('fecha',{ascending:false}),
       sb.from('turnos').select('id,fecha,hora_inicio,estado,pacientes(nombre,email,telefono),servicios(nombre)')
         .eq('estado','pendiente').lt('fecha',hoyStr).order('fecha',{ascending:false}),
       // Precios anómalos (muy bajos O muy altos). Sin caducidad: un error de plata no vence.
-      sb.rpc('turnos_precio_anomalo')
+      sb.rpc('turnos_precio_anomalo'),
+      // Se liberaron solos porque no volvieron a pagar dentro de los 30 minutos
+      // (vence_confirmacion solo lo pisa esa función, nunca un rechazo manual)
+      sb.from('turnos').select('id,fecha,hora_inicio,estado,pacientes(nombre,email,telefono),servicios(nombre)')
+        .eq('estado','cancelado').not('vence_confirmacion','is',null).order('fecha',{ascending:false}).limit(20)
     ]);
     if(rPendientes.error)throw rPendientes.error;
     if(rProximos.error)throw rProximos.error;
@@ -4425,10 +4567,14 @@ async function cargarListas(){
       servicios:{nombre:r.servicio_nombre}
     }));
 
-    // Cachear todo para las acciones
-    [...pasarLista,...porCobrar,...vencidos,...preciosRaros,...(rPendientes.data||[]),...(rProximos.data||[])].forEach(t=>{turnosCache[t.id]=t;});
+    // Se liberaron por falta de pago, sin contar los que Pupi ya descartó (marcó como "ya lo vi")
+    const descartados=obtenerDescartadosResolver();
+    const sinPago=(rSinPago.data||[]).filter(t=>!descartados.has(t.id));
 
-    renderResolver(pasarLista,porCobrar,vencidos,preciosRaros);
+    // Cachear todo para las acciones
+    [...pasarLista,...porCobrar,...vencidos,...preciosRaros,...sinPago,...(rPendientes.data||[]),...(rProximos.data||[])].forEach(t=>{turnosCache[t.id]=t;});
+
+    renderResolver(pasarLista,porCobrar,vencidos,preciosRaros,sinPago);
   }catch(err){
     console.error(err);
     document.getElementById('listaPendientes').innerHTML='<div class="empty-state-c">No pudimos cargar los datos.</div>';
@@ -4440,12 +4586,13 @@ async function cargarListas(){
 // Guardamos los datos completos (no solo los primeros 4) para poder expandir
 // cada grupo en el lugar cuando tocan "ver más", sin perder el contexto del Dashboard.
 let resolverDatosCache=null;
-let resolverExpandido={vencidos:false,porCobrar:false,pasarLista:false,preciosRaros:false};
+let resolverExpandido={vencidos:false,porCobrar:false,pasarLista:false,preciosRaros:false,sinPago:false};
 
-function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros){
+function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros,sinPago){
   preciosRaros=preciosRaros||[];
-  resolverDatosCache={pasarLista,porCobrar,vencidos,preciosRaros};
-  const total=pasarLista.length+porCobrar.length+vencidos.length+preciosRaros.length;
+  sinPago=sinPago||[];
+  resolverDatosCache={pasarLista,porCobrar,vencidos,preciosRaros,sinPago};
+  const total=pasarLista.length+porCobrar.length+vencidos.length+preciosRaros.length+sinPago.length;
   const panel=document.getElementById('resolverPanel');
   const cont=document.getElementById('resolverContenido');
   const badge=document.getElementById('resolverBadge');
@@ -4467,6 +4614,7 @@ function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros){
   titulo.textContent='Por resolver';
   const partes=[];
   if(vencidos.length)partes.push(`${vencidos.length} sin confirmar`);
+  if(sinPago.length)partes.push(`${sinPago.length} sin pagar`);
   if(pasarLista.length)partes.push(`${pasarLista.length} sin pasar lista`);
   if(porCobrar.length)partes.push(`${porCobrar.length} por cobrar`);
   if(preciosRaros.length)partes.push(`${preciosRaros.length} precio${preciosRaros.length===1?'':'s'} a revisar`);
@@ -4485,7 +4633,18 @@ function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros){
     </div>`;
   }
 
-  // 2. POR COBRAR — AGRUPADO POR PACIENTE (así se ve cuánto debe cada uno)
+  // 2. SE FUERON SIN PAGAR (se liberaron solos a los 30 min de no volver de Mercado Pago)
+  if(sinPago.length){
+    const verTodos=resolverExpandido.sinPago;
+    const visibles=verTodos?sinPago:sinPago.slice(0,4);
+    html+=`<div class="resolver-grupo g-urgente">
+      <div class="resolver-grupo-tit"><span class="rg-ico">&#8987;</span> Se fueron sin pagar <span class="rg-n">${sinPago.length}</span></div>
+      ${visibles.map(t=>itemResolver(t,'sinpago')).join('')}
+      ${!verTodos&&sinPago.length>4?linkVerMas(sinPago.length-4,'sinPago'):''}
+    </div>`;
+  }
+
+  // 3. POR COBRAR — AGRUPADO POR PACIENTE (así se ve cuánto debe cada uno)
   if(porCobrar.length){
     const porPaciente={};
     porCobrar.forEach(t=>{
@@ -4508,7 +4667,7 @@ function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros){
     </div>`;
   }
 
-  // 3. PASAR LISTA (registro)
+  // 4. PASAR LISTA (registro)
   if(pasarLista.length){
     const verTodos=resolverExpandido.pasarLista;
     const visibles=verTodos?pasarLista:pasarLista.slice(0,4);
@@ -4519,7 +4678,7 @@ function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros){
     </div>`;
   }
 
-  // 4. PRECIOS A REVISAR (posible error de tipeo)
+  // 5. PRECIOS A REVISAR (posible error de tipeo)
   if(preciosRaros.length){
     const verTodos=resolverExpandido.preciosRaros;
     const visibles=verTodos?preciosRaros:preciosRaros.slice(0,4);
@@ -4537,7 +4696,7 @@ function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros){
 function expandirGrupoResolver(tipo){
   resolverExpandido[tipo]=true;
   if(resolverDatosCache){
-    renderResolver(resolverDatosCache.pasarLista,resolverDatosCache.porCobrar,resolverDatosCache.vencidos,resolverDatosCache.preciosRaros);
+    renderResolver(resolverDatosCache.pasarLista,resolverDatosCache.porCobrar,resolverDatosCache.vencidos,resolverDatosCache.preciosRaros,resolverDatosCache.sinPago);
   }
 }
 
@@ -4726,10 +4885,12 @@ function itemResolver(t,tipo){
 
   // Botón de WhatsApp con mensaje cálido según el contexto (no hace falta salir de acá para escribirle)
   let btnWsp='';
-  if(pac.telefono&&(tipo==='vencido'||tipo==='asistencia')){
+  if(pac.telefono&&(tipo==='vencido'||tipo==='asistencia'||tipo==='sinpago')){
     const telFull=telefonoParaWhatsapp(pac.telefono);
     const msg=tipo==='vencido'
       ? `Hola ${nombre}! Vi que tu turno del ${fechaTxt} a las ${horaTxt} hs todav\u00eda qued\u00f3 sin confirmar. \u00bfSeguimos con ese horario o preferís que veamos otro?`
+      : tipo==='sinpago'
+      ? `Hola ${nombre}! Vi que estabas por reservar ${svc.nombre||'un turno'} para el ${fechaTxt} a las ${horaTxt} hs, pero no llegamos a confirmar el pago a tiempo y se liber\u00f3 el hor\u00e1rio. Si segu\u00ed interesado, decime y lo coordinamos de nuevo \ud83d\ude4c`
       : `Hola ${nombre}! \u00bfC\u00f3mo est\u00e1s? Te escribo por tu turno del ${fechaTxt}. Si necesit\u00e1s reprogramarlo, decime y lo vemos juntas sin problema.`;
     btnWsp=`<a class="rb rb-wsp" href="https://wa.me/${telFull}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${WA_ICON_SVG}</a>`;
   }
@@ -4740,6 +4901,8 @@ function itemResolver(t,tipo){
              <button class="rb rb-no" onclick="accionResolver('${t.id}','cancelar')">&#10007; Cancelar</button>`;
   } else if(tipo==='cobrar'){
     botones=`<button class="rb rb-gold" onclick="accionResolver('${t.id}','cobrar')">$ Cobrado</button>`;
+  } else if(tipo==='sinpago'){
+    botones=`${btnWsp}<button class="rb rb-no" onclick="event.stopPropagation();descartarResolverItem('${t.id}')" title="Ya lo vi / no hace falta escribirle">&#10007; Descartar</button>`;
   } else {
     botones=`${btnWsp}<button class="rb rb-ok" onclick="accionResolver('${t.id}','asistio')">&#10003; Asisti&oacute;</button>
              <button class="rb rb-no" onclick="accionResolver('${t.id}','ausente')">&#10007; No asisti&oacute;</button>`;
@@ -4862,8 +5025,7 @@ async function deudaDelPaciente(turno){
       .neq('estado','cancelado');
     if(error)throw error;
 
-    const total=(data||[]).reduce((s,t)=>
-      s+Number((t.precio_cobrado&&Number(t.precio_cobrado)>0)?t.precio_cobrado:t.precio_original||0),0);
+    const total=(data||[]).reduce((s,t)=>s+montoPendiente(t),0);
     return{sesiones:(data||[]).length,total,nombre:pac.nombre||'Este paciente'};
   }catch(err){
     console.error(err);
@@ -5161,7 +5323,7 @@ async function actualizarContadoresTurnos(){
     if(hasta)q=q.lte('fecha',hasta);
     const{data,error}=await q;
     if(error)throw error;
-    const conteo={todos:data.length,pendiente:0,confirmado:0,pagado:0,cancelado:0};
+    const conteo={todos:data.length,pendiente:0,confirmado:0,señado:0,pagado:0,cancelado:0};
     data.forEach(t=>{if(conteo[t.estado]!==undefined)conteo[t.estado]++;});
     Object.keys(conteo).forEach(k=>{
       const el=document.querySelector(`.chip-count[data-count="${k}"]`);
@@ -5185,6 +5347,9 @@ function renderFilaTurno(t){
   } else if(t.estado==='confirmado'){
     acciones.push(btnAccionIcono('pagar','$','Pagado',`accionTurno('${t.id}','pagado')`));
     acciones.push(btnAccionIcono('cancelar','&#10007;','Cancelar',`accionTurno('${t.id}','cancelado')`));
+  } else if(t.estado==='señado'){
+    acciones.push(btnAccionIcono('pagar','$','Cobrar saldo',`cobrarSaldoTurno('${t.id}')`));
+    acciones.push(btnAccionIcono('cancelar','&#10007;','Cancelar',`accionTurno('${t.id}','cancelado')`));
   } else if(t.estado==='pagado'){
     acciones.push(btnAccionIcono('cancelar','&#10007;','Cancelar',`accionTurno('${t.id}','cancelado')`));
   }
@@ -5200,7 +5365,7 @@ function renderFilaTurno(t){
   // Si el turno ya pasó, está pagado, y nadie marcó si vino o no — un aviso chico,
   // no un badge nuevo (para no sumar otro color más para memorizar).
   const yaPaso=t.fecha<ymd(new Date());
-  const sinAsistenciaAviso=(t.estado==='pagado'&&!t.asistencia&&yaPaso)
+  const sinAsistenciaAviso=((t.estado==='pagado'||t.estado==='señado')&&!t.asistencia&&yaPaso)
     ?'<div class="tt-aviso-asist">sin marcar asistencia</div>':'';
 
   return`<div class="tt-row tt-row-click${t.estado==='cancelado'?' tt-cancelado':''}${yaPaso?' tt-pasado':' tt-futuro'}" id="fila-${t.id}" onclick="abrirDetalleTurno('${t.id}')">
@@ -5227,6 +5392,30 @@ function marcarAsistenciaToggle(id,valor){
   const t=turnosCache[id];
   const nuevo=(t&&t.asistencia===valor)?null:valor;
   marcarAsistencia(id,nuevo);
+}
+
+// Registra el cobro del saldo de un turno señado. Como el resto se cobra de
+// formas distintas según el caso (efectivo, transferencia, otro link de MP),
+// Pupi ingresa el monto a mano en vez de que el sistema lo adivine.
+async function cobrarSaldoTurno(id){
+  const t=turnosCache[id];
+  if(!t)return;
+  const saldo=Math.max((t.precio_original||0)-(t.precio_cobrado||0),0);
+  const monto=prompt(`\u00bfCu\u00e1nto cobraste ahora? (saldo pendiente: ${fmt(saldo)})`,saldo);
+  if(monto===null)return;
+  const montoNum=parseFloat(monto);
+  if(isNaN(montoNum)||montoNum<=0){alert('Ingres\u00e1 un monto v\u00e1lido.');return;}
+  const totalNuevo=(t.precio_cobrado||0)+montoNum;
+  const estadoNuevo=totalNuevo>=(t.precio_original||0)?'pagado':'señado';
+  try{
+    const{error}=await sb.from('turnos').update({precio_cobrado:totalNuevo,estado:estadoNuevo}).eq('id',id);
+    if(error)throw error;
+    cerrarDetalleTurno();
+    refrescarVistaTurnosActual();
+  }catch(err){
+    console.error(err);
+    alert('No pudimos registrar el cobro. Intent\u00e1 de nuevo.');
+  }
 }
 
 // Al cancelar un turno YA PAGADO, la plata queda ambigua: ¿se devolvió o se retuvo?
@@ -5707,7 +5896,10 @@ async function cargarServiciosSelect(targetId){
     return;
   }
   try{
-    const{data,error}=await sb.from('servicios').select('id,nombre,precio,duracion_min,descanso_min,tipo,sesiones_paquete').eq('activo',true).order('precio');
+    // A diferencia de las páginas públicas, acá se muestran TODOS los
+    // servicios (activos e inactivos) — Pupi necesita poder seguir
+    // gestionando turnos de servicios que ya discontinuó públicamente.
+    const{data,error}=await sb.from('servicios').select('id,nombre,precio,duracion_min,descanso_min,tipo,sesiones_paquete,activo').order('precio');
     if(error)throw error;
     ntServiciosCache=data||[];
     poblarSelectServicios(sel);
@@ -5722,7 +5914,7 @@ function poblarSelectServicios(sel){
   // como turno individual — tienen su propio ciclo de encuentros grupales.
   const reservables=(ntServiciosCache||[]).filter(s=>s.tipo!=='suscripcion');
   sel.innerHTML='<option value="">Eleg\u00ed un servicio</option>'+
-    reservables.map(s=>`<option value="${s.id}">${esc(s.nombre)} &middot; ${fmt(s.precio)}</option>`).join('');
+    reservables.map(s=>`<option value="${s.id}">${esc(s.nombre)}${s.activo===false?' (inactivo)':''} &middot; ${fmt(s.precio)}</option>`).join('');
 }
 
 // ══ CÁLCULO CENTRAL DE PRECIO ══
@@ -6688,7 +6880,7 @@ async function abrirFichaPaciente(id){
 
     const histHTML=(turnos&&turnos.length)?turnos.map(t=>{
       const[,m,d]=t.fecha.split('-');
-      const lbl={pendiente:'Pendiente',confirmado:'Confirmado',pagado:'Pagado',cancelado:'Cancelado'}[t.estado]||t.estado;
+      const lbl={pendiente:'Pendiente',confirmado:'Confirmado','señado':'Se\u00f1ado',pagado:'Pagado',cancelado:'Cancelado'}[t.estado]||t.estado;
       return`<div class="pac-hist-item"><span class="fecha">${parseInt(d)}/${m}</span><span class="svc">${esc((t.servicios&&t.servicios.nombre)||'')}</span><span>${lbl}</span></div>`;
     }).join(''):'<div class="empty-state">Todav\u00eda no tiene turnos.</div>';
 
@@ -6698,11 +6890,11 @@ async function abrirFichaPaciente(id){
     }).join(''):'<div class="empty-state">Sin tarifas especiales.</div>';
 
     const totalTurnos=turnos?turnos.length:0;
-    // Solo lo efectivamente cobrado
-    const totalFacturado=(turnos||[]).filter(t=>t.estado==='pagado').reduce((s,t)=>s+Number(t.precio_cobrado||0),0);
-    // Lo que asistió y no pagó
+    // Lo efectivamente cobrado (incluye señas, no solo lo saldado del todo)
+    const totalFacturado=(turnos||[]).filter(t=>t.estado==='pagado'||t.estado==='señado').reduce((s,t)=>s+Number(t.precio_cobrado||0),0);
+    // Lo que asistió y no pagó (del todo)
     const impagos=(turnos||[]).filter(t=>t.asistencia==='asistio'&&t.estado!=='pagado'&&t.estado!=='cancelado');
-    const deuda=impagos.reduce((s,t)=>s+Number((t.precio_cobrado&&Number(t.precio_cobrado)>0)?t.precio_cobrado:t.precio_original||0),0);
+    const deuda=impagos.reduce((s,t)=>s+montoPendiente(t),0);
     const ausencias=(turnos||[]).filter(t=>t.asistencia==='ausente').length;
     const asistidos=(turnos||[]).filter(t=>t.asistencia==='asistio').length;
 
@@ -7849,10 +8041,10 @@ async function cargarFinanzas(){
   document.getElementById('finNext').style.visibility=navOff?'hidden':'visible';
 
   try{
-    // Ingresos: solo turnos pagados
+    // Ingresos: turnos pagados o señados (una seña ya es plata real cobrada)
     let q=sb.from('turnos')
       .select('fecha,hora_inicio,precio_cobrado,precio_original,pacientes(nombre),servicios(nombre)')
-      .eq('estado','pagado')
+      .in('estado',['pagado','señado'])
       .order('fecha',{ascending:false});
     if(desde)q=q.gte('fecha',ymd(desde));
     if(hasta)q=q.lte('fecha',ymd(hasta));
@@ -7879,17 +8071,17 @@ async function cargarFinanzas(){
     if(desde)qTodos=qTodos.gte('fecha',ymd(desde));
     if(hasta)qTodos=qTodos.lte('fecha',ymd(hasta));
 
-    // Ingresos esperados: turnos confirmados/pendientes a futuro, todavía sin cobrar, dentro del período
+    // Ingresos esperados: turnos confirmados/pendientes/señados a futuro, con saldo sin cobrar, dentro del período
     const hoyStr=ymd(new Date());
     let qEsperado=sb.from('turnos').select('precio_cobrado,precio_original')
-      .in('estado',['confirmado','pendiente']).gte('fecha',hoyStr);
+      .in('estado',['confirmado','pendiente','señado']).gte('fecha',hoyStr);
     if(hasta)qEsperado=qEsperado.lte('fecha',ymd(hasta));
 
     // Período anterior (mismo tama\u00f1o de rango, para comparar "vs. anterior")
     const prevRango=finPeriodo!=='todo'?finRangoFechas(finOffset-1):null;
     let qPrev=null,qgPrev=null,qiPrev=null;
     if(prevRango){
-      qPrev=sb.from('turnos').select('precio_cobrado').eq('estado','pagado')
+      qPrev=sb.from('turnos').select('precio_cobrado').in('estado',['pagado','señado'])
         .gte('fecha',ymd(prevRango.desde)).lte('fecha',ymd(prevRango.hasta));
       qgPrev=sb.from('gastos').select('monto').gte('fecha',ymd(prevRango.desde)).lte('fecha',ymd(prevRango.hasta));
       qiPrev=sb.from('ingresos_extra').select('monto').gte('fecha',ymd(prevRango.desde)).lte('fecha',ymd(prevRango.hasta));
@@ -7919,9 +8111,8 @@ async function cargarFinanzas(){
     const balance=totalIngresos-totalGastos;
     const cantIngresos=finDatosActuales.length+finExtrasActuales.length;
 
-    // Plata ya ganada que todavía no entró
-    const totalPorCobrar=finPorCobrarActual.reduce((s,t)=>
-      s+Number((t.precio_cobrado&&Number(t.precio_cobrado)>0)?t.precio_cobrado:t.precio_original||0),0);
+    // Plata ya ganada que todavía no entró (o le falta el saldo)
+    const totalPorCobrar=finPorCobrarActual.reduce((s,t)=>s+montoPendiente(t),0);
     // Cobrabilidad: qué porcentaje de lo facturado efectivamente entró
     const facturado=totalSesiones+totalPorCobrar;
     const cobrabilidad=facturado>0?Math.round((totalSesiones/facturado)*100):null;
@@ -7934,9 +8125,8 @@ async function cargarFinanzas(){
     const cancelados=(todos||[]).filter(t=>t.estado==='cancelado').length;
     const tasaCancelacion=totalTurnosPeriodo>0?Math.round((cancelados/totalTurnosPeriodo)*100):null;
 
-    // Ingresos esperados: lo que falta cobrar de turnos futuros ya confirmados/pendientes
-    const ingresosEsperados=(esperado||[]).reduce((s,t)=>
-      s+Number((t.precio_cobrado&&Number(t.precio_cobrado)>0)?t.precio_cobrado:t.precio_original||0),0);
+    // Ingresos esperados: saldo que falta cobrar de turnos futuros ya confirmados/pendientes/señados
+    const ingresosEsperados=(esperado||[]).reduce((s,t)=>s+montoPendiente(t),0);
 
     // Tendencia vs. período anterior
     let trendIngresosVal=null,trendGastosVal=null,trendBalanceVal=null;

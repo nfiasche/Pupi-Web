@@ -905,6 +905,14 @@ input::placeholder{color:var(--crf)}
             <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
 
+            <div id="modalidadWrap" style="display:none">
+              <span class="campo-label">&#191;Presencial u online?</span>
+              <div class="pago-opciones">
+                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
+                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
+              </div>
+            </div>
+
             <div class="cancel-modal-box">
               <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
               <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver pol&iacute;tica completa</button></p>
@@ -1206,6 +1214,8 @@ function abrirModal(key){
 function abrirModalSvc(id){
   const svc=SVCS.find(s=>s.id===id);if(!svc)return;
   MS={...MS,svc,fecha:null,hora:null,tarifa:null};
+  const modWrap=document.getElementById('modalidadWrap');
+  if(modWrap)modWrap.style.display=svc.modalidad==='ambas'?'block':'none';
   const n=svc.nombre.toLowerCase();
   const key=n.includes('alma')?'alma':n.includes('rtice')?'vertice':n.includes('constelacion')?'constelaciones':null;
   poblarP1(key,(key&&META[key])||{},svc);
@@ -1315,7 +1325,7 @@ async function confirmar(soloReservar=false){
     const pac=pacRows&&pacRows[0];
     if(!pac)throw new Error('No se pudo crear el paciente');
     const s=MS.svc;
-    const[h,mi]=MS.hora.split(':').map(Number);const fin=h*60+mi+s.duracion_min+(s.descanso_min||10);
+    const[h,mi]=MS.hora.split(':').map(Number);const fin=h*60+mi+s.duracion_min+(s.descanso_min||0);
     const hf=String(Math.floor(fin/60)).padStart(2,'0')+':'+String(fin%60).padStart(2,'0');
 
     // El turno siempre nace "pendiente" — recién pasa a confirmado/pagado
@@ -1323,9 +1333,13 @@ async function confirmar(soloReservar=false){
     // el pago real por su cuenta). Si es un servicio tipo paquete, el paquete
     // en sí se crea del lado del servidor cuando el pago se confirma, no acá.
     const turnoIdGenerado=crypto.randomUUID();
+    const modalidadWrap=document.getElementById('modalidadWrap');
+    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
+      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
+      :s.modalidad||null;
     const{error:eTurno}=await sb.from('turnos').insert({
       id:turnoIdGenerado,paciente_id:pac.id,servicio_id:s.id,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
-      estado:'pendiente',precio_cobrado:0,precio_original:s.precio
+      estado:'pendiente',precio_cobrado:0,precio_original:s.precio,modalidad:modalidadTurno
     });
     if(eTurno)throw eTurno;
     const turnoIns={id:turnoIdGenerado};

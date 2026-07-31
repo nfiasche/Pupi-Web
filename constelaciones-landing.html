@@ -885,6 +885,14 @@ footer a:hover{color:var(--gold)}
             <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
 
+            <div id="modalidadWrap" style="display:none">
+              <span class="campo-label">&#191;Presencial u online?</span>
+              <div class="pago-opciones">
+                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
+                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
+              </div>
+            </div>
+
             <div class="cancel-modal-box">
               <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
               <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver pol&iacute;tica completa</button></p>
@@ -1118,7 +1126,7 @@ const SLOTS=['09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00','18
 
 let sb=null;
 let svcId=null;
-let MS={svc:{nombre:'Constelaciones familiares',tipo:'paquete',precio:PRECIO_CONSTELACIONES,duracion_min:90,descanso_min:30,sesiones_paquete:3},m:new Date().getMonth(),y:new Date().getFullYear(),fecha:null,hora:null,tarifa:null};
+let MS={svc:{nombre:'Constelaciones familiares',tipo:'paquete',precio:PRECIO_CONSTELACIONES,duracion_min:90,descanso_min:30,sesiones_paquete:3,modalidad:'ambas'},m:new Date().getMonth(),y:new Date().getFullYear(),fecha:null,hora:null,tarifa:null};
 
 rdy(async()=>{
   sb=window.supabase.createClient(SB_URL,SB_KEY);
@@ -1172,6 +1180,8 @@ const mSlides=document.getElementById('mSlides');
 function abrirModalConstelaciones(){
   MS.fecha=null;MS.hora=null;MS.tarifa=null;
   document.getElementById('m-precio-p1').textContent=fmt(MS.svc.precio);
+  const modWrap=document.getElementById('modalidadWrap');
+  if(modWrap)modWrap.style.display=MS.svc.modalidad==='ambas'?'block':'none';
   irP(1);
   overlay.classList.add('open');
   document.body.style.overflow='hidden';
@@ -1309,16 +1319,21 @@ async function confirmar(soloAsignar=false){
     if(!pac)throw new Error('No se pudo crear el paciente');
     const s=MS.svc;const precio=MS.tarifa!==null?MS.tarifa:s.precio;
     const[h,mi]=MS.hora.split(':').map(Number);
-    const fin=h*60+mi+s.duracion_min+(s.descanso_min||10);
+    const fin=h*60+mi+s.duracion_min+(s.descanso_min||0);
     const hf=String(Math.floor(fin/60)).padStart(2,'0')+':'+String(fin%60).padStart(2,'0');
 
     // El turno siempre nace "pendiente" — recién pasa a confirmado/pagado
     // cuando corresponde (WhatsApp lo confirma a mano, o Mercado Pago avisa
     // el pago real por su cuenta). Nunca se marca solo por haber llegado hasta acá.
+    const modalidadWrap=document.getElementById('modalidadWrap');
+    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
+      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
+      :s.modalidad||null;
+
     const turnoIdGenerado=crypto.randomUUID();
     const{error:eTurno}=await sb.from('turnos').insert({
       id:turnoIdGenerado,paciente_id:pac.id,servicio_id:svcId,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
-      estado:'pendiente',precio_cobrado:0,precio_original:s.precio
+      estado:'pendiente',precio_cobrado:0,precio_original:s.precio,modalidad:modalidadTurno
     });
     if(eTurno)throw eTurno;
     const turnoIns={id:turnoIdGenerado};

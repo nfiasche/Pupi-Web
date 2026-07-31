@@ -461,7 +461,7 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 .skel-line{height:44px;margin-bottom:6px;border-radius:6px}
 
 /* ══ VISTA TURNOS ══ */
-.turnos-search{background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:9px 12px;font-size:12.5px;font-family:'Montserrat',sans-serif;width:220px;transition:border-color .18s}
+.turnos-search{background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:9px 12px;font-size:12.5px;font-family:'Montserrat',sans-serif;width:220px;min-width:140px;flex:0 1 220px;transition:border-color .18s}
 
 /* ══ FILTROS DE TURNOS (compactos, una fila) ══ */
 .filtros-turnos{margin-bottom:20px;padding:14px 16px;background:var(--surf);border:1px solid var(--bds);border-radius:12px;box-shadow:var(--sh1)}
@@ -554,6 +554,7 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 
 .ag-pendiente{background:rgba(201,168,75,.16);border-left-color:var(--warn);color:#e0c469}
 .ag-confirmado{background:rgba(122,155,110,.16);border-left-color:var(--ok);color:#9dbd8f}
+.ag-señado{background:rgba(122,146,201,.16);border-left-color:#8fa8d6;color:#8fa8d6}
 .ag-pagado{background:rgba(201,138,75,.18);border-left-color:var(--gold);color:#e0a765}
 .ag-completado{background:linear-gradient(135deg,rgba(157,184,150,.2),rgba(201,168,75,.14));border-left-color:#9db896;color:#a8d19c}
 
@@ -687,8 +688,10 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .admin-cal-evento:hover{opacity:.8}
 .ev-pendiente{background:var(--warn-bg);border-left-color:var(--warn);color:var(--warn)}
 .ev-confirmado{background:var(--ok-bg);border-left-color:var(--ok);color:var(--ok)}
+.ev-señado{background:rgba(122,146,201,.14);border-left-color:#8fa8d6;color:#8fa8d6}
 .ev-pagado{background:var(--gold-d);border-left-color:var(--gold);color:var(--gold)}
 .ev-cancelado{background:rgba(201,97,75,.06);border-left-color:var(--err);color:var(--crf);text-decoration:line-through}
+.turno-svc-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0;vertical-align:middle}
 .admin-cal-mas{font-size:9.5px;color:var(--crf);padding:2px 5px;cursor:pointer;flex-shrink:0}
 .admin-cal-mas:hover{color:var(--gold)}
 .admin-cal-day-add{position:absolute;top:6px;right:6px;font-size:13px;color:var(--crf);opacity:0;transition:opacity .15s;cursor:pointer}
@@ -699,6 +702,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .cal-punto{width:6px;height:6px;border-radius:50%;display:inline-block}
 .cal-punto.ev-pendiente{background:var(--warn)}
 .cal-punto.ev-confirmado{background:var(--ok)}
+.cal-punto.ev-señado{background:#8fa8d6}
 .cal-punto.ev-pagado{background:var(--gold)}
 .cal-punto.ev-cancelado{background:var(--err)}
 /* Días sin turnos: apagados para que resalten los que sí tienen */
@@ -771,9 +775,10 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .nt-close:hover{border-color:var(--gold);color:var(--gold)}
 .nt-field{margin-bottom:16px}
 .nt-field label{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--crd);font-weight:700;margin-bottom:7px}
-.nt-field input,.nt-field select{width:100%;background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:11px 12px;font-size:13.5px;font-family:'Montserrat',sans-serif;transition:border-color .15s}
-.nt-field input:focus,.nt-field select:focus{outline:none;border-color:var(--gold)}
-.nt-field input::placeholder{color:var(--crf)}
+.nt-field input,.nt-field select,.nt-field textarea{width:100%;background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:11px 12px;font-size:13.5px;font-family:'Montserrat',sans-serif;transition:border-color .15s}
+.nt-field textarea{resize:vertical;min-height:84px;line-height:1.5}
+.nt-field input:focus,.nt-field select:focus,.nt-field textarea:focus{outline:none;border-color:var(--gold)}
+.nt-field input::placeholder,.nt-field textarea::placeholder{color:var(--crf)}
 .nt-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .nt-hora-toggle{margin-top:6px}
 
@@ -849,9 +854,10 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .btn-svc-desbloquear:hover{border-color:var(--gold);color:var(--gold)}
 .svc-field input,.svc-field textarea,.svc-field select{width:100%;background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:9px 11px;font-size:12.5px;font-family:'Montserrat',sans-serif;transition:border-color .15s}
 .svc-field input:focus,.svc-field textarea:focus,.svc-field select:focus{outline:none;border-color:var(--gold)}
-.svc-field textarea{resize:vertical;min-height:52px;font-family:'Montserrat',sans-serif}
+.svc-field textarea{resize:vertical;min-height:84px;font-family:'Montserrat',sans-serif;line-height:1.5}
 .svc-full{grid-column:1/-1}
 .svc-hint-label{font-size:8.5px;font-weight:400;color:var(--crf);text-transform:none;letter-spacing:0;opacity:.8}
+.svc-color-input{width:100%;height:38px;padding:3px;background:var(--bg4);border:1px solid var(--bd);border-radius:6px;cursor:pointer}
 .btn-svc-le-toggle{background:none;border:1px solid var(--bd);color:var(--crd);padding:8px 14px;font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:border-color .15s,color .15s}
 .btn-svc-le-toggle:hover{border-color:var(--gold);color:var(--gold)}
 .le-panel-lista{display:flex;flex-direction:column;gap:6px}
@@ -955,6 +961,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .alerta-mensaje{font-size:13.5px;color:var(--crd);line-height:1.6;margin-bottom:22px}
 .disp-rango-fila select.disp-error{border-color:var(--err);color:#e08a75}
 .cfg-ayuda{font-size:12px;color:var(--crf);margin-bottom:16px;line-height:1.6;font-style:italic;font-family:'Noto Serif Display',serif}
+.cfg-seccion{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:32px 0 12px;opacity:.85}
 .cfg-nota{font-size:10.5px;color:var(--crf);margin-top:6px}
 /* Accesibilidad: texto más claro (alto contraste) */
 body.texto-claro{--crd:#d6ccc0;--crf:#a89c8e}
@@ -1019,11 +1026,14 @@ body.texto-claro{--crd:#d6ccc0;--crf:#a89c8e}
 .td-head-new{display:flex;justify-content:space-between;align-items:flex-start;padding:24px 28px 20px;border-bottom:1px solid var(--bds)}
 .td-head-left{display:flex;flex-direction:column}
 .td-cols{display:grid;grid-template-columns:1fr 320px;gap:0}
-.td-tabs{margin:0 28px 4px}
+.td-tabs{margin:0 28px 4px;flex-wrap:wrap;height:auto}
 .td-tab-panel{animation:none}
-.td-leyenda-estados{margin-top:14px;padding-top:12px;border-top:1px solid var(--bds);display:flex;flex-direction:column;gap:7px}
-.td-leyenda-item{display:flex;align-items:center;gap:9px}
-.td-leyenda-desc{font-size:11px;color:var(--crf)}
+.td-estado-lista{display:flex;flex-direction:column;gap:2px}
+.td-estado-opcion{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--bds);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:border-color .15s,background .15s}
+.td-estado-opcion:hover{border-color:var(--bd)}
+.td-estado-opcion.seleccionado{border-color:var(--gold);background:rgba(201,168,75,.08)}
+.td-estado-opcion input[type="radio"]{margin:0;accent-color:var(--gold);flex-shrink:0}
+.td-estado-desc{font-size:11.5px;color:var(--crf);line-height:1.4}
 .td-col{padding:24px 28px}
 .td-col-datos{border-right:1px solid var(--bds)}
 .td-col-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -1031,14 +1041,19 @@ body.texto-claro{--crd:#d6ccc0;--crf:#a89c8e}
 .td-editar-toggle{background:none;border:1px solid var(--bd);color:var(--crd);padding:6px 12px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;cursor:pointer;border-radius:6px;transition:all .15s}
 .td-editar-toggle:hover{border-color:var(--gold);color:var(--gold)}
 .td-editar-toggle.activo{border-color:var(--err);color:var(--err)}
-.td-accion-principal{display:flex;flex-direction:column;gap:9px}
-.td-btn-primary{border:none;padding:13px 16px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:8px;transition:opacity .15s;width:100%}
+.td-accion-principal{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px}
+.td-btn-primary{border:none;padding:10px 20px;font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;border-radius:8px;transition:opacity .15s;width:auto}
+.td-btn-primary:hover{opacity:.88}
+.td-btn-gold{background:var(--gold);color:#1a1206}
+.td-btn-ghost{background:none;border:1px solid var(--bd);color:var(--crd);padding:9px 18px;font-family:'Montserrat',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;width:auto}
+.td-btn-danger{color:var(--err);border-color:rgba(198,123,106,.35)}
+@media(max-width:560px){
+  .td-accion-principal{flex-direction:column}
+  .td-btn-primary,.td-btn-ghost{width:100%;padding:13px 16px;font-size:13px}
+}
 .td-btn-primary:hover{opacity:.9}
 .td-btn-ok{background:var(--ok);color:#0d1410}
-.td-btn-gold{background:var(--gold);color:#1a1206}
-.td-btn-ghost{background:none;border:1px solid var(--bd);color:var(--crd);padding:11px 16px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;width:100%}
 .td-btn-ghost:hover{border-color:var(--crd);color:var(--cr)}
-.td-btn-danger{color:var(--err);border-color:rgba(198,123,106,.35)}
 .td-btn-danger:hover{background:var(--err-bg);border-color:var(--err);color:var(--err)}
 .td-estado-ok{background:var(--ok-bg);border:1px solid rgba(122,155,118,.3);color:var(--ok);padding:13px 16px;border-radius:8px;font-size:12.5px;font-weight:600;text-align:center}
 .td-estado-cancelado{background:var(--err-bg);border:1px solid rgba(198,123,106,.3);color:var(--err);padding:13px 16px;border-radius:8px;font-size:12.5px;font-weight:600;text-align:center}
@@ -1556,12 +1571,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <p class="dash-fecha">Datos de contacto, apariencia y tu contrase&ntilde;a</p>
       </div>
 
-      <div class="panel" style="margin-bottom:20px" id="panelInstalarApp">
-        <div class="panel-title">Acceso r&aacute;pido desde el celular</div>
-        <p class="cfg-ayuda">Instal&aacute; el panel como si fuera una app: te queda un &iacute;cono en la pantalla de inicio y se abre directo, sin buscar el link.</p>
-        <button class="btn-nt-guardar" id="btnInstalarApp" style="max-width:340px;display:none" onclick="instalarComoApp()">&#8681; Instalar en este celular</button>
-        <p class="cfg-nota" id="instalarNota">En iPhone: toc&aacute; el bot&oacute;n de compartir <strong>&#8593;</strong> de Safari y eleg&iacute; "Agregar a pantalla de inicio". En Android con Chrome, el bot&oacute;n de instalar deber&iacute;a aparecer arriba solo.</p>
-      </div>
+      <!-- ═══ TU NEGOCIO: lo que ve y vive cualquier paciente ═══ -->
+      <div class="cfg-seccion" style="margin-top:8px">Tu negocio</div>
 
       <div class="panel" style="margin-bottom:20px">
         <div class="panel-title">Datos de contacto</div>
@@ -1576,13 +1587,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
             <input type="email" id="cfgEmail" placeholder="hola@pupilarroude.com">
           </div>
         </div>
+        <div class="nt-error" id="cfgError"></div>
+        <button class="btn-nt-guardar" id="cfgGuardarBtn" onclick="guardarConfig()" style="max-width:340px;margin-top:14px">Guardar cambios</button>
+        <span class="svc-guardado-ok" id="cfgOk" style="margin-left:12px">&#10003; Guardado</span>
       </div>
 
-      <div class="nt-error" id="cfgError"></div>
-      <button class="btn-nt-guardar" id="cfgGuardarBtn" onclick="guardarConfig()" style="max-width:340px">Guardar configuraci&oacute;n</button>
-      <span class="svc-guardado-ok" id="cfgOk" style="margin-left:12px">&#10003; Guardado</span>
-
-      <div class="panel" style="margin-top:32px;margin-bottom:20px">
+      <div class="panel" style="margin-bottom:20px">
         <div class="panel-title">Pol&iacute;tica de cancelaciones</div>
         <p class="cfg-ayuda">Este texto es el que ve cualquiera al reservar, en "Ver pol&iacute;tica completa" dentro del paso de pago. Escrib&iacute;lo como quieras que lo lea un paciente &mdash; se muestra tal cual, un p&aacute;rrafo por l&iacute;nea.</p>
         <div class="nt-field" style="margin-bottom:0">
@@ -1594,7 +1604,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <span class="svc-guardado-ok" id="cfgPoliticaOk">&#10003; Guardado</span>
       </div>
 
-      <div class="panel" style="margin-top:32px;margin-bottom:20px">
+      <!-- ═══ TU PANEL: cómo lo usás vos, día a día ═══ -->
+      <div class="cfg-seccion">Tu panel</div>
+
+      <div class="panel" style="margin-bottom:20px">
         <div class="panel-title">C&oacute;mo se ve el panel</div>
         <p class="cfg-ayuda">Ajust&aacute; el panel para que sea c&oacute;modo de leer. Los cambios se aplican al instante y quedan guardados en este dispositivo (pod&eacute;s tener letra grande en el celular y normal en la compu).</p>
         <div class="nt-row2">
@@ -1625,14 +1638,24 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         </div>
       </div>
 
-      <div class="panel" style="margin-top:0;margin-bottom:20px">
+      <div class="panel" style="margin-bottom:20px" id="panelInstalarApp">
+        <div class="panel-title">Acceso r&aacute;pido desde el celular</div>
+        <p class="cfg-ayuda">Instal&aacute; el panel como si fuera una app: te queda un &iacute;cono en la pantalla de inicio y se abre directo, sin buscar el link.</p>
+        <button class="btn-nt-guardar" id="btnInstalarApp" style="max-width:340px;display:none" onclick="instalarComoApp()">&#8681; Instalar en este celular</button>
+        <p class="cfg-nota" id="instalarNota">En iPhone: toc&aacute; el bot&oacute;n de compartir <strong>&#8593;</strong> de Safari y eleg&iacute; "Agregar a pantalla de inicio". En Android con Chrome, el bot&oacute;n de instalar deber&iacute;a aparecer arriba solo.</p>
+      </div>
+
+      <!-- ═══ TU CUENTA: administración, poco frecuente ═══ -->
+      <div class="cfg-seccion">Tu cuenta</div>
+
+      <div class="panel" style="margin-bottom:20px">
         <div class="panel-title">Copia de seguridad</div>
         <p class="cfg-ayuda">Baj&aacute; una copia de tus turnos y pacientes cuando quieras &mdash; por las dudas, sin depender de nada m&aacute;s. Se abre en Excel o Google Sheets.</p>
         <button class="btn-nt-guardar" id="backupBtn" onclick="descargarBackup()" style="max-width:340px">&#8681; Descargar backup (CSV)</button>
         <div class="nt-error" id="backupError" style="display:none"></div>
       </div>
 
-      <div class="panel" style="margin-top:0">
+      <div class="panel">
         <div class="panel-title">Cambiar contrase&ntilde;a del panel</div>
         <div class="nt-row2">
           <div class="nt-field" style="margin-bottom:0">
@@ -1650,6 +1673,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
       </div>
 
     </div>
+
 
     <!-- ══ VISTA USUARIOS (solo admins) ══ -->
     <div id="viewUsuarios" style="display:none">
@@ -2296,6 +2320,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <label>Servicio</label>
         <select id="ntServicio" onchange="onServicioCambiado()"><option value="">Cargando&hellip;</option></select>
       </div>
+      <div class="nt-field" id="ntModalidadWrap" style="display:none">
+        <label>&#191;Presencial u online?</label>
+        <input type="hidden" id="ntModalidad" value="presencial">
+        <div class="nt-pac-tabs">
+          <button type="button" class="nt-pac-tab active" data-modalidad="presencial" onclick="seleccionarModalidad('ntModalidad',this)">Presencial</button>
+          <button type="button" class="nt-pac-tab" data-modalidad="online" onclick="seleccionarModalidad('ntModalidad',this)">Online</button>
+        </div>
+      </div>
       <div class="nt-field">
         <label>Precio</label>
         <input type="number" id="ntPrecio" placeholder="0" oninput="chequearPrecioManual()">
@@ -2356,11 +2388,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
     <div class="nt-paso" id="ntPaso4">
       <div class="nt-field">
         <label>Estado</label>
-        <select id="ntEstado">
+        <select id="ntEstado" onchange="document.getElementById('ntEstadoDesc').textContent=ESTADOS_INFO[this.value].desc">
           <option value="confirmado">Confirmado</option>
           <option value="pagado">Pagado</option>
           <option value="pendiente">Pendiente</option>
         </select>
+        <div class="nt-precio-estado" id="ntEstadoDesc">Vas a dar la sesi&oacute;n, pero todav&iacute;a no cobraste nada</div>
       </div>
       <div class="nt-error" id="ntError"></div>
       <div class="nt-modal-footer nt-paso-nav">
@@ -2775,6 +2808,11 @@ function mostrarVistaTurnos(){
   document.getElementById('turnosCalNav').style.display=turnosVista==='calendario'?'flex':'none';
   document.getElementById('turnosAgendaNav').style.display=esAgenda?'flex':'none';
 
+  // El filtro de período (Hoy/Semana/Mes/rango) solo tiene sentido en Lista:
+  // las demás vistas ya navegan la fecha con sus propias flechas ‹ Hoy ›.
+  const dropPeriodo=document.getElementById('dropPeriodo');
+  if(dropPeriodo)dropPeriodo.style.display=turnosVista==='lista'?'':'none';
+
   if(turnosVista==='lista')cargarTablaTurnos();
   else if(turnosVista==='calendario')cargarCalendarioTurnos();
   else cargarAgenda();
@@ -2841,7 +2879,7 @@ async function cargarAgenda(){
     // Turnos del rango + bloqueos, en paralelo
     const[rTurnos,rBloqueos]=await Promise.all([
       sb.from('turnos')
-        .select('id,fecha,hora_inicio,hora_fin,estado,asistencia,precio_cobrado,precio_original,servicio_id,pacientes(nombre,email,telefono),servicios(nombre)')
+        .select('id,fecha,hora_inicio,hora_fin,estado,asistencia,precio_cobrado,precio_original,servicio_id,pacientes(nombre,email,telefono),servicios(nombre,color)')
         .gte('fecha',desde).lte('fecha',hasta)
         .neq('estado','cancelado')
         .order('hora_inicio'),
@@ -2940,10 +2978,11 @@ function renderAgenda(dias,turnos,bloqueos){
       const svc=t.servicios||{};
       const completado=t.estado==='pagado'&&t.asistencia==='asistio';
       const clase=completado?'completado':t.estado;
+      const dotAg=svc.color?`<span class="turno-svc-dot" style="background:${esc(svc.color)}"></span>`:'';
       bloques+=`<div class="ag-turno ag-${clase}" style="top:${top}px;height:${alto}px"
         onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')"
         title="${esc(pac.nombre||'')} \u00b7 ${esc(svc.nombre||'')}">
-        <div class="ag-t-hora">${t.hora_inicio.slice(0,5)}</div>
+        <div class="ag-t-hora">${dotAg}${t.hora_inicio.slice(0,5)}</div>
         <div class="ag-t-nombre">${esc(pac.nombre||'(sin nombre)')}</div>
         ${alto>52?`<div class="ag-t-svc">${esc(svc.nombre||'')}</div>`:''}
       </div>`;
@@ -2986,7 +3025,7 @@ async function cargarCalendarioTurnos(){
   const hoyStr=ymd(new Date());
 
   try{
-    let q=sb.from('turnos').select('id,fecha,hora_inicio,hora_fin,precio_cobrado,precio_original,estado,asistencia,servicio_id,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre)')
+    let q=sb.from('turnos').select('id,fecha,hora_inicio,hora_fin,precio_cobrado,precio_original,estado,asistencia,servicio_id,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre,color)')
       .gte('fecha',startStr).lte('fecha',endStr).order('hora_inicio');
     if(turnosFiltroEstado!=='todos')q=q.eq('estado',turnosFiltroEstado);
     if(turnosFiltroAsistencia)q=q.eq('asistencia',turnosFiltroAsistencia);
@@ -3019,9 +3058,11 @@ async function cargarCalendarioTurnos(){
       const visibles=items.slice(0,MAX_VISIBLES);
       const eventosHTML=visibles.map(t=>{
         const pac=t.pacientes||{};
+        const svc=t.servicios||{};
         const hora=t.hora_inicio?t.hora_inicio.slice(0,5):'';
         const asistMarca=t.asistencia==='asistio'?' &#10003;':t.asistencia==='ausente'?' &#10007;':'';
-        return`<div class="admin-cal-evento ev-${t.estado}" onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')" title="${esc(hora+' '+(pac.nombre||''))}">${hora} ${esc(pac.nombre||'(sin nombre)')}${asistMarca}</div>`;
+        const dot=svc.color?`<span class="turno-svc-dot" style="background:${esc(svc.color)}"></span>`:'';
+        return`<div class="admin-cal-evento ev-${t.estado}" onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')" title="${esc(hora+' '+(pac.nombre||'')+' \u00b7 '+(svc.nombre||''))}">${dot}${hora} ${esc(pac.nombre||'(sin nombre)')}${asistMarca}</div>`;
       }).join('');
       const masHTML=items.length>MAX_VISIBLES?`<div class="admin-cal-mas" onclick="event.stopPropagation();abrirDiaTurnos('${ds}',true)">+${items.length-MAX_VISIBLES} m\u00e1s</div>`:'';
       // Puntos de color por estado (solo se ven en mobile, donde el texto no entra)
@@ -3049,6 +3090,20 @@ function abrirDetalleTurno(id){
   if(!t)return;
   const pac=t.pacientes||{};const svc=t.servicios||{};
   const[,m,d]=t.fecha.split('-');
+
+  // Fin de la sesión en sí (sin descanso) y hasta cuándo queda bloqueado el
+  // horario en total (con descanso) — dos datos distintos que antes se
+  // mezclaban en un solo hora_fin sin explicarlo.
+  const svcCompleto=(ntServiciosCache||[]).find(s=>s.id===t.servicio_id)||{};
+  let infoHorarios='';
+  if(t.hora_inicio&&svcCompleto.duracion_min){
+    const[hi,mi]=t.hora_inicio.slice(0,5).split(':').map(Number);
+    const finSesionMin=hi*60+mi+svcCompleto.duracion_min;
+    const finSesion=String(Math.floor(finSesionMin/60)).padStart(2,'0')+':'+String(finSesionMin%60).padStart(2,'0');
+    const bloqueaHasta=t.hora_fin?t.hora_fin.slice(0,5):finSesion;
+    const descanso=svcCompleto.descanso_min||0;
+    infoHorarios=`<p class="cfg-hint" style="margin:-8px 0 12px">Termina la sesi\u00f3n a las ${finSesion} hs${descanso>0?` &middot; queda bloqueado hasta las ${bloqueaHasta} hs (${descanso} min de descanso)`:''}</p>`;
+  }
 
   // Acción principal según el estado (un solo lugar, clara)
   let accionPrincipal='';
@@ -3088,10 +3143,9 @@ function abrirDetalleTurno(id){
     <div class="vista-toggle td-tabs" id="tdTabs">
       <button class="vista-toggle-btn active" data-tdtab="datos" onclick="cambiarTdTab('datos')">Datos</button>
       <button class="vista-toggle-btn" data-tdtab="estado" onclick="cambiarTdTab('estado')">Estado y pago</button>
-      <button class="vista-toggle-btn" data-tdtab="mas" onclick="cambiarTdTab('mas')">M&aacute;s acciones</button>
     </div>
 
-    <!-- PESTAÑA: Datos (ver / editar) -->
+    <!-- PESTAÑA: Datos (ver / editar / reprogramar / eliminar) -->
     <div class="td-tab-panel td-col" id="tdPanelDatos">
       <div class="td-col-header">
         <span class="td-col-titulo">Datos del turno</span>
@@ -3105,7 +3159,9 @@ function abrirDetalleTurno(id){
         <div class="td-row"><span class="lbl">Mail</span><span class="val">${esc(pac.email||'&mdash;')}</span></div>
         <div class="td-row"><span class="lbl">Tel&eacute;fono</span><span class="val">${esc(pac.telefono||'&mdash;')}</span></div>
         <div class="td-row"><span class="lbl">Fecha</span><span class="val">${parseInt(d)}/${m} &middot; ${t.hora_inicio?t.hora_inicio.slice(0,5):''} hs</span></div>
+        ${infoHorarios}
         <div class="td-row"><span class="lbl">Servicio</span><span class="val">${esc(svc.nombre||'&mdash;')}</span></div>
+        ${t.modalidad?`<div class="td-row"><span class="lbl">Modalidad</span><span class="val">${t.modalidad==='online'?'Online':'Presencial'}</span></div>`:''}
         <div class="td-row"><span class="lbl">Precio</span><span class="val">${fmtConDescuento(t.precio_cobrado,t.precio_original)}</span></div>
         ${botonesContacto(t)}
       </div>
@@ -3126,9 +3182,23 @@ function abrirDetalleTurno(id){
           <div class="nt-field" style="margin-bottom:12px"><label>Servicio</label><select id="tdEditServicio"><option value="">Cargando&hellip;</option></select></div>
           <div class="nt-field" style="margin-bottom:12px"><label for="tdEditPrecio">Precio</label><input type="number" id="tdEditPrecio" value="${t.precio_cobrado||''}"><div id="tdPrecioAviso" class="td-precio-aviso"></div></div>
         </div>
+        <div class="nt-field" id="tdModalidadWrap" style="display:none">
+          <label>&#191;Presencial u online?</label>
+          <input type="hidden" id="tdEditModalidad" value="${t.modalidad||'presencial'}">
+          <div class="nt-pac-tabs">
+            <button type="button" class="nt-pac-tab${t.modalidad!=='online'?' active':''}" data-modalidad="presencial" onclick="seleccionarModalidad('tdEditModalidad',this)">Presencial</button>
+            <button type="button" class="nt-pac-tab${t.modalidad==='online'?' active':''}" data-modalidad="online" onclick="seleccionarModalidad('tdEditModalidad',this)">Online</button>
+          </div>
+        </div>
         <div class="nt-error" id="tdEditError"></div>
         <button class="btn-nt-guardar" id="tdEditGuardarBtn" onclick="guardarEdicionTurno('${t.id}')">Guardar cambios</button>
       </div>
+
+      ${(t.estado!=='cancelado'&&!(t.estado==='pagado'&&t.asistencia==='asistio'))?`
+      <div class="td-sep"></div>
+      <button class="td-btn-reprogramar" onclick="abrirReprogramar('${t.id}')">&#128260; Reprogramar turno</button>
+      `:''}
+      <button class="td-eliminar-link" onclick="eliminarTurno('${t.id}')">&#128465; Eliminar del historial</button>
     </div>
 
     <!-- PESTAÑA: Estado y pago -->
@@ -3140,17 +3210,16 @@ function abrirDetalleTurno(id){
       <div class="td-bloque">
         <span class="td-bloque-label">Forzar otro estado</span>
         <input type="hidden" id="tdSelectEstado" value="${t.estado}">
-        <div class="nt-pac-tabs td-estado-tabs">
+        <div class="td-estado-lista" id="tdEstadoLista">
           ${['pendiente','confirmado','señado','pagado','cancelado'].map(e=>
-            `<button type="button" class="nt-pac-tab${e===t.estado?' active':''}" data-estado="${e}" title="${esc(ESTADOS_INFO[e].desc)}" onclick="seleccionarEstadoForzado(this)">${ESTADOS_INFO[e].label}</button>`
+            `<label class="td-estado-opcion${e===t.estado?' seleccionado':''}">
+              <input type="radio" name="tdEstadoRadio" value="${e}" ${e===t.estado?'checked':''} onchange="document.getElementById('tdSelectEstado').value=this.value;this.closest('.td-estado-lista').querySelectorAll('.td-estado-opcion').forEach(o=>o.classList.remove('seleccionado'));this.closest('.td-estado-opcion').classList.add('seleccionado')">
+              <span class="badge-estado badge-${e}">${ESTADOS_INFO[e].label}</span>
+              <span class="td-estado-desc">${ESTADOS_INFO[e].desc}</span>
+            </label>`
           ).join('')}
         </div>
-        <button class="td-btn-ghost" style="margin-top:8px" onclick="cambiarEstadoLibre('${t.id}')">Aplicar</button>
-        <div class="td-leyenda-estados">
-          ${['pendiente','confirmado','señado','pagado','cancelado'].map(e=>
-            `<div class="td-leyenda-item"><span class="badge-estado badge-${e}">${ESTADOS_INFO[e].label}</span><span class="td-leyenda-desc">${ESTADOS_INFO[e].desc}</span></div>`
-          ).join('')}
-        </div>
+        <button class="td-btn-ghost" style="margin-top:10px" onclick="cambiarEstadoLibre('${t.id}')">Aplicar</button>
       </div>
 
       <div class="td-sep"></div>
@@ -3162,18 +3231,6 @@ function abrirDetalleTurno(id){
           <button class="td-asist-b ${t.asistencia==='ausente'?'act-err':''}" onclick="marcarAsistencia('${t.id}','${t.asistencia==='ausente'?'null':'ausente'}')">&#10007; No asisti&oacute;</button>
         </div>
       </div>
-    </div>
-
-    <!-- PESTAÑA: Más acciones -->
-    <div class="td-tab-panel td-col" id="tdPanelMas" style="display:none">
-      ${(t.estado!=='cancelado'&&!(t.estado==='pagado'&&t.asistencia==='asistio'))?`<div class="td-bloque">
-        <span class="td-bloque-label">Mover de fecha</span>
-        <button class="td-btn-reprogramar" onclick="abrirReprogramar('${t.id}')">&#128260; Reprogramar turno</button>
-      </div>`:''}
-
-      <div class="td-sep"></div>
-
-      <button class="td-eliminar-link" onclick="eliminarTurno('${t.id}')">&#128465; Eliminar del historial</button>
     </div>`;
   document.getElementById('tdOverlay').classList.add('open');
 
@@ -3184,10 +3241,20 @@ function abrirDetalleTurno(id){
     const sel=document.getElementById('tdEditServicio');
     if(sel){
       sel.value=t.servicio_id||'';
+      actualizarModalidadWrapEdicion();
       // Al cambiar el servicio, recalcular el precio automáticamente
       sel.addEventListener('change',recalcularPrecioEdicion);
+      sel.addEventListener('change',actualizarModalidadWrapEdicion);
     }
   });
+}
+
+// El selector de modalidad de la edición solo se muestra si el servicio elegido admite las dos
+function actualizarModalidadWrapEdicion(){
+  const svcId=document.getElementById('tdEditServicio').value;
+  const svc=(ntServiciosCache||[]).find(s=>s.id===svcId);
+  const wrap=document.getElementById('tdModalidadWrap');
+  if(wrap)wrap.style.display=(svc&&svc.modalidad==='ambas')?'block':'none';
 }
 
 // Alterna entre ver y editar los datos del turno
@@ -3493,7 +3560,7 @@ function cerrarDetalleTurno(){
 
 // Cambia entre las 3 pestañas del detalle del turno (Datos / Estado y pago / Más acciones)
 function cambiarTdTab(tab){
-  ['datos','estado','mas'].forEach(k=>{
+  ['datos','estado'].forEach(k=>{
     const panel=document.getElementById('tdPanel'+k.charAt(0).toUpperCase()+k.slice(1));
     if(panel)panel.style.display=k===tab?'block':'none';
   });
@@ -3588,9 +3655,14 @@ async function guardarEdicionTurno(id){
     const finMin=h*60+mi+dur+desc;
     const horaFin=String(Math.floor(finMin/60)).padStart(2,'0')+':'+String(finMin%60).padStart(2,'0');
 
+    const modWrapEdit=document.getElementById('tdModalidadWrap');
+    const modalidadEdit=(modWrapEdit&&modWrapEdit.style.display!=='none')
+      ?document.getElementById('tdEditModalidad').value
+      :(svc&&svc.modalidad)||null;
+
     const cambios={
       fecha,hora_inicio:hora,hora_fin:horaFin,
-      servicio_id:servicioId,precio_cobrado:Number(precio)
+      servicio_id:servicioId,precio_cobrado:Number(precio),modalidad:modalidadEdit
     };
     if(tdPacienteReasignado)cambios.paciente_id=tdPacienteReasignado.id;
 
@@ -3614,7 +3686,7 @@ async function guardarEdicionTurno(id){
 
 async function cambiarEstadoLibre(id){
   const nuevo=document.getElementById('tdSelectEstado').value;
-  const nombresEstado={pendiente:'Pendiente',confirmado:'Confirmado',pagado:'Pagado',cancelado:'Cancelado'};
+  const nombresEstado={pendiente:'Pendiente',confirmado:'Confirmado','señado':'Se\u00f1ado',pagado:'Pagado',cancelado:'Cancelado'};
   if(!await confirmarAccion(`\u00bfCambiar este turno a "${nombresEstado[nuevo]||nuevo}"?`))return;
   if(nuevo==='cancelado'&&!await preguntarDevolucion(turnosCache[id]))return;
   try{
@@ -5855,6 +5927,13 @@ function abrirModalNuevoTurno(fechaPrecargada){
   const estadoPrecio=document.getElementById('ntPrecioEstado');
   if(estadoPrecio)estadoPrecio.textContent='Precio de lista';
   document.getElementById('ntEstado').value='confirmado';
+  document.getElementById('ntEstadoDesc').textContent=ESTADOS_INFO.confirmado.desc;
+  const modWrapReset=document.getElementById('ntModalidadWrap');
+  if(modWrapReset){
+    modWrapReset.style.display='none';
+    document.getElementById('ntModalidad').value='presencial';
+    modWrapReset.querySelectorAll('.nt-pac-tab').forEach(b=>b.classList.toggle('active',b.dataset.modalidad==='presencial'));
+  }
   document.getElementById('ntPacBuscar').value='';
   document.getElementById('ntPacResultados').innerHTML='';
   document.getElementById('ntNuevoNombre').value='';
@@ -5899,7 +5978,7 @@ async function cargarServiciosSelect(targetId){
     // A diferencia de las páginas públicas, acá se muestran TODOS los
     // servicios (activos e inactivos) — Pupi necesita poder seguir
     // gestionando turnos de servicios que ya discontinuó públicamente.
-    const{data,error}=await sb.from('servicios').select('id,nombre,precio,duracion_min,descanso_min,tipo,sesiones_paquete,activo').order('precio');
+    const{data,error}=await sb.from('servicios').select('id,nombre,precio,duracion_min,descanso_min,tipo,sesiones_paquete,activo,modalidad').order('precio');
     if(error)throw error;
     ntServiciosCache=data||[];
     poblarSelectServicios(sel);
@@ -5947,6 +6026,12 @@ async function onServicioCambiado(){
   // hay que recalcular qué horarios entran dentro de la disponibilidad
   if(document.getElementById('ntFecha').value)cargarHorasDisponibles();
   await chequearPaqueteActivo();
+
+  // El selector de modalidad solo tiene sentido si el servicio admite las dos
+  const svcId=document.getElementById('ntServicio').value;
+  const svc=(ntServiciosCache||[]).find(s=>s.id===svcId);
+  const modWrap=document.getElementById('ntModalidadWrap');
+  if(modWrap)modWrap.style.display=(svc&&svc.modalidad==='ambas')?'block':'none';
 }
 
 async function recalcularPrecioNt(){
@@ -6263,10 +6348,16 @@ async function guardarNuevoTurno(){
     const precioLista=svc?Number(svc.precio):0;
     const precioAGuardar=(precioManual===precioLista||precioManual===precioFinal)?precioFinal:precioManual;
 
+    const modWrapNt=document.getElementById('ntModalidadWrap');
+    const modalidadNt=(modWrapNt&&modWrapNt.style.display!=='none')
+      ?document.getElementById('ntModalidad').value
+      :(svc&&svc.modalidad)||null;
+
     const{error:et}=await sb.from('turnos').insert({
       paciente_id:pacienteId,servicio_id:servicioId,fecha,hora_inicio:hora,hora_fin:horaFin,
       estado,precio_cobrado:precioAGuardar,precio_original:svc?svc.precio:null,
-      paquete_id:(ntPaqueteActivo&&ntVincularPaquete)?ntPaqueteActivo.paquete_id:null
+      paquete_id:(ntPaqueteActivo&&ntVincularPaquete)?ntPaqueteActivo.paquete_id:null,
+      modalidad:modalidadNt
     });
     if(et)throw et;
 
@@ -6298,7 +6389,26 @@ async function guardarNuevoTurno(){
   btn.disabled=false;btn.textContent='Guardar turno';
 }
 
-// ══ VISTA SERVICIOS ══
+// Traduce duración + descanso a un ejemplo concreto de horario, en vez de
+// dejar que Pupi tenga que sumar los dos números mentalmente.
+function actualizarAyudaHorarios(id){
+  const el=document.getElementById('svc-ayuda-horario-'+id);
+  if(!el)return;
+  const dur=Number(document.getElementById('svc-dur-'+id).value)||0;
+  const desc=Number(document.getElementById('svc-desc-min-'+id).value)||0;
+  if(!dur){el.textContent='';return;}
+  const fmtHora=(min)=>{
+    const h=Math.floor(min/60)%24,m=min%60;
+    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  };
+  const inicio=10*60; // 10:00, solo como ejemplo ilustrativo
+  const fin=inicio+dur;
+  let texto=`Ejemplo: un turno que empieza a las ${fmtHora(inicio)} termina a las ${fmtHora(fin)}`;
+  texto+=desc>0
+    ? `, y bloquea el horario hasta las ${fmtHora(fin+desc)} (${desc} min de descanso antes del pr\u00f3ximo).`
+    : ', sin descanso extra bloqueado despu\u00e9s.';
+  el.textContent=texto;
+}
 async function cargarServicios(){
   const cont=document.getElementById('serviciosLista');
   cont.innerHTML='<div class="skel skel-card"></div>'.repeat(2);
@@ -6307,6 +6417,7 @@ async function cargarServicios(){
     if(error)throw error;
     if(!data||!data.length){cont.innerHTML=`<div class="empty-state"><svg class="es-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h4"/></svg>No hay servicios cargados todav\u00eda.</div>`;return;}
     cont.innerHTML=data.map(s=>renderCardServicio(s)).join('');
+    data.forEach(s=>actualizarAyudaHorarios(s.id));
   }catch(err){
     console.error(err);
     cont.innerHTML='<div class="empty-state">No pudimos cargar los servicios.</div>';
@@ -6397,22 +6508,12 @@ function renderCardServicio(s){
         <label class="svc-toggle-activo">
           <input type="checkbox" id="svc-activo-${s.id}" ${s.activo?'checked':''}> Activo (visible en la web)
         </label>
-        <button type="button" class="btn-svc-desbloquear" onclick="toggleBloqueoServicio('${s.id}')" id="svc-lock-btn-${s.id}">&#128274; Desbloquear edici&oacute;n</button>
+        <button type="button" class="btn-svc-desbloquear" onclick="toggleBloqueoServicio('${s.id}')" id="svc-lock-btn-${s.id}">&#9998; Editar contenido de la web</button>
       </div>
     </div>
+
+    <!-- Lo operativo: siempre visible, se edita directo sin desplegar nada -->
     <div class="svc-grid">
-      <div class="svc-field svc-full">
-        <label for="svc-nombre-${s.id}">Nombre</label>
-        <input type="text" id="svc-nombre-${s.id}" value="${esc(s.nombre)}" disabled>
-      </div>
-      <div class="svc-field svc-full">
-        <label>Descripci&oacute;n corta <span class="svc-hint-label">(se ve en la tarjeta de la web)</span></label>
-        <textarea id="svc-desc-${s.id}" placeholder="Ej: Regulaci\u00f3n energ\u00e9tica con marco profesional&hellip;">${esc(s.descripcion||'')}</textarea>
-      </div>
-      <div class="svc-field svc-full">
-        <label>Para qui&eacute;n es <span class="svc-hint-label">(se ve en la tarjeta de la web)</span></label>
-        <textarea id="svc-paraquien-${s.id}" placeholder="Ej: Para la mujer que siente el cuerpo cargado&hellip;">${esc(s.para_quien||'')}</textarea>
-      </div>
       <div class="svc-field">
         <label for="svc-precio-${s.id}">Precio</label>
         <input type="number" id="svc-precio-${s.id}" value="${s.precio}">
@@ -6428,11 +6529,32 @@ function renderCardServicio(s){
       </div>
       <div class="svc-field">
         <label for="svc-dur-${s.id}">Duraci&oacute;n (min)</label>
-        <input type="number" id="svc-dur-${s.id}" value="${s.duracion_min||''}">
+        <input type="number" id="svc-dur-${s.id}" value="${s.duracion_min||''}" oninput="actualizarAyudaHorarios('${s.id}')">
       </div>
       <div class="svc-field">
         <label for="svc-desc-min-${s.id}">Descanso entre sesiones (min)</label>
-        <input type="number" id="svc-desc-min-${s.id}" value="${s.descanso_min||0}">
+        <input type="number" id="svc-desc-min-${s.id}" value="${s.descanso_min||0}" oninput="actualizarAyudaHorarios('${s.id}')">
+      </div>
+      <p class="cfg-hint svc-full" id="svc-ayuda-horario-${s.id}" style="margin:-8px 0 0"></p>
+      <div class="svc-field">
+        <label for="svc-color-${s.id}">Color en el calendario</label>
+        <input type="color" id="svc-color-${s.id}" value="${s.color||'#9c9c9c'}" class="svc-color-input">
+      </div>
+    </div>
+
+    <!-- Contenido de la web: oculto por defecto, se despliega con el botón de arriba -->
+    <div class="svc-grid svc-web-content" id="svc-web-${s.id}" style="display:none">
+      <div class="svc-field svc-full">
+        <label for="svc-nombre-${s.id}">Nombre</label>
+        <input type="text" id="svc-nombre-${s.id}" value="${esc(s.nombre)}">
+      </div>
+      <div class="svc-field svc-full">
+        <label>Descripci&oacute;n corta <span class="svc-hint-label">(se ve en la tarjeta de la web)</span></label>
+        <textarea id="svc-desc-${s.id}" placeholder="Ej: Regulaci\u00f3n energ\u00e9tica con marco profesional&hellip;">${esc(s.descripcion||'')}</textarea>
+      </div>
+      <div class="svc-field svc-full">
+        <label>Para qui&eacute;n es <span class="svc-hint-label">(se ve en la tarjeta de la web)</span></label>
+        <textarea id="svc-paraquien-${s.id}" placeholder="Ej: Para la mujer que siente el cuerpo cargado&hellip;">${esc(s.para_quien||'')}</textarea>
       </div>
       ${s.tipo==='suscripcion'?`
       <div class="svc-field svc-full">
@@ -6463,6 +6585,7 @@ function renderCardServicio(s){
         </div>
       </div>`:''}
     </div>
+
     <div class="svc-card-foot">
       <span class="svc-guardado-ok" id="svc-ok-${s.id}">&#10003; Guardado</span>
       <button class="btn-svc-guardar" onclick="guardarServicio('${s.id}')">Guardar cambios</button>
@@ -6470,21 +6593,12 @@ function renderCardServicio(s){
   </div>`;
 }
 
-async function toggleBloqueoServicio(id){
-  const nombreInput=document.getElementById('svc-nombre-'+id);
-  const descInput=document.getElementById('svc-desc-'+id);
+function toggleBloqueoServicio(id){
+  const cont=document.getElementById('svc-web-'+id);
   const btn=document.getElementById('svc-lock-btn-'+id);
-  const estaBloqueado=nombreInput.disabled;
-  if(estaBloqueado){
-    if(!await confirmarAccion('Estos campos son sensibles: si los cambi\u00e1s, se actualizan en toda la web. \u00bfSeguro que quer\u00e9s editarlos?',{textoConfirmar:'S\u00ed, editar'}))return;
-    nombreInput.disabled=false;
-    descInput.disabled=false;
-    btn.innerHTML='&#128275; Bloquear edici&oacute;n';
-  } else {
-    nombreInput.disabled=true;
-    descInput.disabled=true;
-    btn.innerHTML='&#128274; Desbloquear edici&oacute;n';
-  }
+  const estaAbierto=cont.style.display!=='none';
+  cont.style.display=estaAbierto?'none':'grid';
+  btn.innerHTML=estaAbierto?'&#9998; Editar contenido de la web':'&#9650; Ocultar contenido de la web';
 }
 
 // Lista de espera: quién se anotó desde la web para que le avisen cuando reabra el programa.
@@ -6568,6 +6682,7 @@ async function guardarServicio(id){
       modalidad:document.getElementById('svc-modalidad-'+id).value,
       duracion_min:Number(document.getElementById('svc-dur-'+id).value)||null,
       descanso_min:Number(document.getElementById('svc-desc-min-'+id).value)||0,
+      color:document.getElementById('svc-color-'+id).value,
       activo:document.getElementById('svc-activo-'+id).checked
     };
     // Estos 3 campos solo existen en la tarjeta si el servicio es tipo "programa por temporadas"

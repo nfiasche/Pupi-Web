@@ -16,7 +16,19 @@ exports.handler = async (event) => {
       return { statusCode: 405, body: JSON.stringify({ error: "Método no permitido" }) };
     }
 
-    const { turno_id, tipo_pago } = JSON.parse(event.body || "{}");
+    const body = JSON.parse(event.body || "{}");
+
+    // "Despertar" la función antes de que haga falta de verdad: cuando el
+    // cliente termina de escribir el mail (mucho antes de tocar "Pagar"),
+    // el navegador manda esto en silencio. No toca la base ni Mercado Pago
+    // — solo hace que Netlify tenga el contenedor ya listo ("caliente")
+    // para cuando llegue el pedido real, en vez de arrancarlo de cero recién
+    // en ese momento.
+    if (body.warmup) {
+      return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+    }
+
+    const { turno_id, tipo_pago } = body;
     if (!turno_id) {
       return { statusCode: 400, body: JSON.stringify({ error: "Falta el turno" }) };
     }
@@ -54,18 +66,18 @@ exports.handler = async (event) => {
 
     // Le damos 30 minutos para volver y pagar — pasado ese plazo, el horario
     // se libera solo (lo hace horarios_ocupados_en_fecha en cada consulta,
-    // no hace falta ningún proceso corriendo en segundo plano). Si esto
-    // falla no cortamos el pago por eso, solo lo dejamos en el log.
-    try {
-      const resVence = await fetch(`${SB_URL}/rest/v1/rpc/marcar_turno_esperando_pago`, {
-        method: "POST",
-        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ p_turno_id: turno_id, p_minutos: 30 }),
-      });
-      if (!resVence.ok) console.error("No pudimos marcar el vencimiento del turno:", await resVence.text());
-    } catch (errVence) {
-      console.error("Error al marcar el vencimiento del turno:", errVence);
-    }
+    // no hace falta ningún proceso corriendo en segundo plano). Esto no
+    // depende de nada de lo que sigue (armar el link de pago), así que lo
+    // disparamos ahora y seguimos de largo — se espera recién al final, en
+    // paralelo con la llamada a Mercado Pago, en vez de en fila antes de
+    // arrancarla. Si falla no cortamos el pago por eso, solo queda en el log.
+    const vencePromise = fetch(`${SB_URL}/rest/v1/rpc/marcar_turno_esperando_pago`, {
+      method: "POST",
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_turno_id: turno_id, p_minutos: 30 }),
+    })
+      .then((r) => { if (!r.ok) return r.text().then((t) => console.error("No pudimos marcar el vencimiento del turno:", t)); })
+      .catch((errVence) => console.error("Error al marcar el vencimiento del turno:", errVence));
 
     const MP_TOKEN = process.env.MP_ACCESS_TOKEN;
     if (!MP_TOKEN) {
@@ -81,31 +93,34 @@ exports.handler = async (event) => {
     }
     const nombreServicio = turno.nombre_servicio || "Sesión";
 
-    const prefRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${MP_TOKEN}`,
-      },
-      body: JSON.stringify({
-        items: [
-          {
-            title: `${esPagoCompleto ? "Pago completo" : "Seña"} — ${nombreServicio}`,
-            quantity: 1,
-            unit_price: monto,
-            currency_id: "ARS",
-          },
-        ],
-        external_reference: turno_id,
-        back_urls: {
-          success: `${origen}${paginaOrigen}?pago=exitoso`,
-          pending: `${origen}${paginaOrigen}?pago=pendiente`,
-          failure: `${origen}${paginaOrigen}?pago=fallido`,
+    const [prefRes] = await Promise.all([
+      fetch("https://api.mercadopago.com/checkout/preferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${MP_TOKEN}`,
         },
-        auto_return: "approved",
-        notification_url: `${origen}/.netlify/functions/webhook-mp`,
+        body: JSON.stringify({
+          items: [
+            {
+              title: `${esPagoCompleto ? "Pago completo" : "Seña"} — ${nombreServicio}`,
+              quantity: 1,
+              unit_price: monto,
+              currency_id: "ARS",
+            },
+          ],
+          external_reference: turno_id,
+          back_urls: {
+            success: `${origen}${paginaOrigen}?pago=exitoso`,
+            pending: `${origen}${paginaOrigen}?pago=pendiente`,
+            failure: `${origen}${paginaOrigen}?pago=fallido`,
+          },
+          auto_return: "approved",
+          notification_url: `${origen}/.netlify/functions/webhook-mp`,
+        }),
       }),
-    });
+      vencePromise,
+    ]);
 
     if (!prefRes.ok) {
       console.error("Error de Mercado Pago al crear la preferencia:", await prefRes.text());

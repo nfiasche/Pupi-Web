@@ -126,27 +126,72 @@ async function fetchBloqueos(y,m){
   }catch(err){console.error('Error al cargar bloqueos',err);}
 }
 
+// Turnos ya ocupados en todo el mes (para saber qué días ya no tienen ningún
+// horario libre, sin tener que consultar día por día).
+async function fetchTurnosMes(y,m){
+  const key=`${y}-${m}`;
+  if(turnosMesCargado===key)return;
+  turnosMesCargado=key;
+  turnosMes={};
+  if(!sb)return;
+  try{
+    const{data,error}=await sb.rpc('horarios_ocupados_en_mes',{p_anio:y,p_mes:m+1});
+    if(error)throw error;
+    (data||[]).forEach(row=>{
+      (turnosMes[row.fecha]=turnosMes[row.fecha]||[]).push(row);
+    });
+  }catch(err){console.error('Error al cargar turnos del mes',err);}
+}
+
+// ¿Queda al menos un horario libre ese día, para el servicio actual? Repite
+// la misma lógica de superposición que usa selF(), pero sin tener que
+// esperar a que la persona haga click para descubrir que no hay nada.
+function diaTieneHorarioLibre(fecha){
+  const slots=slotsDelDia(fecha);
+  if(!slots.length)return false;
+  const duracion=(MS&&MS.svc&&MS.svc.duracion_min)||60;
+  const ocupados=turnosMes[fecha]||[];
+  const bloqueosDia=blockedRanges.filter(r=>r.fecha===fecha);
+  return slots.some(t=>{
+    const finSlot=sumarMinutos(t,duracion);
+    if(ocupados.some(row=>seSuperponen(t,finSlot,row.hora_inicio,row.hora_fin)))return false;
+    if(bloqueosDia.some(r=>seSuperponen(t,finSlot,r.hora_inicio,r.hora_fin)))return false;
+    return true;
+  });
+}
+
 
 /* ── Calendario y selección ── */
-async function renderCal(){
+async function renderCal(intentos){
+  intentos=intentos||0;
   const{m,y,fecha}=MS;
   await cargarDisponibilidad();
   await fetchBloqueos(y,m);
+  await fetchTurnosMes(y,m);
   const first=new Date(y,m,1);const sd=(first.getDay()+6)%7;
   const dim=new Date(y,m+1,0).getDate();const today=new Date();today.setHours(0,0,0,0);
   const minFecha=new Date(Date.now()+reglasReserva.min_horas*3600000);minFecha.setHours(0,0,0,0);
   const maxFecha=new Date(today.getTime()+reglasReserva.max_dias*86400000);
-  document.getElementById('m-calmes').textContent=`${MES[m]} ${y}`;
   let c=DOW.map(d=>`<div class="cal-dow2">${d}</div>`).join('');
   for(let i=0;i<sd;i++)c+=`<div class="cday2 e"></div>`;
+  let hayDiaLibre=false;
   for(let d2=1;d2<=dim;d2++){
     const o=new Date(y,m,d2);const dw=o.getDay();
     const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d2).padStart(2,'0')}`;
     const diaKey=DIA_KEY[dw];
     const diaCerrado=!disponibilidadSemana||!Array.isArray(disponibilidadSemana[diaKey])||!disponibilidadSemana[diaKey].length;
-    if(o<minFecha||o>maxFecha||diaCerrado||blockedDays.has(ds))c+=`<div class="cday2 d">${d2}</div>`;
-    else c+=`<div class="cday2 a${fecha===ds?' s':''}" onclick="selF('${ds}')">${d2}</div>`;
+    const sinHorarioLibre=!diaCerrado&&!(o<minFecha||o>maxFecha)&&!blockedDays.has(ds)&&!diaTieneHorarioLibre(ds);
+    if(o<minFecha||o>maxFecha||diaCerrado||blockedDays.has(ds)||sinHorarioLibre)c+=`<div class="cday2 d">${d2}</div>`;
+    else{hayDiaLibre=true;c+=`<div class="cday2 a${fecha===ds?' s':''}" onclick="selF('${ds}')">${d2}</div>`;}
   }
+  // Si ningún día de este mes tiene un horario libre, salta solo al próximo
+  // mes que sí tenga — hasta 12 meses hacia adelante, para no colgarse si
+  // por algún motivo no hay disponibilidad cargada en ningún lado.
+  if(!hayDiaLibre&&intentos<12){
+    MS.m++;if(MS.m>11){MS.m=0;MS.y++;}
+    return renderCal(intentos+1);
+  }
+  document.getElementById('m-calmes').textContent=`${MES[MS.m]} ${MS.y}`;
   document.getElementById('m-cal').innerHTML=c;
 }
 

@@ -33,57 +33,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="assets/shared.css">
 <style>
-:root{
-  --bg:#0c0a09;--bg2:#0f0d0b;--bg3:#141210;--bg4:#181512;
-  --bd:#2a2219;--bds:#1c1712;
-  --gold:#c98a4b;--gold-d:rgba(201,138,75,.11);--gold-l:rgba(201,138,75,.22);
-  --lav:#9491c4;--lav-d:rgba(148,145,196,.12);
-  --stone:#8a8478;--rust:#b8763d;
-  --cr:#f0e8dc;--crd:#a8998a;--crf:#8c7c6c;
-  --ok:#7a9b6e;--ok-bg:rgba(122,155,110,.1);
-  --accent:rgb(150,146,191);--accent-l:rgba(150,146,191,.3);--accent-glow:0 0 18px 3px rgba(150,146,191,.6);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--cr);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-h1,h2,h3,h4,blockquote{font-family:'Noto Serif Display',serif;font-weight:400}
-.w{max-width:1080px;margin:0 auto;padding:0 32px}
-
-.ey{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;font-family:'Montserrat',sans-serif}
-
 .nota-revision{position:fixed;bottom:88px;right:20px;z-index:999;background:var(--bg4);border:1px solid var(--gold);padding:12px 16px;max-width:260px;font-size:11px;color:var(--crd);line-height:1.6;font-family:'Montserrat',sans-serif}
-.nota-revision strong{color:var(--gold)}
-.nota-revision button{background:none;border:none;color:var(--crf);cursor:pointer;font-size:11px;font-family:'Montserrat',sans-serif;text-decoration:underline;margin-top:6px;display:block}
-.texto-sugerido{border-bottom:1px dashed var(--rust);padding-bottom:1px}
-.texto-sugerido::after{content:'*';color:var(--gold);font-size:10px;vertical-align:super;margin-left:2px;font-family:'Montserrat',sans-serif;font-weight:700}
-
 /* NAV — sticky, se afina al scrollear */
 .nav-bar{position:sticky;top:0;z-index:50;background:transparent;transition:background .3s ease,box-shadow .3s ease}
-.nav-bar.scrolled{background:rgba(12,10,9,.97);box-shadow:0 4px 20px rgba(0,0,0,.45),0 1px 0 var(--bds)}
-@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)){
-  .nav-bar.scrolled{background:rgba(12,10,9,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-}
-@media(max-width:760px){
-  .nav-bar.scrolled{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
-}
-nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bds);position:relative;z-index:10;transition:padding .35s ease,border-color .3s ease}
-.nav-bar.scrolled nav{padding:9px 0;border-bottom-color:transparent}
-.nav-bar.scrolled .nlogo{font-size:10px;transition:font-size .35s ease}
-.nlogo{font-size:11px;letter-spacing:.22em;font-weight:700;text-decoration:none;color:var(--cr);transition:font-size .35s ease}
-.nlinks{display:flex;gap:30px}
-.nlinks a{color:var(--crd);text-decoration:none;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;transition:color .2s}
-.nlinks a:hover{color:var(--gold)}
-.nav-toggle{display:none;background:none;border:1px solid var(--bd);color:var(--crd);width:32px;height:32px;cursor:pointer;font-size:15px;align-items:center;justify-content:center;transition:border-color .18s,color .18s}
-.nav-toggle:hover{border-color:var(--gold);color:var(--gold)}
-@media(max-width:760px){
-  .nav-toggle{display:flex}
-  .nlinks{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:var(--bg);border-bottom:1px solid var(--bds);box-shadow:0 8px 24px rgba(0,0,0,.5);padding:4px 32px 8px}
-  .nlinks.open{display:flex}
-  .nlinks a{padding:14px 0;border-bottom:1px solid var(--bds)}
-  .nlinks a:last-child{border-bottom:none}
-}
-
 /* ══ HERO ══ */
 .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;overflow:hidden}
 .hero-fog{position:absolute;inset:0;z-index:1;pointer-events:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);will-change:opacity}
@@ -103,18 +57,14 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid var(--bd);color:var(--crd);padding:5px 11px;transition:border-color .3s linear}
 .hero-badge .ic{color:var(--accent);font-size:10px;transition:color .3s linear}
 .hero-para{font-family:'Noto Serif Display',serif;font-style:italic;font-size:clamp(13px,1.5vw,15px);color:var(--crf);line-height:1.75;max-width:420px;opacity:.85;margin-top:2px}
-
 /* MARQUEE — con el eje narrativo de Pupi */
 .mw{border-top:1px solid var(--bds);overflow:hidden;padding:13px 0;position:relative;z-index:2}
 .mi{display:flex;white-space:nowrap;animation:sc 34s linear infinite;width:max-content}
 .mi span{font-family:'Noto Serif Display',serif;font-style:italic;font-size:13px;color:var(--crf);padding:0 22px}
-.mi .dt{color:var(--gold);font-style:normal;padding:0 5px}
-@keyframes sc{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){
   .mi{animation:none}
   .thresh-dot{animation:none;opacity:.6}
 }
-
 /* PARA QUIÉN — texto narrativo íntegro de Pupi */
 .pq{padding:110px 0 100px;border-top:1px solid var(--bds);text-align:center}
 .pq h2{font-size:clamp(24px,3.4vw,42px);margin:12px 0 44px;letter-spacing:.02em}
@@ -125,7 +75,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .pq-pull{max-width:100%;text-align:center;margin:40px 0}
 .pq-pull p{font-size:clamp(22px,2.8vw,30px);color:var(--gold);font-style:italic;line-height:1.35;max-width:none;margin:0}
 .pq-kicker{font-size:16px;font-weight:600;color:var(--cr);text-align:center;max-width:520px;margin:0 auto 40px;line-height:1.5}
-
 /* LA PROPUESTA */
 .prop{padding:130px 0 100px;border-top:1px solid var(--bds);text-align:center}
 .prop h2{font-size:clamp(22px,3vw,38px);margin:12px 0 20px;letter-spacing:.02em}
@@ -139,7 +88,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .prop-body{min-width:0}
 .prop-title{font-family:'Noto Serif Display',serif;font-size:17px;color:var(--cr);margin-bottom:8px}
 .prop-text{font-size:12.5px;color:var(--crd);line-height:1.7}
-
 /* MÓDULOS — recorrido cromático piedra → lavanda → dorado */
 .modulos{padding:100px 0;background:var(--bg3);border-top:1px solid var(--bds)}
 .modulos .ey{color:var(--lav)}
@@ -189,7 +137,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   opacity:0;pointer-events:none;transition:opacity .25s ease .1s;z-index:21;
 }
 .mod-tool:hover::after,.mod-tool:hover::before{opacity:1}
-
 /* CALENDARIO */
 
 /* SOBRE PUPI */
@@ -202,16 +149,12 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .testi-autor{font-size:11px;color:var(--crf);letter-spacing:.04em;text-transform:uppercase;font-weight:700}
 .pupi-grid{display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:start}
 .pupi-img-wrap{width:100%;aspect-ratio:3/4;max-height:440px;overflow:hidden;border:1px solid var(--bd);position:sticky;top:100px}
-.pupi-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(15%) contrast(1.05)}
 .pupi-text h2{font-size:clamp(21px,2.6vw,32px);margin:10px 0 6px}
 .pupi-cargo{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--crf);margin-bottom:22px}
 .pupi-bio{font-size:14px;color:var(--crd);line-height:1.82;margin-bottom:12px}
 .pupi-tags{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 22px}
-.pupi-tag{border:1px solid var(--bd);color:var(--crf);font-size:10px;letter-spacing:.06em;padding:5px 10px;text-transform:uppercase;font-weight:600}
 .pupi-tray{display:inline-flex;align-items:baseline;gap:10px;border-top:1px solid var(--bds);padding-top:18px}
 .pupi-tray-num{font-family:'Noto Serif Display',serif;font-size:36px;color:var(--accent);transition:color .3s linear}
-.pupi-tray-label{font-size:12px;color:var(--crd)}
-
 /* PRECIO */
 .precio{padding:100px 0;border-top:1px solid var(--bds);text-align:center}
 .precio h2{font-size:clamp(22px,2.8vw,34px);margin:12px 0 8px}
@@ -222,7 +165,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .precio-detalle{font-size:11px;letter-spacing:.04em;color:var(--crf);display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px}
 .precio-detalle span{white-space:nowrap}
 .precio-cta-divider{width:36px;height:1px;background:var(--gold-l);margin:36px auto 32px}
-
 /* CTA FINAL — ahora vive dentro de precio-block, mismo momento */
 .cta-frase{font-family:'Noto Serif Display',serif;font-style:italic;font-size:clamp(19px,2.6vw,28px);color:var(--cr);line-height:1.5;margin-bottom:20px}
 .cta-frase em{color:var(--gold);font-style:normal}
@@ -256,11 +198,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .sello-cerrado{background:linear-gradient(90deg,#8a4638,#a85a4a)}
 .sello-abierto{background:linear-gradient(90deg,#8f6a2e,var(--gold))}
 @media(max-width:600px){.sello-inscripcion{font-size:10px;padding:10px 12px;line-height:1.5}}
-
-.rev{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
-.rev.in{opacity:1;transform:translateY(0)}
-.d1{transition-delay:.12s}.d2{transition-delay:.22s}
-
 @media(max-width:760px){
   .hero-inner{padding:90px 24px 48px}
   .hero-titulo{font-size:clamp(40px,13vw,110px);letter-spacing:.015em}
@@ -276,33 +213,31 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 @media(max-width:380px){
   .hero-titulo{font-size:clamp(32px,11vw,55px);letter-spacing:0}
 }
-/* ══ WHATSAPP FLOTANTE ══ */
-.wa-flotante{
-  position:fixed;right:16px;bottom:16px;z-index:60;
-  display:inline-flex;align-items:center;
-  height:48px;border-radius:26px;max-width:220px;padding-right:16px;
-  background:var(--bg2);border:1px solid var(--gold);color:var(--gold);
-  text-decoration:none;overflow:hidden;white-space:nowrap;
-  box-shadow:0 6px 20px rgba(0,0,0,.35);
-  opacity:0;transform:translateY(12px);pointer-events:none;
-  transition:opacity .25s,transform .25s,max-width .3s ease,padding-right .3s ease,border-color .18s,color .18s,background .18s;
-}
-.wa-flotante.visible{opacity:1;transform:translateY(0);pointer-events:auto}
-.wa-flotante-icon{width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.wa-flotante-icon svg{width:22px;height:22px}
-.wa-flotante-txt{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.02em;opacity:1}
-@media(hover:hover) and (pointer:fine){
-  .wa-flotante{max-width:52px;padding-right:0}
-  .wa-flotante-txt{opacity:0;transition:opacity .2s ease}
-  .wa-flotante:hover{max-width:220px;padding-right:16px;border-color:#25D366;color:#25D366}
-  .wa-flotante:hover .wa-flotante-txt{opacity:1;transition:opacity .2s ease .1s}
-}
-@media(max-width:600px){
-  .wa-flotante{height:44px;max-width:200px}
-  .wa-flotante-icon{width:44px;height:44px}
-  .wa-flotante-icon svg{width:20px;height:20px}
-  .wa-flotante-txt{font-size:10.5px}
-}
+input:focus{outline:none;border-color:var(--lav)}
+.hslot2:hover{border-color:var(--lav);color:var(--lav);background:var(--bg4);transform:translateY(-1px)}
+.nav-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.info-box ul{font-size:13px;color:var(--crd);line-height:1.9;list-style:none;margin-bottom:18px}
+.m-btn-reservar{width:100%;background:none;border:1px solid var(--bd);color:var(--crd);padding:12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color .18s,color .18s}
+.m-btn-pagar{width:100%;background:var(--gold);color:var(--bg);border:none;padding:14px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .18s}
+nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bds);position:relative;z-index:10;transition:padding .35s ease,border-color .3s ease}
+.nav-bar.scrolled nav{padding:9px 0;border-bottom-color:transparent}
+.m-sq{display:flex;align-items:center;justify-content:center;border:1px solid var(--lav);color:var(--lav);font-size:10px;font-weight:700;min-width:36px;height:26px;padding:0 7px;white-space:nowrap}
+.m-nota{font-size:12px;color:var(--crf);font-style:italic;font-family:'Noto Serif Display',serif;border-left:2px solid var(--lav-d);padding-left:10px;line-height:1.6;margin-bottom:20px}
+.inv-box{background:var(--bg3);border:1px solid var(--bd);border-top:2px solid var(--lav);padding:36px 40px;max-width:580px;margin:0 auto 40px;text-align:left}
+.info-box-btns button:first-child{flex:1;background:none;border:1px solid var(--lav);color:var(--lav);padding:11px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,color .18s}
+.modal{background:var(--bg);border:1px solid var(--bd);width:100%;max-width:580px;position:relative;transform:translateY(16px) scale(.98);transition:transform .32s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.cal-nav2 button:hover{border-color:var(--lav);color:var(--lav)}
+.cancel-modal-box{background:var(--bg3);border:1px solid var(--bd);border-left:2px solid var(--rust);padding:16px 18px;margin-bottom:16px}
+.modal-step{flex:1;padding:12px 16px;text-align:center;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--crf);border-bottom:2px solid transparent;transition:color .25s,border-color .25s;font-family:'Montserrat',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-lista li::before{content:'→';color:var(--lav);flex-shrink:0;font-weight:700}
+.modal-progress{display:flex;flex:1}
+.inv-box-titulo{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lav);font-weight:700;margin-bottom:20px}
+.dx h2{font-size:clamp(18px,2.4vw,28px);line-height:1.22;letter-spacing:.04em;margin:12px 0 36px;max-width:340px}
+.info-box ul li::before{content:'→ ';color:var(--lav)}
+.modal-step.active{color:var(--lav);border-bottom-color:var(--lav)}
+.modal-close:hover{border-color:var(--lav);color:var(--lav)}
+.info-box-btns button:first-child:hover{background:var(--lav);color:var(--bg)}
+.pupi-tag{border:1px solid var(--bd);color:var(--crf);font-size:10px;letter-spacing:.06em;padding:5px 10px;text-transform:uppercase;font-weight:600}
 </style>
 <script type="application/ld+json">
 {
@@ -626,7 +561,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
     </div>
     <div style="border-top:1px solid var(--bds);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--crf);flex-wrap:wrap;gap:8px">
       <span>&copy; 2026 Pupi Larroude &middot; Todos los derechos reservados</span>
-      <span style="font-size:10px">Dise&ntilde;o &amp; desarrollo a medida</span>
+      <span style="font-size:10px">Hecho a medida por: Nach!</span>
     </div>
   </div>
 </footer>

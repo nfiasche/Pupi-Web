@@ -356,6 +356,7 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 
 /* Items con micro-interacción */
 .resolver-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid var(--bds);border-radius:10px;background:var(--bg4);margin-bottom:6px;position:relative;overflow:hidden;transition:background .15s,transform .35s cubic-bezier(.4,0,.2,1),opacity .35s,max-height .35s,margin .35s,padding .35s;max-height:80px}
+body.zoom-grande .resolver-item{flex-wrap:wrap;max-height:none}
 .resolver-item:hover{background:var(--surf-hover)}
 .ri-info{flex:1;cursor:pointer;min-width:0}
 .ri-nombre{font-size:13px;color:var(--cr);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -434,6 +435,7 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 /* ══ SERVICIOS (donuts) + PACIENTES ══ */
 .donuts-row{display:flex;gap:20px;justify-content:space-around;align-items:flex-start}
 .donut-block{text-align:center;flex:1}
+body.zoom-grande .donuts-row{flex-direction:column;align-items:center}
 .donut-wrap{width:110px;height:110px;margin:0 auto 10px;position:relative}
 .donut-caption{font-size:10px;color:var(--crd);letter-spacing:.02em;margin-bottom:8px}
 .donut-legend{display:flex;flex-direction:column;gap:5px;margin-top:8px;text-align:left}
@@ -518,6 +520,13 @@ body.sidebar-colapsado .ic-colapsar{transform:rotate(180deg)}
 .tt-precio{font-size:12px;color:var(--crd);font-weight:600;line-height:1.45;white-space:normal}
 .vista-toggle-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
 .vista-toggle{display:inline-flex;border:1px solid var(--bd);padding:2px;gap:2px}
+.tab-mayor{display:flex;border:none;padding:0;gap:0;border-bottom:1px solid var(--bds);width:100%}
+.tab-mayor .vista-toggle-btn{padding:10px 4px;margin-right:28px;border-bottom:2px solid transparent;border-radius:0;background:none!important;font-size:12px;letter-spacing:.04em;position:relative;top:1px}
+.tab-mayor .vista-toggle-btn.active{color:var(--gold)!important;border-bottom-color:var(--gold)}
+.tab-mayor .vista-toggle-btn:not(.active):hover{color:var(--cr)}
+body.zoom-grande .tab-mayor{flex-wrap:wrap;border-bottom:none}
+body.zoom-grande .tab-mayor .vista-toggle-btn{border-bottom:2px solid var(--bds);margin-right:0;margin-bottom:8px;flex:1 1 45%;text-align:center}
+body.zoom-grande .tab-mayor .vista-toggle-btn.active{border-bottom-color:var(--gold)}
 
 /* ══ VISTA AGENDA (semana / día) ══ */
 .agenda{display:flex;background:var(--surf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;box-shadow:var(--sh2)}
@@ -692,6 +701,8 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .ev-pagado{background:var(--gold-d);border-left-color:var(--gold);color:var(--gold)}
 .ev-cancelado{background:rgba(201,97,75,.06);border-left-color:var(--err);color:var(--crf);text-decoration:line-through}
 .turno-svc-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0;vertical-align:middle}
+.cal-ev-dim{opacity:.3}
+.cal-ev-match{box-shadow:0 0 0 1.5px var(--gold);position:relative;z-index:1}
 .admin-cal-mas{font-size:9.5px;color:var(--crf);padding:2px 5px;cursor:pointer;flex-shrink:0}
 .admin-cal-mas:hover{color:var(--gold)}
 .admin-cal-day-add{position:absolute;top:6px;right:6px;font-size:13px;color:var(--crf);opacity:0;transition:opacity .15s;cursor:pointer}
@@ -738,7 +749,9 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 /* ══ MODAL NUEVO TURNO ══ */
 .nt-overlay{position:fixed;inset:0;background:rgba(4,3,5,.75);backdrop-filter:blur(4px);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
 .nt-overlay.open{display:flex}
-.nt-modal{background:var(--surf);border:1px solid var(--bd);border-radius:14px;width:100%;max-width:460px;padding:26px 26px 24px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh3)}
+.nt-modal{background:var(--surf);border:1px solid var(--bd);border-radius:14px;width:100%;max-width:680px;padding:26px 26px 24px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh3)}
+body.zoom-grande .nt-modal{max-width:min(94vw,560px)}
+@media(max-width:720px){.nt-modal{max-width:460px}}
 .nt-modal-footer{position:sticky;bottom:-24px;background:var(--surf);margin:16px -26px -24px;padding:14px 26px 24px;border-top:1px solid var(--bds)}
 .nt-paquete-aviso{background:var(--bg3);border:1px solid var(--gold);border-left:2px solid var(--gold);padding:12px 14px;margin-bottom:14px}
 .nt-paquete-check{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--crd);line-height:1.55;cursor:pointer}
@@ -755,6 +768,8 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 /* Barra de progreso de 4 pasos */
 .nt-progreso{display:flex;border-bottom:1px solid var(--bds);margin:0 -26px 22px;padding:0 26px}
 .nt-progreso-paso{flex:1;padding:0 0 12px;text-align:center;font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--crf);border-bottom:2px solid transparent;transition:color .25s,border-color .25s;font-family:'Montserrat',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:3px;padding-right:3px}
+body.zoom-grande .nt-progreso{flex-wrap:wrap}
+body.zoom-grande .nt-progreso-paso{flex:1 1 45%;white-space:normal;overflow:visible;text-overflow:clip;padding-bottom:8px}
 .nt-progreso-paso.activo{color:var(--gold);border-bottom-color:var(--gold)}
 .nt-progreso-paso.hecho{color:var(--crd)}
 
@@ -780,6 +795,10 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .nt-field input:focus,.nt-field select:focus,.nt-field textarea:focus{outline:none;border-color:var(--gold)}
 .nt-field input::placeholder,.nt-field textarea::placeholder{color:var(--crf)}
 .nt-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+body.zoom-grande .nt-row2{grid-template-columns:1fr}
+.nt-fecha-hora-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media(max-width:720px){.nt-fecha-hora-grid{grid-template-columns:1fr}}
+body.zoom-grande .nt-fecha-hora-grid{grid-template-columns:1fr}
 .nt-hora-toggle{margin-top:6px}
 
 /* ══ CALENDARIO DE NUEVO TURNO ══ */
@@ -821,6 +840,8 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .nd-nota strong{color:var(--crd)}
 .nt-row2 input{width:100%;background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:11px 12px;font-size:13.5px;font-family:'Montserrat',sans-serif}
 .nt-pac-tabs{display:flex;gap:2px;margin-bottom:10px;background:var(--bg4);border:1px solid var(--bd);width:fit-content}
+body.zoom-grande .nt-pac-tabs{flex-wrap:wrap;width:100%}
+body.zoom-grande .nt-pac-tab{flex:1 1 auto}
 .nt-pac-tab{background:none;border:none;color:var(--crd);padding:7px 12px;font-size:10.5px;font-weight:600;letter-spacing:.03em;cursor:pointer;font-family:'Montserrat',sans-serif}
 .nt-pac-hint{font-size:10px;color:var(--crf);margin-top:8px;line-height:1.5}
 .nt-pac-hint strong{color:var(--crd)}
@@ -847,6 +868,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .svc-toggle-activo{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--crd)}
 .svc-toggle-activo input{accent-color:var(--gold);width:15px;height:15px}
 .svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+body.zoom-grande .svc-grid{grid-template-columns:1fr}
 .svc-field{margin-bottom:0}
 .svc-field label{display:block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--crf);font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
 .svc-field input:disabled,.svc-field textarea:disabled{opacity:.5;cursor:not-allowed}
@@ -857,7 +879,10 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .svc-field textarea{resize:vertical;min-height:84px;font-family:'Montserrat',sans-serif;line-height:1.5}
 .svc-full{grid-column:1/-1}
 .svc-hint-label{font-size:8.5px;font-weight:400;color:var(--crf);text-transform:none;letter-spacing:0;opacity:.8}
-.svc-color-input{width:100%;height:38px;padding:3px;background:var(--bg4);border:1px solid var(--bd);border-radius:6px;cursor:pointer}
+.svc-color-input{width:100%;height:46px;padding:3px;background:var(--bg4);border:1px solid var(--bd);border-radius:8px;cursor:pointer;margin-bottom:8px}
+.svc-color-presets{display:flex;flex-wrap:wrap;gap:6px}
+.svc-color-swatch{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);cursor:pointer;padding:0;transition:transform .1s}
+.svc-color-swatch:hover{transform:scale(1.15)}
 .btn-svc-le-toggle{background:none;border:1px solid var(--bd);color:var(--crd);padding:8px 14px;font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:border-color .15s,color .15s}
 .btn-svc-le-toggle:hover{border-color:var(--gold);color:var(--gold)}
 .le-panel-lista{display:flex;flex-direction:column;gap:6px}
@@ -894,6 +919,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 /* ══ VISTA FINANZAS ══ */
 .fin-periodo-label{font-size:12px;color:var(--cr);font-weight:600;min-width:90px;text-align:center;text-transform:capitalize}
 .fin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+body.zoom-grande .fin-stats{grid-template-columns:repeat(2,1fr)}
 .fin-stat-alerta{border-color:rgba(201,138,75,.35);background:linear-gradient(160deg,rgba(201,138,75,.06),var(--surf))}
 @media(max-width:900px){.fin-stats{grid-template-columns:repeat(2,1fr)}}
 .fin-stat{background:var(--bg3);border:1px solid var(--bd);padding:18px 20px;border-radius:12px;box-shadow:var(--sh2);position:relative;overflow:hidden}
@@ -902,6 +928,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .fin-stat .sub{font-size:10.5px;color:var(--crf);margin-top:6px;position:relative;z-index:1}
 .fin-stat-watermark{position:absolute;bottom:-14px;right:-10px;width:76px;height:76px;opacity:.05;color:var(--gold);z-index:0;pointer-events:none}
 .fin-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+body.zoom-grande .fin-chips{grid-template-columns:1fr}
 @media(max-width:900px){.fin-chips{grid-template-columns:1fr}}
 .fin-chip{display:flex;justify-content:space-between;align-items:center;background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:12px 16px}
 .fin-chip-lbl{font-size:11px;color:var(--crf)}
@@ -1291,7 +1318,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
       <button class="btn-nuevo-turno" style="padding:16px 28px;font-size:12.5px" onclick="abrirModalNuevoTurno()">&#43; Nuevo turno</button>
     </div>
 
-    <div class="vista-toggle" id="dashTabs" style="margin:20px 0 24px">
+    <div class="vista-toggle tab-mayor" id="dashTabs" style="margin:20px 0 24px">
       <button class="vista-toggle-btn active" data-dashtab="turnos" onclick="cambiarDashTab('turnos')">Turnos</button>
       <button class="vista-toggle-btn dashtab-numeros" data-dashtab="numeros" onclick="cambiarDashTab('numeros')">N&uacute;meros</button>
     </div>
@@ -1437,7 +1464,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         </div>
       </div>
 
-      <div class="vista-toggle" id="finTabs" style="margin:20px 0 24px">
+      <div class="vista-toggle tab-mayor" id="finTabs" style="margin:20px 0 24px">
         <button class="vista-toggle-btn active" data-fin-tab="operativo" onclick="cambiarFinTab('operativo')">Operativo</button>
         <button class="vista-toggle-btn dashtab-numeros" data-fin-tab="analisis" onclick="cambiarFinTab('analisis')">An&aacute;lisis</button>
       </div>
@@ -1653,6 +1680,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <p class="cfg-ayuda">Baj&aacute; una copia de tus turnos y pacientes cuando quieras &mdash; por las dudas, sin depender de nada m&aacute;s. Se abre en Excel o Google Sheets.</p>
         <button class="btn-nt-guardar" id="backupBtn" onclick="descargarBackup()" style="max-width:340px">&#8681; Descargar backup (CSV)</button>
         <div class="nt-error" id="backupError" style="display:none"></div>
+      </div>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-title">Google Calendar</div>
+        <p class="cfg-ayuda">Conect&aacute; tu Google Calendar para que los turnos confirmados aparezcan solos ah&iacute; &mdash; se crean, actualizan y borran autom&aacute;ticamente, sin que tengas que cargarlos dos veces.</p>
+        <div id="googleCalEstado" class="cfg-nota">Revisando&hellip;</div>
+        <a href="/.netlify/functions/google-oauth-start" class="btn-nt-guardar" id="googleCalConectarBtn" style="max-width:340px;display:none;text-decoration:none;text-align:center">Conectar Google Calendar</a>
+        <button class="btn-tarifa-borrar" id="googleCalDesconectarBtn" style="display:none" onclick="desconectarGoogleCalendar()">Desconectar</button>
       </div>
 
       <div class="panel">
@@ -1912,13 +1947,23 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 
     <div class="nt-row2">
       <div class="nt-field" style="margin-bottom:0">
+        <label>Categor&iacute;a</label>
+        <select id="ingresoCategoria">
+          <option value="taller">Talleres / eventos</option>
+          <option value="venta">Venta de productos</option>
+          <option value="consultoria">Asesor&iacute;a puntual</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div class="nt-field" style="margin-bottom:0">
         <label>Monto</label>
         <input type="number" id="ingresoMonto" placeholder="0">
       </div>
-      <div class="nt-field" style="margin-bottom:0">
-        <label for="ingresoFecha">Fecha</label>
-        <input type="date" id="ingresoFecha">
-      </div>
+    </div>
+
+    <div class="nt-field">
+      <label for="ingresoFecha">Fecha</label>
+      <input type="date" id="ingresoFecha">
     </div>
 
     <div class="nt-field">
@@ -2344,6 +2389,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 
     <!-- PASO 3: Calendario -->
     <div class="nt-paso" id="ntPaso3">
+      <div class="nt-fecha-hora-grid">
       <div class="nt-field">
         <label>Fecha</label>
         <div class="nt-cal" id="ntCal">
@@ -2377,6 +2423,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <div class="nt-hora-aviso" id="ntHoraAviso" style="display:none">
           Mostrando todos los horarios. Los <strong>ocupados siguen bloqueados</strong> &mdash; nunca se superponen turnos.
         </div>
+      </div>
       </div>
       <div class="nt-modal-footer nt-paso-nav">
         <button type="button" class="nt-btn-volver" onclick="irPasoNt(2)">&#8592; Volver</button>
@@ -2890,6 +2937,13 @@ async function cargarAgenda(){
     const turnos=rTurnos.data||[];
     const bloqueos=rBloqueos.data||[];
     turnos.forEach(t=>{turnosCache[t.id]=t;});
+    if(turnosBusqueda){
+      const b=quitarAcentos(turnosBusqueda);
+      turnos.forEach(t=>{
+        const pac=t.pacientes||{};
+        t._match=quitarAcentos(pac.nombre||'').includes(b)||quitarAcentos(pac.email||'').includes(b);
+      });
+    }
 
     wrap.innerHTML=renderAgenda(dias,turnos,bloqueos);
   }catch(err){
@@ -2979,7 +3033,8 @@ function renderAgenda(dias,turnos,bloqueos){
       const completado=t.estado==='pagado'&&t.asistencia==='asistio';
       const clase=completado?'completado':t.estado;
       const dotAg=svc.color?`<span class="turno-svc-dot" style="background:${esc(svc.color)}"></span>`:'';
-      bloques+=`<div class="ag-turno ag-${clase}" style="top:${top}px;height:${alto}px"
+      const claseBusquedaAg=turnosBusqueda?(t._match?' cal-ev-match':' cal-ev-dim'):'';
+      bloques+=`<div class="ag-turno ag-${clase}${claseBusquedaAg}" style="top:${top}px;height:${alto}px"
         onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')"
         title="${esc(pac.nombre||'')} \u00b7 ${esc(svc.nombre||'')}">
         <div class="ag-t-hora">${dotAg}${t.hora_inicio.slice(0,5)}</div>
@@ -3033,11 +3088,12 @@ async function cargarCalendarioTurnos(){
     if(error)throw error;
 
     let turnos=data||[];
-    if(turnosBusqueda){
+    const hayBusquedaMes=!!turnosBusqueda;
+    if(hayBusquedaMes){
       const b=quitarAcentos(turnosBusqueda);
-      turnos=turnos.filter(t=>{
+      turnos.forEach(t=>{
         const pac=t.pacientes||{};
-        return quitarAcentos(pac.nombre||'').includes(b)||quitarAcentos(pac.email||'').includes(b);
+        t._match=quitarAcentos(pac.nombre||'').includes(b)||quitarAcentos(pac.email||'').includes(b);
       });
     }
 
@@ -3053,6 +3109,7 @@ async function cargarCalendarioTurnos(){
     for(let d=1;d<=dim;d++){
       const ds=`${turnosCalAnio}-${String(turnosCalMes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const items=porDia[ds]||[];
+      if(hayBusquedaMes)items.sort((a,b)=>(a._match?0:1)-(b._match?0:1));
       const esHoy=ds===hoyStr?' hoy':'';
       const sinTurnos=items.length===0?' sin-turnos':'';
       const visibles=items.slice(0,MAX_VISIBLES);
@@ -3062,7 +3119,8 @@ async function cargarCalendarioTurnos(){
         const hora=t.hora_inicio?t.hora_inicio.slice(0,5):'';
         const asistMarca=t.asistencia==='asistio'?' &#10003;':t.asistencia==='ausente'?' &#10007;':'';
         const dot=svc.color?`<span class="turno-svc-dot" style="background:${esc(svc.color)}"></span>`:'';
-        return`<div class="admin-cal-evento ev-${t.estado}" onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')" title="${esc(hora+' '+(pac.nombre||'')+' \u00b7 '+(svc.nombre||''))}">${dot}${hora} ${esc(pac.nombre||'(sin nombre)')}${asistMarca}</div>`;
+        const claseBusqueda=hayBusquedaMes?(t._match?' cal-ev-match':' cal-ev-dim'):'';
+        return`<div class="admin-cal-evento ev-${t.estado}${claseBusqueda}" onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')" title="${esc(hora+' '+(pac.nombre||'')+' \u00b7 '+(svc.nombre||''))}">${dot}${hora} ${esc(pac.nombre||'(sin nombre)')}${asistMarca}</div>`;
       }).join('');
       const masHTML=items.length>MAX_VISIBLES?`<div class="admin-cal-mas" onclick="event.stopPropagation();abrirDiaTurnos('${ds}',true)">+${items.length-MAX_VISIBLES} m\u00e1s</div>`:'';
       // Puntos de color por estado (solo se ven en mobile, donde el texto no entra)
@@ -3140,7 +3198,7 @@ function abrirDetalleTurno(id){
     <!-- Progreso del turno: en qué etapa está y qué falta -->
     <div class="td-progreso">${progresoTurno(t)}</div>
 
-    <div class="vista-toggle td-tabs" id="tdTabs">
+    <div class="vista-toggle td-tabs tab-mayor" id="tdTabs">
       <button class="vista-toggle-btn active" data-tdtab="datos" onclick="cambiarTdTab('datos')">Datos</button>
       <button class="vista-toggle-btn" data-tdtab="estado" onclick="cambiarTdTab('estado')">Estado y pago</button>
     </div>
@@ -4460,10 +4518,13 @@ async function renderServicios(turnos){
 }
 
 const COLOR_CAT_GASTO_LABEL={'Alquiler / espacio':'#b8763d','Impuestos / monotributo':'#c67b6a','Materiales':'#9491c4','Gastos laborales':'#8a8478','Otro':'#6a5e52'};
-let finDonutServiciosInst=null,finDonutGastosInst=null;
+const INGRESO_CAT_LABEL={sesion:'Sesiones / consultas',taller:'Talleres / eventos',venta:'Venta de productos',consultoria:'Asesor\u00eda puntual',otro:'Otro'};
+const COLOR_CAT_INGRESO_LABEL={'Sesiones / consultas':'#7a9b6e','Talleres / eventos':'#c9a15c','Venta de productos':'#8fa8d6','Asesor\u00eda puntual':'#b5a5d6','Otro':'#6a5e52'};
+let finDonutServiciosInst=null,finDonutGastosInst=null,finDonutCatIngInst=null;
 
 // Desglose del período de Finanzas: ingresos por servicio + gastos por categoría, mismo lenguaje visual que renderServicios
-async function renderFinDesglose(turnosPagados,gastos){
+async function renderFinDesglose(turnosPagados,gastos,extras){
+  extras=extras||[];
   await cargarChartJs();
   const cont=document.getElementById('finDesglosePanel');
   if(!cont)return;
@@ -4473,21 +4534,44 @@ async function renderFinDesglose(turnosPagados,gastos){
     const nombre=(t.servicios&&t.servicios.nombre)||'Sin servicio';
     porServicio[nombre]=(porServicio[nombre]||0)+Number(t.precio_cobrado||0);
   });
+  // Los ingresos cargados a mano ("+ Ingreso") también son plata real del
+  // período — se agrupan por su concepto, igual que los gastos se agrupan
+  // por categoría. Antes quedaban afuera del gráfico por completo.
+  extras.forEach(x=>{
+    const nombre=x.concepto?x.concepto.trim():'Ingreso extra';
+    porServicio[nombre]=(porServicio[nombre]||0)+Number(x.monto||0);
+  });
   const porCategoria={};
   gastos.forEach(g=>{
     const cat=GASTO_CAT_LABEL[g.categoria]||'Otro';
     porCategoria[cat]=(porCategoria[cat]||0)+Number(g.monto||0);
   });
 
-  if(!turnosPagados.length&&!gastos.length){
+  // Ingresos por categoría: las sesiones (turnos) van todas juntas bajo
+  // "Sesiones / consultas" — lo que ya se abre por servicio en el otro
+  // gráfico —, y cada ingreso cargado a mano usa la categoría que se le
+  // eligió al crearlo (Talleres, Venta de productos, etc.).
+  const porCategoriaIngreso={};
+  const totalSesiones=turnosPagados.reduce((a,t)=>a+Number(t.precio_cobrado||0),0);
+  if(totalSesiones>0)porCategoriaIngreso[INGRESO_CAT_LABEL.sesion]=totalSesiones;
+  extras.forEach(x=>{
+    const cat=INGRESO_CAT_LABEL[x.categoria]||INGRESO_CAT_LABEL.otro;
+    porCategoriaIngreso[cat]=(porCategoriaIngreso[cat]||0)+Number(x.monto||0);
+  });
+
+  if(!turnosPagados.length&&!gastos.length&&!extras.length){
     cont.innerHTML='<div class="empty-state">No hay datos suficientes en este per\u00edodo todav\u00eda.</div>';
     return;
   }
 
   cont.innerHTML=`
     <div class="donut-block">
-      <div class="donut-caption">Ingresos por servicio</div>
+      <div class="donut-caption">Ingresos por servicio / concepto</div>
       <div class="donut-wrap"><canvas id="finDonutServicios"></canvas></div>
+    </div>
+    <div class="donut-block">
+      <div class="donut-caption">Ingresos por categor&iacute;a</div>
+      <div class="donut-wrap"><canvas id="finDonutCatIng"></canvas></div>
     </div>
     <div class="donut-block">
       <div class="donut-caption">Gastos por categor&iacute;a</div>
@@ -4547,6 +4631,7 @@ async function renderFinDesglose(turnosPagados,gastos){
       return chart;
     };
     finDonutServiciosInst=mkDonut('finDonutServicios',Object.keys(porServicio).length?porServicio:{'Sin datos a\u00fan':1},finDonutServiciosInst,colorPara,'INGRESOS');
+    finDonutCatIngInst=mkDonut('finDonutCatIng',Object.keys(porCategoriaIngreso).length?porCategoriaIngreso:{'Sin datos a\u00fan':1},finDonutCatIngInst,n=>COLOR_CAT_INGRESO_LABEL[n]||'#6a5e52','INGRESOS');
     finDonutGastosInst=mkDonut('finDonutGastos',Object.keys(porCategoria).length?porCategoria:{'Sin datos a\u00fan':1},finDonutGastosInst,n=>COLOR_CAT_GASTO_LABEL[n]||'#6a5e52','GASTOS');
   });
 }
@@ -5477,11 +5562,10 @@ async function cobrarSaldoTurno(id){
   if(monto===null)return;
   const montoNum=parseFloat(monto);
   if(isNaN(montoNum)||montoNum<=0){alert('Ingres\u00e1 un monto v\u00e1lido.');return;}
-  const totalNuevo=(t.precio_cobrado||0)+montoNum;
-  const estadoNuevo=totalNuevo>=(t.precio_original||0)?'pagado':'señado';
   try{
-    const{error}=await sb.from('turnos').update({precio_cobrado:totalNuevo,estado:estadoNuevo}).eq('id',id);
+    const{data,error}=await sb.rpc('cobrar_saldo_turno',{p_turno_id:id,p_monto:montoNum});
     if(error)throw error;
+    if(!data){alert('No se pudo registrar el cobro (el turno puede estar cancelado).');return;}
     cerrarDetalleTurno();
     refrescarVistaTurnosActual();
   }catch(err){
@@ -6106,16 +6190,26 @@ function chequearPrecioManual(){
   const estado=document.getElementById('ntPrecioEstado');
   if(!aviso)return;
   if(ntPrecioCalculado&&val&&val!==ntPrecioCalculado){
-    aviso.textContent=`\u26a0 Precio distinto al de lista (${fmt(ntPrecioCalculado)})`;
+    aviso.innerHTML=`&#9888; Precio distinto al de lista (<u>${fmt(ntPrecioCalculado)}</u>) &mdash; tocar para restaurar`;
     aviso.style.color='var(--warn)';
+    aviso.style.cursor='pointer';
+    aviso.onclick=restaurarPrecioListaNt;
     if(estado)estado.textContent='Editado a mano';
   } else {
     aviso.style.color='';
+    aviso.style.cursor='';
+    aviso.onclick=null;
     if(val===ntPrecioCalculado){
       aviso.textContent='';
       if(estado&&estado.textContent==='Editado a mano')estado.textContent='Precio de lista';
     }
   }
+}
+
+// Vuelve el precio al valor de lista calculado, con un click sobre el aviso
+function restaurarPrecioListaNt(){
+  document.getElementById('ntPrecio').value=ntPrecioCalculado;
+  chequearPrecioManual();
 }
 
 // Búsqueda de paciente existente
@@ -6500,6 +6594,10 @@ async function guardarNuevoServicio(){
   btn.disabled=false;btn.textContent='Crear servicio';
 }
 
+// 15 tonos prearmados para el color de cada servicio en el calendario —
+// además del picker libre, para no tener que andar buscando un hex a mano.
+const PALETA_COLORES_SERVICIO=['#9b8bc4','#6bab9e','#c48b9b','#c9a15c','#7a8494','#8fa8d6','#c98a4b','#b5a5d6','#a8c4a0','#d6a5b5','#8fbfc9','#c9b88f','#e0967a','#9db5c9','#bfa88f'];
+
 function renderCardServicio(s){
   return`<div class="svc-card" id="svc-${s.id}">
     <div class="svc-card-head">
@@ -6538,6 +6636,10 @@ function renderCardServicio(s){
       <p class="cfg-hint svc-full" id="svc-ayuda-horario-${s.id}" style="margin:-8px 0 0"></p>
       <div class="svc-field">
         <label for="svc-color-${s.id}">Color en el calendario</label>
+        <div class="svc-color-presets">
+          ${PALETA_COLORES_SERVICIO.map(c=>`<button type="button" class="svc-color-swatch" style="background:${c}" onclick="document.getElementById('svc-color-${s.id}').value='${c}'" title="${c}"></button>`).join('')}
+        </div>
+        <p class="cfg-hint" style="margin:8px 0 6px">O eleg&iacute; un color libre:</p>
         <input type="color" id="svc-color-${s.id}" value="${s.color||'#9c9c9c'}" class="svc-color-input">
       </div>
     </div>
@@ -6803,7 +6905,17 @@ function onServicioTarifaCambiado(){
   const comp=document.getElementById('tfComparacion');
   const compPct=document.getElementById('tfComparacionPct');
   if(!svc){comp.textContent='';compPct.textContent='';return;}
-  comp.textContent=`Precio de lista: ${fmt(svc.precio)}`;
+
+  const precioVal=Number(document.getElementById('tfPrecio').value)||0;
+  if(precioVal>0){
+    const pctEquiv=Math.round((1-precioVal/svc.precio)*100);
+    comp.textContent=pctEquiv>=0
+      ? `Precio de lista: ${fmt(svc.precio)} \u2192 equivale a un ${pctEquiv}% de descuento`
+      : `Precio de lista: ${fmt(svc.precio)} \u2192 queda ${Math.abs(pctEquiv)}% m\u00e1s caro que el precio de lista`;
+  } else {
+    comp.textContent=`Precio de lista: ${fmt(svc.precio)}`;
+  }
+
   const pctVal=Number(document.getElementById('tfPorcentaje').value)||0;
   compPct.textContent=pctVal>0?`Precio de lista: ${fmt(svc.precio)} \u2192 quedar\u00eda en ${fmt(Math.round(svc.precio*(1-pctVal/100)))}`:`Precio de lista: ${fmt(svc.precio)}`;
 }
@@ -6821,6 +6933,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   const pctInput=document.getElementById('tfPorcentaje');
   if(pctInput)pctInput.addEventListener('input',onServicioTarifaCambiado);
+  const precioInput=document.getElementById('tfPrecio');
+  if(precioInput)precioInput.addEventListener('input',onServicioTarifaCambiado);
 });
 
 async function buscarPacienteTarifa(termino){
@@ -6861,6 +6975,21 @@ async function guardarTarifa(){
   if(!servicioId){errBox.textContent='Eleg\u00ed un servicio.';errBox.style.display='block';return;}
   if(tfModoActual==='fijo'&&(!precio||Number(precio)<=0)){errBox.textContent='Ingres\u00e1 un precio v\u00e1lido.';errBox.style.display='block';return;}
   if(tfModoActual==='porcentaje'&&(!porcentaje||Number(porcentaje)<=0||Number(porcentaje)>=100)){errBox.textContent='Ingres\u00e1 un porcentaje entre 1 y 99.';errBox.style.display='block';return;}
+
+  // Si el descuento efectivo resulta inusual (muy alto, o directo más caro
+  // que el precio de lista), lo confirmamos antes de guardar — más fácil
+  // frenar un error de tipeo acá que encontrarlo después en un turno.
+  const svcTarifa=(ntServiciosCache||[]).find(s=>s.id===servicioId);
+  if(svcTarifa&&svcTarifa.precio>0){
+    const pctEfectivo=tfModoActual==='fijo'
+      ?Math.round((1-Number(precio)/svcTarifa.precio)*100)
+      :Number(porcentaje);
+    if(pctEfectivo<0){
+      if(!await confirmarAccion(`Con este valor, la tarifa queda ${Math.abs(pctEfectivo)}% m\u00e1s cara que el precio de lista (${fmt(svcTarifa.precio)}). \u00bfEs lo que quer\u00e9s?`))return;
+    } else if(pctEfectivo>=70){
+      if(!await confirmarAccion(`Es un descuento del ${pctEfectivo}% \u2014 bastante m\u00e1s de lo habitual. \u00bfConfirm\u00e1s que es correcto?`))return;
+    }
+  }
 
   const btn=document.getElementById('tfGuardarBtn');
   btn.disabled=true;btn.textContent='Guardando...';
@@ -7527,9 +7656,47 @@ async function cargarConfig(){
     set('cfgMinHoras',data.reserva_min_horas??24);
     set('cfgMaxDias',data.reserva_max_dias??60);
     set('cfgPolitica',data.politica_cancelacion||'');
+    if(document.getElementById('googleCalEstado'))cargarEstadoGoogleCalendar();
   }catch(err){
     console.error(err);
     mostrarAlerta('No pudimos cargar la configuraci\u00f3n. Recarg\u00e1 la p\u00e1gina.');
+  }
+}
+
+async function cargarEstadoGoogleCalendar(){
+  const estadoEl=document.getElementById('googleCalEstado');
+  const btnConectar=document.getElementById('googleCalConectarBtn');
+  const btnDesconectar=document.getElementById('googleCalDesconectarBtn');
+  if(!estadoEl)return;
+  try{
+    const{data,error}=await sb.rpc('google_calendar_conectado');
+    if(error)throw error;
+    if(data){
+      estadoEl.textContent='\u2713 Conectado \u2014 los turnos confirmados se sincronizan solos.';
+      estadoEl.style.color='var(--ok)';
+      btnConectar.style.display='none';
+      btnDesconectar.style.display='inline-block';
+    } else {
+      estadoEl.textContent='Todav\u00eda no est\u00e1 conectado.';
+      estadoEl.style.color='';
+      btnConectar.style.display='inline-block';
+      btnDesconectar.style.display='none';
+    }
+  }catch(err){
+    console.error(err);
+    estadoEl.textContent='No pudimos revisar el estado de la conexi\u00f3n.';
+  }
+}
+
+async function desconectarGoogleCalendar(){
+  if(!await confirmarAccion('\u00bfDesconectar Google Calendar? Los turnos van a dejar de sincronizarse hasta que lo conectes de nuevo.',{destructivo:true,textoConfirmar:'Desconectar'}))return;
+  try{
+    const{error}=await sb.rpc('desconectar_google_calendar');
+    if(error)throw error;
+    cargarEstadoGoogleCalendar();
+  }catch(err){
+    console.error(err);
+    alert('No pudimos desconectarlo. Intent\u00e1 de nuevo.');
   }
 }
 
@@ -7846,6 +8013,19 @@ document.addEventListener('DOMContentLoaded',()=>{
       cargarFinanzas();
     });
   });
+
+  // Si venimos de autorizar (o cancelar) Google Calendar, avisamos y
+  // llevamos directo a Configuración para que se vea el resultado.
+  const paramsUrl=new URLSearchParams(location.search);
+  const googleResultado=paramsUrl.get('google');
+  if(googleResultado){
+    history.replaceState(null,'',location.pathname);
+    setTimeout(()=>{
+      if(typeof cambiarVista==='function')cambiarVista('config');
+      if(googleResultado==='conectado')mostrarToastSimple('\u2713 Google Calendar conectado');
+      else mostrarToastSimple('No pudimos conectar Google Calendar. Intent\u00e1 de nuevo.');
+    },400);
+  }
 });
 
 function finCambiarOffset(delta){finOffset+=delta;cargarFinanzas();}
@@ -8140,6 +8320,24 @@ async function sincronizarIngresosDelMes(){
 }
 
 let cargarFinanzasToken=0;
+// Genera los fijos mensuales (gastos e ingresos) de TODOS los meses dentro
+// del rango que se está mirando — no solo "hoy". Así, si Pupi entra a
+// revisar un mes viejo que nunca abrió, el alquiler/monotributo de ESE mes
+// también aparece, sin que tenga que acordarse de nada. En "Todo el
+// historial" no se recorre mes a mes (sería carísimo y no hace falta).
+async function sincronizarFijosDelRango(desde,hasta){
+  if(!desde||!hasta)return;
+  const cursor=new Date(desde.getFullYear(),desde.getMonth(),1);
+  const fin=new Date(hasta.getFullYear(),hasta.getMonth(),1);
+  const llamadas=[];
+  while(cursor<=fin){
+    llamadas.push(sb.rpc('generar_gastos_recurrentes',{p_anio:cursor.getFullYear(),p_mes:cursor.getMonth()+1}));
+    llamadas.push(sb.rpc('generar_ingresos_recurrentes',{p_anio:cursor.getFullYear(),p_mes:cursor.getMonth()+1}));
+    cursor.setMonth(cursor.getMonth()+1);
+  }
+  try{await Promise.all(llamadas);}catch(err){console.error('Error sincronizando fijos del per\u00edodo',err);}
+}
+
 async function cargarFinanzas(){
   const miToken=++cargarFinanzasToken;
   const cont=document.getElementById('finLista');
@@ -8155,10 +8353,12 @@ async function cargarFinanzas(){
   document.getElementById('finPrev').style.visibility=navOff?'hidden':'visible';
   document.getElementById('finNext').style.visibility=navOff?'hidden':'visible';
 
+  await sincronizarFijosDelRango(desde,hasta);
+
   try{
     // Ingresos: turnos pagados o señados (una seña ya es plata real cobrada)
     let q=sb.from('turnos')
-      .select('fecha,hora_inicio,precio_cobrado,precio_original,pacientes(nombre),servicios(nombre)')
+      .select('fecha,hora_inicio,precio_cobrado,precio_original,estado,pacientes(nombre),servicios(nombre)')
       .in('estado',['pagado','señado'])
       .order('fecha',{ascending:false});
     if(desde)q=q.gte('fecha',ymd(desde));
@@ -8332,7 +8532,7 @@ async function cargarFinanzas(){
     renderGastos();
 
     // Desglose del período: ingresos por servicio + gastos por categoría
-    renderFinDesglose(finDatosActuales,finGastosActuales);
+    renderFinDesglose(finDatosActuales,finGastosActuales,finExtrasActuales);
 
     // Gráfico de evolución
     renderFinChart(listaIngresos,finGastosActuales,desde,hasta);
@@ -8569,6 +8769,7 @@ async function eliminarGasto(id){
 function abrirModalIngreso(){
   document.getElementById('ingresoError').style.display='none';
   document.getElementById('ingresoConcepto').value='';
+  document.getElementById('ingresoCategoria').value='taller';
   document.getElementById('ingresoMonto').value='';
   document.getElementById('ingresoFecha').value=ymd(new Date());
   document.getElementById('ingresoNota').value='';
@@ -8590,7 +8791,7 @@ async function guardarIngreso(){
   const btn=document.getElementById('ingresoGuardarBtn');
   btn.disabled=true;btn.textContent='Guardando...';
   try{
-    const{error}=await sb.from('ingresos_extra').insert({concepto,monto:Number(monto),fecha,nota:nota||null});
+    const{error}=await sb.from('ingresos_extra').insert({concepto,monto:Number(monto),fecha,nota:nota||null,categoria:document.getElementById('ingresoCategoria').value});
     if(error)throw error;
     cerrarModalIngreso();
     cargarFinanzas();
@@ -8621,7 +8822,8 @@ function exportarFinanzasCSV(){
   const filas=[];
   finDatosActuales.forEach(t=>{
     const pac=t.pacientes||{};const svc=t.servicios||{};
-    filas.push(['Ingreso (sesi\u00f3n)',t.fecha,pac.nombre||'',svc.nombre||'',Number(t.precio_cobrado||0)]);
+    const esSeña=t.estado==='señado';
+    filas.push([esSeña?'Ingreso (se\u00f1a \u2014 falta saldo)':'Ingreso (sesi\u00f3n)',t.fecha,pac.nombre||'',svc.nombre||'',Number(t.precio_cobrado||0)]);
   });
   finExtrasActuales.forEach(x=>{
     filas.push(['Ingreso (extra)',x.fecha,x.concepto||'',x.nota||'',Number(x.monto||0)]);

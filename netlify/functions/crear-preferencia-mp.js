@@ -58,7 +58,35 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "Ese turno ya está pagado" }) };
     }
 
-    const precioLista = Number(turno.precio_original || 0);
+    // Si el paciente tiene tarifa especial para este servicio, ese es el
+    // precio real a usar como base — nunca el de lista. Esta consulta se
+    // hace acá, del lado del servidor, con la misma función que usa la web
+    // para mostrar el descuento en pantalla — así el monto que se cobra de
+    // verdad siempre coincide con lo que el paciente vio antes de pagar.
+    let precioBase = Number(turno.precio_original || 0);
+    if (turno.paciente_email && turno.servicio_id) {
+      try {
+        const resTarifa = await fetch(`${SB_URL}/rest/v1/rpc/obtener_tarifa_especial`, {
+          method: "POST",
+          headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ p_email: turno.paciente_email, p_servicio_id: turno.servicio_id }),
+        });
+        if (resTarifa.ok) {
+          const tarifaEspecial = await resTarifa.json();
+          // Solo la usamos si es un descuento real (nunca para cobrar de más
+          // si por algún motivo diera un número mayor al de lista).
+          if (tarifaEspecial !== null && tarifaEspecial !== undefined && Number(tarifaEspecial) < precioBase) {
+            precioBase = Number(tarifaEspecial);
+          }
+        } else {
+          console.error("No pudimos consultar la tarifa especial:", await resTarifa.text());
+        }
+      } catch (errTarifa) {
+        console.error("Error al consultar la tarifa especial:", errTarifa);
+      }
+    }
+
+    const precioLista = precioBase;
     const monto = esPagoCompleto ? precioLista : Math.round(precioLista * SEÑA_PORCENTAJE);
     if (monto <= 0) {
       return { statusCode: 400, body: JSON.stringify({ error: "No pudimos calcular el monto a pagar" }) };

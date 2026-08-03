@@ -312,6 +312,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   </div>
   <div class="mw"><div class="mi" id="mq"></div></div>
 </header>
+<main id="main">
 
 <!-- ③ PARA QUIÉN ES — texto íntegro de Pupi -->
 <section class="pq rev">
@@ -531,6 +532,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 </section>
 
 <!-- FOOTER (unificado con el resto del sitio) -->
+</main>
 <footer style="background:var(--bg2);border-top:1px solid var(--bds);padding:52px 0 32px">
   <div class="w">
     <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px">
@@ -910,9 +912,9 @@ const MQI=['Umbral &middot; Programa por temporadas &middot; 12 semanas','&iques
 function mostrarFormLista(servicioId){
   document.getElementById('leWrap').innerHTML=`
     <div class="le-form">
-      <input type="text" id="leNombre" placeholder="Tu nombre">
-      <input type="email" id="leEmail" placeholder="Tu mail">
-      <input type="tel" id="leTelefono" placeholder="Tu WhatsApp (opcional)">
+      <input type="text" id="leNombre" placeholder="Tu nombre" aria-label="Tu nombre">
+      <input type="email" id="leEmail" placeholder="Tu mail" aria-label="Tu correo electrónico">
+      <input type="tel" id="leTelefono" placeholder="Tu WhatsApp (opcional)" aria-label="Tu WhatsApp, opcional">
       <div class="le-error" id="leError"></div>
       <button type="button" class="btn-wa-cta btn-wa-cta-ghost" onclick="enviarListaEspera('${servicioId}')">Anotarme</button>
     </div>`;

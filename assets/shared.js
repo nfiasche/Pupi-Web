@@ -285,7 +285,7 @@ function poblarP3(){
   const s=MS.svc;const[,mo,d]=MS.fecha.split('-');
   const pr=MS.tarifa!==null?MS.tarifa:s.precio;
   document.getElementById('m-resumen3').innerHTML=`
-    <div><div class="p3-svc">${s.nombre}</div><div class="p3-det">${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div></div>
+    <div><div class="p3-svc">${esc(s.nombre)}</div><div class="p3-det">${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div></div>
     <div class="p3-precio-r">${fmt(s.precio)}</div>`;
   document.getElementById('m-pv').textContent=fmt(pr);
 }

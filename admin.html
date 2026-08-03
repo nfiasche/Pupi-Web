@@ -421,6 +421,11 @@ body.zoom-grande .resolver-item{flex-wrap:wrap;max-height:none}
 .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
 .panel{background:var(--surf);border:1px solid var(--bd);border-radius:12px;padding:22px;box-shadow:var(--sh2)}
 .panel-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--crd);font-weight:700;margin-bottom:16px}
+.panel-liviano{box-shadow:none;padding:16px 22px}
+.panel-title-chica{font-size:9.5px;font-weight:600;opacity:.7;margin-bottom:0}
+.panel-title-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;color:inherit;text-align:left}
+.panel-title-chevron{transition:transform .2s;opacity:.6;font-size:11px}
+.panel-title-toggle.abierto .panel-title-chevron{transform:rotate(180deg)}
 .chart-wrap{height:210px;position:relative;max-width:100%;overflow:hidden}
 .chart-wrap canvas{max-width:100%!important}
 
@@ -601,7 +606,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .toast-backdrop{position:fixed;inset:0;background:rgba(6,4,2,.62);z-index:2050;opacity:0;pointer-events:none;transition:opacity .25s}
 .toast-backdrop.visible{opacity:1;pointer-events:auto}
 /* ══ MODAL DE CONFIRMACIÓN (reemplaza confirm() nativo del navegador) ══ */
-.confirm-overlay{position:fixed;inset:0;background:rgba(6,4,2,.62);z-index:2200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.confirm-overlay{position:fixed;inset:0;background:rgba(6,4,2,.62);z-index:2200;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .2s}
 .confirm-overlay.open{opacity:1;pointer-events:auto}
 .confirm-modal{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:26px 24px 22px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.55);transform:translateY(10px) scale(.98);transition:transform .2s}
 .confirm-overlay.open .confirm-modal{transform:translateY(0) scale(1)}
@@ -747,7 +752,7 @@ body.zoom-grande .tt-svc,body.zoom-grande .tt-head span:nth-child(3){display:non
 .btn-nuevo-turno:active{transform:translateY(0)}
 
 /* ══ MODAL NUEVO TURNO ══ */
-.nt-overlay{position:fixed;inset:0;background:rgba(4,3,5,.75);backdrop-filter:blur(4px);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+.nt-overlay{position:fixed;inset:0;background:rgba(4,3,5,.75);backdrop-filter:blur(4px);z-index:900;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
 .nt-overlay.open{display:flex}
 .nt-modal{background:var(--surf);border:1px solid var(--bd);border-radius:14px;width:100%;max-width:680px;padding:26px 26px 24px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh3)}
 body.zoom-grande .nt-modal{max-width:min(94vw,560px)}
@@ -796,6 +801,8 @@ body.zoom-grande .nt-progreso-paso{flex:1 1 45%;white-space:normal;overflow:visi
 .nt-field input::placeholder,.nt-field textarea::placeholder{color:var(--crf)}
 .nt-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 body.zoom-grande .nt-row2{grid-template-columns:1fr}
+.disp-reglas-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:600px){.disp-reglas-row{grid-template-columns:1fr}}
 .nt-fecha-hora-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
 @media(max-width:720px){.nt-fecha-hora-grid{grid-template-columns:1fr}}
 body.zoom-grande .nt-fecha-hora-grid{grid-template-columns:1fr}
@@ -1045,7 +1052,7 @@ body.texto-claro{--crd:#d6ccc0;--crf:#a89c8e}
 .pac-hist-item .svc{color:var(--crf)}
 
 /* ══ MODAL DETALLE DE TURNO (desde el calendario) ══ */
-.td-overlay{position:fixed;inset:0;background:rgba(4,3,5,.75);backdrop-filter:blur(4px);z-index:950;display:none;align-items:center;justify-content:center;padding:20px}
+.td-overlay{position:fixed;inset:0;background:rgba(4,3,5,.75);backdrop-filter:blur(4px);z-index:950;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
 .td-overlay.open{display:flex}
 .td-modal{background:var(--surf);border:1px solid var(--bd);border-radius:14px;width:100%;max-width:400px;padding:26px;max-height:88vh;overflow-y:auto;box-shadow:var(--sh3)}
 /* Modal de detalle de turno: ancho en desktop (nunca más del 94% de la pantalla) */
@@ -1539,21 +1546,27 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <div class="nt-error" id="dispSemanaError"></div>
         <button class="btn-nt-guardar" id="dispSemanaGuardarBtn" onclick="guardarHorarioSemanal()" style="margin-top:16px">Guardar horario semanal</button>
         <span class="svc-guardado-ok" id="dispSemanaOk">&#10003; Guardado</span>
+        <div id="dispHistorialWrap" style="margin-top:18px;font-size:12px;color:var(--crf)"></div>
       </div>
 
-      <div class="panel" style="margin-bottom:24px">
-        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <div class="panel panel-liviano" style="margin-bottom:24px">
+        <div class="panel-title panel-title-chica" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <span>D&iacute;as u horarios bloqueados puntualmente</span>
           <button class="btn-nuevo-turno" style="padding:9px 16px" onclick="abrirModalBloqueo()">&#43; Bloquear</button>
         </div>
         <div id="bloqueosLista"><div class="loading-state">Cargando&hellip;</div></div>
       </div>
 
-      <!-- Reglas de reserva: definen cuándo la gente puede reservar (va acá, junto a los horarios) -->
-      <div class="panel">
-        <div class="panel-title">Reglas de reserva</div>
+      <!-- Reglas de reserva: definen cuándo la gente puede reservar (va acá, junto a los horarios).
+           Se toca poco, así que arranca colapsada y con menos peso visual que Horario semanal. -->
+      <div class="panel panel-liviano">
+        <button type="button" class="panel-title panel-title-chica panel-title-toggle" id="reglasReservaToggle" onclick="toggleReglasReserva()">
+          <span>Reglas de reserva</span>
+          <span class="panel-title-chevron" id="reglasReservaChevron">&#9662;</span>
+        </button>
+        <div id="reglasReservaBody" style="display:none;margin-top:14px">
         <p class="cfg-ayuda">Controlan qu&eacute; fechas puede elegir alguien al reservar desde la web.</p>
-        <div class="nt-row2">
+        <div class="disp-reglas-row">
           <div class="nt-field" style="margin-bottom:0">
             <label>Anticipaci&oacute;n m&iacute;nima (horas)</label>
             <input type="number" id="cfgMinHoras" min="0" placeholder="24">
@@ -1568,6 +1581,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <div class="nt-error" id="cfgReglasError"></div>
         <button class="btn-nt-guardar" style="max-width:280px;margin-top:16px" onclick="guardarReglasReserva()">Guardar reglas</button>
         <span class="svc-guardado-ok" id="cfgReglasOk">&#10003; Guardado</span>
+        </div>
       </div>
     </div>
 
@@ -7321,6 +7335,7 @@ const DIAS_ORDEN=['lunes','martes','miercoles','jueves','viernes','sabado','domi
 const DIAS_LABEL={lunes:'Lunes',martes:'Martes',miercoles:'Mi\u00e9rcoles',jueves:'Jueves',viernes:'Viernes',sabado:'S\u00e1bado',domingo:'Domingo'};
 let dispConfigId=null;
 let dispBaseActual={};
+let dispBaseOriginal={};
 let dispCerrados=new Set(); // días destildados a mano — independiente de si tienen rangos guardados para restaurar
 
 // Horarios disponibles para elegir en los desplegables — cada 30 minutos,
@@ -7334,6 +7349,28 @@ const OPCIONES_HORA=(()=>{
   return arr;
 })();
 
+async function cargarHistorialDisponibilidad(){
+  const wrap=document.getElementById('dispHistorialWrap');
+  if(!wrap)return;
+  try{
+    const{data,error}=await sb.rpc('obtener_historial_disponibilidad');
+    if(error)throw error;
+    if(!data||!data.length){wrap.innerHTML='';return;}
+    const filas=data.map(h=>{
+      const fecha=new Date(h.modificado_en);
+      const fechaStr=fecha.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+fecha.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+      const base=h.disponibilidad_base||{};
+      const resumenDias=DIAS_ORDEN.filter(d=>Array.isArray(base[d])&&base[d].length)
+        .map(d=>`${DIAS_LABEL[d].slice(0,2)} ${formatearRangos(base[d])}`).join(' &middot; ')||'todo cerrado';
+      return`<div style="padding:6px 0;border-top:1px solid var(--bd)"><strong>${esc(fechaStr)}</strong> &mdash; ${esc(resumenDias)}</div>`;
+    }).join('');
+    wrap.innerHTML=`<div style="margin-bottom:4px;font-weight:700;color:var(--crd)">&#8635; Antes de estos &uacute;ltimos 3 cambios ten\u00edas guardado:</div>${filas}`;
+  }catch(err){
+    console.error(err);
+    wrap.innerHTML='';
+  }
+}
+
 async function cargarHorarioSemanal(){
   const wrap=document.getElementById('dispSemanaWrap');
   wrap.innerHTML='<div class="loading-state">Cargando&hellip;</div>';
@@ -7342,7 +7379,9 @@ async function cargarHorarioSemanal(){
     if(error)throw error;
     dispConfigId=data.id;
     dispBaseActual=data.disponibilidad_base||{};
+    dispBaseOriginal=JSON.parse(JSON.stringify(dispBaseActual)); // snapshot inmutable, para comparar al guardar
     renderHorarioSemanal();
+    cargarHistorialDisponibilidad();
   }catch(err){
     console.error(err);
     wrap.innerHTML='<div class="empty-state">No pudimos cargar el horario.</div>';
@@ -7442,6 +7481,40 @@ function cerrarAlerta(){
   document.getElementById('alertaOverlay').classList.remove('open');
 }
 
+// Compara lo que había al abrir la página contra lo que se está por guardar,
+// y arma una lista legible de qué cambió día por día (para mostrar antes de guardar).
+function formatearRangos(rangos){
+  return rangos.map(r=>`${r.inicio}\u2013${r.fin}`).join(', ');
+}
+function construirResumenCambiosDisponibilidad(original,nuevo){
+  const cambios=[];
+  for(const dia of DIAS_ORDEN){
+    const antesRangos=Array.isArray(original[dia])?original[dia]:null;
+    const despuesRangos=Array.isArray(nuevo[dia])?nuevo[dia]:null;
+    const antesAbierto=!!(antesRangos&&antesRangos.length);
+    const despuesAbierto=!!(despuesRangos&&despuesRangos.length);
+    if(!antesAbierto&&!despuesAbierto)continue; // seguía cerrado, no cambió
+    if(antesAbierto!==despuesAbierto){
+      cambios.push(despuesAbierto
+        ?`${DIAS_LABEL[dia]}: pasa a ABIERTO (${formatearRangos(despuesRangos)})`
+        :`${DIAS_LABEL[dia]}: pasa a CERRADO`);
+      continue;
+    }
+    if(JSON.stringify(antesRangos)!==JSON.stringify(despuesRangos)){
+      cambios.push(`${DIAS_LABEL[dia]}: ${formatearRangos(antesRangos)} \u2192 ${formatearRangos(despuesRangos)}`);
+    }
+  }
+  return cambios;
+}
+
+function toggleReglasReserva(){
+  const body=document.getElementById('reglasReservaBody');
+  const btn=document.getElementById('reglasReservaToggle');
+  const abrir=body.style.display==='none';
+  body.style.display=abrir?'block':'none';
+  btn.classList.toggle('abierto',abrir);
+}
+
 async function guardarHorarioSemanal(){
   const errBox=document.getElementById('dispSemanaError');
   errBox.style.display='none';
@@ -7466,12 +7539,37 @@ async function guardarHorarioSemanal(){
     }
     nuevaBase[dia]=rangos;
   }
+  // Chequeo de edición simultánea: puede que alguien (vos mismo en otra pestaña,
+  // o Pupi desde el celu) haya guardado un cambio después de que se cargó esta página.
+  try{
+    const{data:actual,error:errActual}=await sb.from('configuracion').select('disponibilidad_base').eq('id',dispConfigId).single();
+    if(!errActual&&actual&&JSON.stringify(actual.disponibilidad_base||{})!==JSON.stringify(dispBaseOriginal)){
+      const seguir=await confirmarAccion(
+        'Alguien guard\u00f3 un cambio en la disponibilidad despu\u00e9s de que abriste esta p\u00e1gina (puede que hayas sido vos mismo, en otra pesta\u00f1a o dispositivo).\n\nSi continu\u00e1s, tu versi\u00f3n va a pisar ese otro cambio. Te recomendamos recargar la p\u00e1gina para ver el \u00faltimo estado antes de decidir.',
+        {textoConfirmar:'Guardar igual (pisa el otro cambio)',textoCancelar:'Mejor recargo la p\u00e1gina',destructivo:true}
+      );
+      if(!seguir)return;
+    }
+  }catch(e){console.error(e);}
+
+  const resumen=construirResumenCambiosDisponibilidad(dispBaseOriginal,nuevaBase);
+  if(resumen.length===0){
+    mostrarAlerta('No hay ning\u00fan cambio respecto a lo que ya estaba guardado.');
+    return;
+  }
+  const ok=await confirmarAccion(
+    `Vas a guardar estos cambios en el horario semanal:\n\n${resumen.join('\n')}`,
+    {textoConfirmar:'S\u00ed, guardar',textoCancelar:'Revisar de nuevo'}
+  );
+  if(!ok)return;
   const btn=document.getElementById('dispSemanaGuardarBtn');
   btn.disabled=true;btn.textContent='Guardando...';
   try{
     const{error}=await sb.from('configuracion').update({disponibilidad_base:nuevaBase}).eq('id',dispConfigId);
     if(error)throw error;
     dispBaseActual=nuevaBase;
+    dispBaseOriginal=JSON.parse(JSON.stringify(nuevaBase));
+    cargarHistorialDisponibilidad();
     const ok=document.getElementById('dispSemanaOk');
     ok.style.display='inline';
     setTimeout(()=>{ok.style.display='none';},2500);
@@ -7493,7 +7591,7 @@ async function cargarBloqueos(){
     const hoyStr=ymd(new Date());
     const{data,error}=await sb.from('bloqueos').select('*').gte('fecha',hoyStr).order('fecha');
     if(error)throw error;
-    if(!data||!data.length){cont.innerHTML='<div class="empty-state">No hay d\u00edas bloqueados pr\u00f3ximamente.</div>';return;}
+    if(!data||!data.length){cont.innerHTML='<p style="padding:8px 2px;margin:0;color:var(--crf);font-size:12.5px;font-style:italic">No hay d\u00edas bloqueados pr\u00f3ximamente.</p>';return;}
     bloqueosCache={};
     data.forEach(b=>{bloqueosCache[b.id]=b;});
     cont.innerHTML=data.map(b=>renderBloqueo(b)).join('');

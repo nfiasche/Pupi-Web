@@ -367,6 +367,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   </div>
   </div>
 </header>
+<main id="main">
 
 <!-- ② PARA QUIÉN ES -->
 <section class="dx rev" id="para-quien">
@@ -489,6 +490,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   </div>
 </section>
 
+</main>
 <footer style="background:var(--bg2);border-top:1px solid var(--bds);padding:52px 0 32px">
   <div class="w">
     <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px">
@@ -590,10 +592,10 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
           <div>
             <span class="campo-label">Tus datos</span>
             <div class="frow">
-              <input type="text" id="m-nombre-i" placeholder="Nombre" oninput="validarNombreEnVivo()">
-              <input type="email" id="m-email-i" placeholder="Mail" oninput="chkT()">
+              <input type="text" id="m-nombre-i" placeholder="Nombre" aria-label="Nombre" oninput="validarNombreEnVivo()">
+              <input type="email" id="m-email-i" placeholder="Mail" aria-label="Correo electrónico" oninput="chkT()">
             </div>
-            <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
+            <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
 
             <div id="modalidadWrap" style="display:none">
@@ -635,7 +637,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
-<script src="assets/shared.js"></script>
+<script src="assets/shared.js" defer></script>
 <script>
 // ── WHATSAPP FLOTANTE ──
 try{initWhatsAppFlotante('5491158059979','Hola Pupi, estuve leyendo la web y me interesa Constelaciones Familiares. Me gustaría consultar disponibilidad para coordinar el primer encuentro.');}catch(e){console.error('No se pudo inicializar el botón de WhatsApp',e);}
@@ -1102,7 +1104,7 @@ async function confirmar(soloAsignar=false){
       <p>Te confirmo en menos de 24 hs y coordinamos el pago por WhatsApp (transferencia o efectivo).</p>
       ${avisoDato}
       <div class="m-confirm-det">
-        <div><strong>${s.nombre}</strong></div>
+        <div><strong>${esc(s.nombre)}</strong></div>
         <div>${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div>
         <div>${esc(pac.nombre_real||nombre)} &middot; ${esc(email)}</div>
         <div>Pago a coordinar por WhatsApp</div>

@@ -555,6 +555,7 @@ input:focus{outline:none;border-color:var(--gold)}
   </div>
   <div class="mw"><div class="mi" id="mq"></div></div>
 </header>
+<main id="main">
 
 <!-- ② CONEXION -->
 <section class="cx rev">
@@ -656,6 +657,7 @@ input:focus{outline:none;border-color:var(--gold)}
 </section>
 
 <!-- FOOTER -->
+</main>
 <footer class="footer">
   <div class="w">
     <div class="footer-grid">
@@ -776,10 +778,10 @@ input:focus{outline:none;border-color:var(--gold)}
           <div>
             <span class="campo-label">Tus datos</span>
             <div class="frow">
-              <input type="text" id="m-nombre-i" placeholder="Nombre" oninput="validarNombreEnVivo()">
-              <input type="email" id="m-email-i" placeholder="Mail" oninput="chkT()">
+              <input type="text" id="m-nombre-i" placeholder="Nombre" aria-label="Nombre" oninput="validarNombreEnVivo()">
+              <input type="email" id="m-email-i" placeholder="Mail" aria-label="Correo electrónico" oninput="chkT()">
             </div>
-            <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
+            <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
 
             <div id="modalidadWrap" style="display:none">
@@ -826,7 +828,7 @@ input:focus{outline:none;border-color:var(--gold)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
-<script src="assets/shared.js"></script>
+<script src="assets/shared.js" defer></script>
 <script>
 // ── WHATSAPP FLOTANTE ──
 try{initWhatsAppFlotante('5491158059979','Hola Pupi, vi tu web y me gustaría saber más sobre tus servicios. ¿Podríamos hablar?');}catch(e){console.error('No se pudo inicializar el botón de WhatsApp',e);}
@@ -996,7 +998,7 @@ function renderList(){
     <div class="tr-item" onclick="abrirModalSvc('${s.id}')">
       <div class="tr-item-l">
         <div class="tr-icon">${ICONS[s.icono]||'&#9675;'}</div>
-        <div><div class="tr-nombre">${s.nombre}</div>
+        <div><div class="tr-nombre">${esc(s.nombre)}</div>
         <div class="tr-sub">${s.tipo==='paquete'?`${s.sesiones_paquete} sesiones &middot; ${s.duracion_min} min c/u`:`${s.duracion_min} min &middot; sesi&oacute;n individual`}</div></div>
       </div>
       <div class="tr-price">${fmt(s.precio)}</div>
@@ -1268,7 +1270,7 @@ async function confirmar(soloReservar=false){
       <p>Te confirmo tu turno y coordinamos el pago por WhatsApp (transferencia o efectivo).</p>
       ${avisoDato}
       <div class="m-confirm-det">
-        <div><strong>${s.nombre}</strong></div>
+        <div><strong>${esc(s.nombre)}</strong></div>
         <div>${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div>
         <div>${esc(pac.nombre_real||nombre)} &middot; ${esc(email)}</div>
         <div style="color:var(--crf)">Pago a coordinar</div>

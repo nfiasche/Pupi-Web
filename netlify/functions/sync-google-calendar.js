@@ -6,7 +6,7 @@
 // Si Pupi todavía no conectó su Google Calendar, esta función no hace nada
 // (responde 200 igual, para no generar errores en el trigger que la llama).
 
-const SB_URL = "https://mhppnqiqxywpcinkrimj.supabase.co";
+const SB_URL = "https://yjzurrjofrxrrejvlmmo.supabase.co";
 const TIMEZONE = "America/Argentina/Buenos_Aires";
 
 // Solo estos estados representan un turno real que Pupi va a dar — el resto

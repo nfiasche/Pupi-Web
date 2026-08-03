@@ -2435,12 +2435,17 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
     <div class="nt-paso" id="ntPaso4">
       <div class="nt-field">
         <label>Estado</label>
-        <select id="ntEstado" onchange="document.getElementById('ntEstadoDesc').textContent=ESTADOS_INFO[this.value].desc">
+        <select id="ntEstado" onchange="onCambiarEstadoNt()">
           <option value="confirmado">Confirmado</option>
+          <option value="señado">Se&ntilde;ado</option>
           <option value="pagado">Pagado</option>
           <option value="pendiente">Pendiente</option>
         </select>
         <div class="nt-precio-estado" id="ntEstadoDesc">Vas a dar la sesi&oacute;n, pero todav&iacute;a no cobraste nada</div>
+      </div>
+      <div class="nt-field" id="ntSeñaWrap" style="display:none">
+        <label for="ntSeñaMonto">Monto de la se&ntilde;a cobrada</label>
+        <input type="number" id="ntSeñaMonto" placeholder="0">
       </div>
       <div class="nt-error" id="ntError"></div>
       <div class="nt-modal-footer nt-paso-nav">
@@ -2453,8 +2458,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
 <script>
-const SB_URL='https://mhppnqiqxywpcinkrimj.supabase.co';
-const SB_KEY='sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld';
+const SB_URL='https://yjzurrjofrxrrejvlmmo.supabase.co';
+const SB_KEY='sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj';
 const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const DOW=['L','M','M','J','V','S','D'];
 const MES_LARGO=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -2566,6 +2571,13 @@ function fmt(n){return'$ '+Number(n||0).toLocaleString('es-AR');}
 // La asistencia es un eje aparte: si faltó, lo marcamos sin romper el progreso.
 // Qué significa cada estado, en una línea — se usa como leyenda y como
 // tooltip en los botones de "forzar estado" del detalle del turno.
+function onCambiarEstadoNt(){
+  const val=document.getElementById('ntEstado').value;
+  document.getElementById('ntEstadoDesc').textContent=ESTADOS_INFO[val].desc;
+  const wrap=document.getElementById('ntSeñaWrap');
+  if(wrap)wrap.style.display=val==='señado'?'block':'none';
+}
+
 const ESTADOS_INFO={
   pendiente:{label:'Pendiente',desc:'Reci\u00e9n reservado \u2014 todav\u00eda no lo confirmaste'},
   confirmado:{label:'Confirmado',desc:'Vas a dar la sesi\u00f3n, pero todav\u00eda no cobraste nada'},
@@ -5133,8 +5145,8 @@ function renderListaCompacta(items,contId,badgeId,estadoForzado){
         :'';
 
       return`<div class="turno-item-c turno-item-click" id="dashitem-${t.id}" onclick="abrirDetalleTurno('${t.id}')">
-        <div><div class="tnombre">${esc(pac.nombre||'(sin nombre)')} ${alertaProximo}</div><div class="tsub">${esc(svc.nombre||'')}</div></div>
-        <div class="tright"><span class="thora">${t.hora_inicio?t.hora_inicio.slice(0,5):''}</span>${badgeTurno(tBadge)}${accionesInline}</div>
+        <div><div class="tnombre">${esc(pac.nombre||'(sin nombre)')}</div><div class="tsub">${esc(svc.nombre||'')}</div></div>
+        <div class="tright">${alertaProximo}<span class="thora">${t.hora_inicio?t.hora_inicio.slice(0,5):''}</span>${badgeTurno(tBadge)}${accionesInline}</div>
       </div>`;
     }).join('');
 
@@ -6012,6 +6024,8 @@ function abrirModalNuevoTurno(fechaPrecargada){
   if(estadoPrecio)estadoPrecio.textContent='Precio de lista';
   document.getElementById('ntEstado').value='confirmado';
   document.getElementById('ntEstadoDesc').textContent=ESTADOS_INFO.confirmado.desc;
+  const señaWrapReset=document.getElementById('ntSeñaWrap');
+  if(señaWrapReset){señaWrapReset.style.display='none';document.getElementById('ntSeñaMonto').value='';}
   const modWrapReset=document.getElementById('ntModalidadWrap');
   if(modWrapReset){
     modWrapReset.style.display='none';
@@ -6372,6 +6386,9 @@ async function guardarNuevoTurno(){
   const hora=document.getElementById('ntHora').value;
   const precio=document.getElementById('ntPrecio').value;
   const estado=document.getElementById('ntEstado').value;
+  if(estado==='señado'&&Number(document.getElementById('ntSeñaMonto').value)<=0){
+    errBox.textContent='Ingres\u00e1 cu\u00e1nto cobraste de se\u00f1a.';errBox.style.display='block';return;
+  }
 
   if(tabActiva==='existente'&&!ntPacienteSeleccionado){errBox.textContent='Eleg\u00ed un paciente de la b\u00fasqueda, o pas\u00e1 a "Paciente nuevo".';errBox.style.display='block';return;}
   const nuevoNombre=document.getElementById('ntNuevoNombre').value.trim();
@@ -6440,7 +6457,11 @@ async function guardarNuevoTurno(){
     // si Pupi lo editó manualmente a otro valor, respetamos ese.
     const precioManual=Number(precio);
     const precioLista=svc?Number(svc.precio):0;
-    const precioAGuardar=(precioManual===precioLista||precioManual===precioFinal)?precioFinal:precioManual;
+    let precioAGuardar=(precioManual===precioLista||precioManual===precioFinal)?precioFinal:precioManual;
+    if(estado==='señado'){
+      const montoSeña=Number(document.getElementById('ntSeñaMonto').value)||0;
+      precioAGuardar=montoSeña;
+    }
 
     const modWrapNt=document.getElementById('ntModalidadWrap');
     const modalidadNt=(modWrapNt&&modWrapNt.style.display!=='none')

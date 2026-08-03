@@ -3,8 +3,8 @@
 // Esta función corre lunes y jueves al mediodía (UTC) y hace una consulta real
 // (SELECT sobre servicios), que cuenta como actividad y evita la pausa.
 
-const SB_URL = "https://mhppnqiqxywpcinkrimj.supabase.co";
-const SB_KEY = "sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld";
+const SB_URL = "https://yjzurrjofrxrrejvlmmo.supabase.co";
+const SB_KEY = "sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj";
 
 export default async () => {
   try {

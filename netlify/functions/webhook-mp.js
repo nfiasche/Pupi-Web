@@ -9,8 +9,8 @@
 // Escrita con el formato clásico de Netlify Functions (exports.handler),
 // el más compatible con despliegues manuales (zip / drag-and-drop) sin build.
 
-const SB_URL = "https://mhppnqiqxywpcinkrimj.supabase.co";
-const SB_KEY = "sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld";
+const SB_URL = "https://yjzurrjofrxrrejvlmmo.supabase.co";
+const SB_KEY = "sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj";
 
 exports.handler = async (event) => {
   try {

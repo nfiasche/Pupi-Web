@@ -801,11 +801,11 @@ const MQI=['Umbral &middot; Programa por temporadas &middot; 12 semanas','&iques
 
 // WhatsApp dinámico: lee el número configurado por Pupi (fetch directo, sin librería)
 (function(){
-  fetch('https://mhppnqiqxywpcinkrimj.supabase.co/rest/v1/rpc/obtener_config_publica',{
+  fetch('https://yjzurrjofrxrrejvlmmo.supabase.co/rest/v1/rpc/obtener_config_publica',{
     method:'POST',
     headers:{
-      'apikey':'sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld',
-      'Authorization':'Bearer sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld',
+      'apikey':'sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj',
+      'Authorization':'Bearer sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj',
       'Content-Type':'application/json'
     },
     body:'{}'
@@ -853,10 +853,10 @@ const MQI=['Umbral &middot; Programa por temporadas &middot; 12 semanas','&iques
     });
   }
 
-  fetch('https://mhppnqiqxywpcinkrimj.supabase.co/rest/v1/servicios?nombre=eq.Umbral&select=id,inscripciones_abiertas,proxima_apertura,proximo_cierre,mensaje_cerrado',{
+  fetch('https://yjzurrjofrxrrejvlmmo.supabase.co/rest/v1/servicios?nombre=eq.Umbral&select=id,inscripciones_abiertas,proxima_apertura,proximo_cierre,mensaje_cerrado',{
     headers:{
-      'apikey':'sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld',
-      'Authorization':'Bearer sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld'
+      'apikey':'sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj',
+      'Authorization':'Bearer sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj'
     }
   }).then(r=>r.json()).then(rows=>{
     const s=rows&&rows[0];
@@ -927,11 +927,11 @@ async function enviarListaEspera(servicioId){
   if(nombre.length<2){elN.classList.add('campo-error');errEl.textContent='Escrib\u00ed tu nombre.';return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){elE.classList.add('campo-error');errEl.textContent='Escrib\u00ed un mail v\u00e1lido.';return;}
   try{
-    const r=await fetch('https://mhppnqiqxywpcinkrimj.supabase.co/rest/v1/rpc/anotarse_lista_espera',{
+    const r=await fetch('https://yjzurrjofrxrrejvlmmo.supabase.co/rest/v1/rpc/anotarse_lista_espera',{
       method:'POST',
       headers:{
-        'apikey':'sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld',
-        'Authorization':'Bearer sb_publishable_-l5IP_tfrI29dkgxtbx3vA_mB_HYkld',
+        'apikey':'sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj',
+        'Authorization':'Bearer sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj',
         'Content-Type':'application/json'
       },
       body:JSON.stringify({p_servicio_id:servicioId,p_nombre:nombre,p_email:email,p_telefono:telefono||null})

@@ -3,7 +3,7 @@
 // tokens reales, y los guarda — no expone nada de esto al navegador, todo
 // pasa server-side.
 
-const SB_URL = "https://mhppnqiqxywpcinkrimj.supabase.co";
+const SB_URL = "https://yjzurrjofrxrrejvlmmo.supabase.co";
 const REDIRECT_URI = "https://pupilarroude.netlify.app/.netlify/functions/google-oauth-callback";
 const PANEL_URL = "https://pupilarroude.netlify.app/admin.html";
 

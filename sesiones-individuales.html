@@ -15,10 +15,10 @@
 h1,h2,h3{font-family:'Noto Serif Display',serif;font-weight:400}
 html,body{height:100%}
 .si-hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
-.si-hero .ey{margin-bottom:14px}
-.si-hero h1{font-size:clamp(30px,6vw,52px);margin-bottom:16px;max-width:680px}
-.si-hero p{font-size:15px;color:var(--crd);max-width:440px;margin-bottom:34px;line-height:1.7}
-.si-cta{border:none;position:relative;overflow:hidden;padding:17px 40px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
+.si-hero .ey{margin-bottom:18px;font-size:11px}
+.si-hero h1{font-size:clamp(40px,8vw,68px);margin-bottom:14px;letter-spacing:.01em}
+.si-hero p{font-size:14px;color:var(--crf);max-width:400px;margin-bottom:36px;line-height:1.6}
+.si-cta{border:none;position:relative;overflow:hidden;padding:19px 44px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
 .si-cta:hover{opacity:.9}
 
 /* Modal de reserva: mismo overlay/modal que el resto del sitio, pero con el
@@ -40,9 +40,9 @@ html,body{height:100%}
 
 <!-- HERO: lo único que se ve al entrar, sin scroll -->
 <div class="si-hero">
-  <span class="ey">Pupi Larroude</span>
-  <h1>Contá con un espacio para vos</h1>
-  <p>Sesiones individuales de counseling y acompañamiento terapéutico. Reservá tu turno en un par de clicks.</p>
+  <span class="ey">Reservar turno</span>
+  <h1>Pupi Larroude</h1>
+  <p>Sesiones individuales de counseling y acompañamiento terapéutico.</p>
   <button type="button" class="si-cta" onclick="abrirReserva()">Reservar sesión individual</button>
 </div>
 
@@ -166,11 +166,14 @@ async function cargarServicio(){
       if(m){alert(`${m.titulo}\n\n${m.texto}`);history.replaceState(null,'',location.pathname);abrirReserva();}
     }
 
-    // El servicio se llama "Terapia" en la base — de cara al público lo
-    // mostramos siempre como "Sesión Individual" (ver activarServicio).
+    // El servicio se llama "Terapia" en la base y está marcado como inactivo
+    // (fue el que se discontinuó en general) — a propósito NO filtramos por
+    // activo acá, porque esta página es la única forma de seguir reservándolo
+    // para pacientes puntuales. De cara al público lo mostramos como
+    // "Sesión Individual" (ver activarServicio).
     const{data,error}=await sb.from('servicios')
       .select('id,nombre,descripcion,para_quien,tipo,precio,duracion_min,duracion_texto,descanso_min,sesiones_paquete,modalidad,icono,precio_nota')
-      .eq('activo',true).eq('nombre','Terapia').limit(1);
+      .eq('nombre','Terapia').limit(1);
 
     if(error||!data||!data.length){
       document.getElementById('siEstadoModal').textContent='No pudimos cargar el servicio en este momento. Escribime por WhatsApp si el problema sigue.';

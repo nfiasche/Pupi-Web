@@ -157,6 +157,7 @@
 /* FOOTER */ footer{border-top:1px solid var(--bds);padding:32px 0;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--crf);flex-wrap:wrap;gap:8px}
 /* INVERSIÓN + RESERVA */ .inversion{padding:100px 0;border-top:1px solid var(--bds);text-align:center}
 /* Modal de info "asignar turno" */ .info-overlay{position:fixed;inset:0;background:rgba(6,4,3,.82);backdrop-filter:blur(4px);z-index:950;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.info-overlay.open{opacity:1;pointer-events:auto}
 /* NAV */ 
 /* NOTA REVISIÓN */ /* NAV */ .nav-bar{position:sticky;top:0;z-index:50;background:transparent;transition:background .3s ease,box-shadow .3s ease}
 /* NÚMEROS CLAVE */ .hero-nums-wrap{max-width:1080px;margin:56px auto 0;padding:0 32px;position:relative;z-index:2}
@@ -164,7 +165,10 @@
 /* SOBRE PUPI */ .pupi{padding:100px 0;background:var(--bg3);border-top:1px solid var(--bds)}
 /* ══ HERO INMERSIVO ══ */ .hero{ position:relative; min-height:100vh; display:flex;flex-direction:column; overflow:hidden; }
 /* ══ WHATSAPP FLOTANTE ══ */ .wa-flotante{ position:fixed;right:16px;bottom:16px;z-index:60; display:inline-flex;align-items:center; height:48px;border-radius:26px;max-width:220px;padding-right:16px; background:var(--bg2);border:1px solid var(--gold);color:var(--gold); text-decoration:none;overflow:hidden;white-space:nowrap; box-shadow:0 6px 20px rgba(0,0,0,.35); opacity:0;transform:translateY(12px);pointer-events:none; transition:opacity .25s,transform .25s,max-width .3s ease,padding-right .3s ease,border-color .18s,color .18s,background .18s; }
-/* ════ MODAL DE RESERVA — idéntico al del index, scopeado a Vértice ════ */ .modal-overlay{ position:fixed;inset:0;background:rgba(6,4,3,.75); backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px); z-index:900;display:flex;align-items:center;justify-content:center;padding:20px; opacity:0;pointer-events:none;transition:opacity .28s ease; }
+/* ════ .modal-overlay/.modal-close: única definición real, la usan las 5
+   páginas (alma, vertice, constelaciones, umbral e index) — el resto de las
+   piezas del modal (.modal, .modal-progress, .modal-step, etc.) siguen
+   duplicadas a propósito en el <style> de cada página. ════ */ .modal-overlay{ position:fixed;inset:0;background:rgba(6,4,3,.75); backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px); z-index:900;display:flex;align-items:center;justify-content:center;padding:20px; opacity:0;pointer-events:none;transition:opacity .28s ease; }
 @keyframes sc{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(hover:hover) and (pointer:fine){ .wa-flotante{max-width:52px;padding-right:0} .wa-flotante-txt{opacity:0;transition:opacity .2s ease} .wa-flotante:hover{max-width:220px;padding-right:16px;border-color:#25D366;color:#25D366} .wa-flotante:hover .wa-flotante-txt{opacity:1;transition:opacity .2s ease .1s} }
 @media(max-width:360px){.h-col{grid-template-columns:repeat(2,1fr)}}

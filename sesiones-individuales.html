@@ -20,6 +20,43 @@ html,body{height:100%}
 .si-hero p{font-size:14px;color:var(--crf);max-width:400px;margin-bottom:36px;line-height:1.6}
 .si-cta{border:none;position:relative;overflow:hidden;padding:19px 44px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
 .si-cta:hover{opacity:.9}
+
+/* ══ Lo que faltaba: estas reglas viven en el <style> propio de index.html,
+   NO en shared.css (a pesar de lo que dice un comentario ahí adentro que
+   sugiere lo contrario) — sin esto el modal no se ve como popup real. ══ */
+.modal{
+  background:var(--bg);border:1px solid var(--bd);
+  width:100%;max-width:580px;
+  position:relative;
+  transform:translateY(16px) scale(.98);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.modal-progress{display:flex;flex:1;border-bottom:1px solid var(--bds)}
+.modal-step{
+  flex:1;padding:12px 16px;text-align:center;
+  font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+  color:var(--crf);border-bottom:2px solid transparent;
+  transition:color .25s,border-color .25s;font-family:'Montserrat',sans-serif;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.modal-step.active{color:var(--gold);border-bottom-color:var(--gold)}
+.modal-close:hover{border-color:var(--gold);color:var(--gold)}
+.m-sq{display:flex;align-items:center;justify-content:center;border:1px solid var(--cc,var(--gold));color:var(--cc,var(--gold));font-size:10px;font-weight:700;min-width:36px;height:26px;padding:0 7px;white-space:nowrap}
+.m-nota{font-size:12px;color:var(--crf);font-style:italic;font-family:'Noto Serif Display',serif;border-left:2px solid var(--gold-l);padding-left:10px;line-height:1.6;margin-bottom:20px}
+.m-btn-pagar{width:100%;background:var(--gold);color:var(--bg);border:none;padding:14px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .18s;margin-bottom:0}
+.m-btn-reservar{width:100%;background:none;color:var(--crd);border:1px solid var(--bd);padding:12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color .18s,color .18s}
+.cancel-modal-box{background:var(--bg3);border:1px solid var(--bd);border-left:2px solid var(--rust);padding:16px 18px;margin-bottom:16px}
+.cancel-modal-titulo{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:8px}
+.precio-label{font-size:10px;color:var(--crf);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+@media(max-width:760px){
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal{max-height:88vh;border-bottom:none}
+  .modal-slide{max-height:calc(88vh - 48px);padding:22px 18px 26px}
+  .cal-grid2{gap:2px}
+  .frow{grid-template-columns:1fr}
+  .p2-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>

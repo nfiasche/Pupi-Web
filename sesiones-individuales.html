@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservar Sesión Individual — Pupi Larroude</title>
+<meta name="theme-color" content="#0c0a09">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMGMwYTA5Ii8+PHRleHQgeD0iMzMiIHk9IjQ3IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZm9udC1zaXplPSIzOCIgZmlsbD0iI2M5OGE0YiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UDwvdGV4dD48L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="assets/shared.css">
+<style>
+h1,h2,h3{font-family:'Noto Serif Display',serif;font-weight:400}
+html,body{height:100%}
+.si-hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.si-hero .ey{margin-bottom:14px}
+.si-hero h1{font-size:clamp(30px,6vw,52px);margin-bottom:16px;max-width:680px}
+.si-hero p{font-size:15px;color:var(--crd);max-width:440px;margin-bottom:34px;line-height:1.7}
+.si-cta{border:none;position:relative;overflow:hidden;padding:17px 40px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
+.si-cta:hover{opacity:.9}
+
+/* Modal de reserva: mismo overlay/modal que el resto del sitio, pero con el
+   contenido "compacto" (calendario+datos+pago juntos, sin pasos) adentro. */
+.si-modal-overlay{position:fixed;inset:0;background:rgba(4,3,5,.78);backdrop-filter:blur(4px);z-index:900;display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+.si-modal-overlay.open{display:flex}
+.si-modal{background:var(--bg);border:1px solid var(--bd);max-width:760px;width:100%;padding:32px;position:relative;margin:auto 0}
+.si-modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--crf);font-size:22px;cursor:pointer;line-height:1;padding:6px}
+.si-modal-head{text-align:center;margin-bottom:20px}
+.si-modal-head h2{font-size:clamp(19px,3vw,24px);margin:4px 0}
+.si-precio{font-size:14px;color:var(--gold);font-weight:700}
+.si-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:30px;align-items:start}
+@media(max-width:640px){.si-grid{grid-template-columns:1fr;gap:24px}.si-modal{padding:24px 18px}}
+.asignar-nota{font-size:11px;color:var(--crf);margin-top:8px;line-height:1.6}
+#siEstadoModal{text-align:center;color:var(--crd);font-style:italic;font-family:'Noto Serif Display',serif;padding:30px 0}
+</style>
+</head>
+<body>
+
+<!-- HERO: lo único que se ve al entrar, sin scroll -->
+<div class="si-hero">
+  <span class="ey">Pupi Larroude</span>
+  <h1>Contá con un espacio para vos</h1>
+  <p>Sesiones individuales de counseling y acompañamiento terapéutico. Reservá tu turno en un par de clicks.</p>
+  <button type="button" class="si-cta" onclick="abrirReserva()">Reservar sesión individual</button>
+</div>
+
+<!-- MODAL: se abre con el CTA, todo compacto adentro (sin pasos) -->
+<div class="si-modal-overlay" id="siOverlay" onclick="if(event.target===this)cerrarReserva()">
+  <div class="si-modal">
+    <button type="button" class="si-modal-close" onclick="cerrarReserva()">&#215;</button>
+
+    <div class="si-modal-head">
+      <h2 id="siNombre">Sesión Individual</h2>
+      <div class="si-precio" id="siPrecio"></div>
+    </div>
+
+    <p id="siEstadoModal">Cargando disponibilidad&hellip;</p>
+
+    <div id="siForm" style="display:none">
+      <div class="si-grid">
+
+        <!-- Columna izquierda: calendario + horarios -->
+        <div>
+          <div class="campo-label">Elegí un día</div>
+          <div class="cal-nav2">
+            <button type="button" onclick="chMo(-1)">&#8249;</button>
+            <span class="cal-mes2" id="m-calmes"></span>
+            <button type="button" onclick="chMo(1)">&#8250;</button>
+          </div>
+          <div class="cal-grid2" id="m-cal"></div>
+
+          <div class="campo-label" style="margin-top:20px">Horario</div>
+          <div class="h-col" id="m-hcol"><div class="h-hint">Elegí un día primero</div></div>
+
+          <!-- shared.js necesita este botón, aunque acá no se ve -->
+          <button type="button" id="m-cont2" style="display:none" disabled></button>
+        </div>
+
+        <!-- Columna derecha: datos + pago -->
+        <div>
+          <div class="campo-label">Tus datos</div>
+          <div class="frow">
+            <input type="text" id="m-nombre-i" placeholder="Nombre" aria-label="Nombre" oninput="validarNombreEnVivo()">
+            <input type="email" id="m-email-i" placeholder="Mail" aria-label="Correo electrónico" oninput="chkT()">
+          </div>
+          <input type="tel" id="m-tel-i" placeholder="Celular (con código de área)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
+          <div class="tav" id="m-tav"></div>
+
+          <div id="modalidadWrap" style="display:none">
+            <span class="campo-label">¿Presencial u online?</span>
+            <div class="pago-opciones">
+              <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
+              <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
+            </div>
+          </div>
+
+          <div class="cancel-modal-box">
+            <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
+            <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver política completa</button></p>
+            <div class="cancel-modal-full" id="cancelPoliticaFull" style="display:none"><p>Cargando&hellip;</p></div>
+            <label class="cancel-modal-check">
+              <input type="checkbox" id="m-acepto-cancel" onchange="actualizarBotonesPago()">
+              Leí y acepto la política de cancelaciones y reprogramaciones
+            </label>
+          </div>
+
+          <div class="p3-resumen" id="m-resumen3"></div>
+          <div class="pago-opciones">
+            <label class="pago-opcion"><input type="radio" name="tipoPago" value="sena" checked onchange="aplicarTipoPagoAPrecio()"> Seña (50%)</label>
+            <label class="pago-opcion"><input type="radio" name="tipoPago" value="completo" onchange="aplicarTipoPagoAPrecio()"> Pago completo</label>
+          </div>
+          <div class="precio-final">
+            <div><div class="precio-label" id="m-pv-label">Seña a pagar ahora</div><div class="precio-val" id="m-pv"></div></div>
+          </div>
+          <button class="m-btn-pagar" id="m-pagar" onclick="confirmar()" disabled>Pagar seña con Mercado Pago &nearr;</button>
+          <div class="asignar-box">
+            <div class="asignar-divider"><span>o si preferís</span></div>
+            <button class="m-btn-reservar" id="m-btn-asignar" onclick="confirmar(true)" disabled>Asignar turno sin pagar ahora</button>
+            <p class="asignar-nota">Te confirmo por WhatsApp en menos de 24 hs. El pago se coordina por transferencia o efectivo.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+<script src="assets/shared.js"></script>
+<script>
+// ── Config y estado global (mismos nombres que usa shared.js) ──
+const SBU='https://yjzurrjofrxrrejvlmmo.supabase.co';
+const SBK='sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj';
+const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let sb=null,SVCS=[];
+let MS={svc:null,m:new Date().getMonth(),y:new Date().getFullYear(),fecha:null,hora:null,tarifa:null};
+let tipoPago='sena';
+let servicioListo=false;
+
+function abrirReserva(){
+  document.getElementById('siOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(!servicioListo)cargarServicio();
+}
+function cerrarReserva(){
+  document.getElementById('siOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+async function cargarServicio(){
+  rdy(async()=>{
+    sb=window.supabase.createClient(SBU,SBK);
+    cargarPoliticaCancelacion();
+
+    // Mensaje de vuelta de Mercado Pago (mismo comportamiento que el resto del sitio)
+    const pago=new URLSearchParams(location.search).get('pago');
+    if(pago){
+      const mensajes={
+        exitoso:{titulo:'¡Listo, gracias!',texto:'Tu seña se acreditó. Te confirmo el turno por WhatsApp en breve.'},
+        pendiente:{titulo:'Pago en proceso',texto:'Mercado Pago todavía está procesando tu pago. Apenas se acredite, te confirmo por WhatsApp.'},
+        fallido:{titulo:'El pago no se completó',texto:'Podés intentar de nuevo, o escribirme por WhatsApp si preferís coordinar de otra forma.'}
+      };
+      const m=mensajes[pago];
+      if(m){alert(`${m.titulo}\n\n${m.texto}`);history.replaceState(null,'',location.pathname);abrirReserva();}
+    }
+
+    // El servicio se llama "Terapia" en la base — de cara al público lo
+    // mostramos siempre como "Sesión Individual" (ver activarServicio).
+    const{data,error}=await sb.from('servicios')
+      .select('id,nombre,descripcion,para_quien,tipo,precio,duracion_min,duracion_texto,descanso_min,sesiones_paquete,modalidad,icono,precio_nota')
+      .eq('activo',true).eq('nombre','Terapia').limit(1);
+
+    if(error||!data||!data.length){
+      document.getElementById('siEstadoModal').textContent='No pudimos cargar el servicio en este momento. Escribime por WhatsApp si el problema sigue.';
+      return;
+    }
+    activarServicio(data[0]);
+  });
+}
+
+function activarServicio(svc){
+  svc.nombre='Sesión Individual'; // nombre público — en la base sigue siendo "Terapia"
+  servicioListo=true;
+  SVCS=[svc];
+  MS={...MS,svc,fecha:null,hora:null,tarifa:null};
+  document.getElementById('siNombre').textContent=svc.nombre;
+  document.getElementById('siPrecio').textContent=fmt(svc.precio);
+  const modWrap=document.getElementById('modalidadWrap');
+  if(modWrap)modWrap.style.display=svc.modalidad==='ambas'?'block':'none';
+  document.getElementById('siEstadoModal').style.display='none';
+  document.getElementById('siForm').style.display='block';
+  renderCal();
+}
+
+// Habilita los botones de pago recién cuando hay fecha+hora elegidas Y se
+// aceptó la política — así nunca se puede intentar pagar algo incompleto.
+function actualizarBotonesPago(){
+  const listo=!!(MS.fecha&&MS.hora&&document.getElementById('m-acepto-cancel').checked);
+  document.getElementById('m-pagar').disabled=!listo;
+  document.getElementById('m-btn-asignar').disabled=!listo;
+}
+
+// selF ya viene de shared.js — la envolvemos para que, al elegir una fecha
+// nueva (que resetea la hora elegida), los botones de pago se desactiven
+// de nuevo hasta que se elija un horario otra vez.
+const selFBase=selF;
+selF=async function(f){
+  await selFBase(f);
+  actualizarBotonesPago();
+};
+
+// Redefine selH (shared.js define una versión base): además de marcar el
+// horario elegido, acá mismo actualiza el resumen y el precio — no hay un
+// paso separado al que "avanzar", todo está siempre a la vista.
+function selH(h){
+  MS.hora=h;
+  document.querySelectorAll('.hslot2').forEach(el=>el.classList.toggle('s',el.textContent===h));
+  document.getElementById('m-cont2').disabled=false;
+  poblarP3();
+  aplicarTipoPagoAPrecio();
+  actualizarBotonesPago();
+  if(sb&&MS.svc&&MS.svc.id){
+    sb.from('eventos_reserva').insert({tipo:'paso_alcanzado',paso:3,servicio_id:MS.svc.id,landing:'sesiones-individuales'}).then(()=>{}).catch(()=>{});
+  }
+}
+
+function aplicarTipoPagoAPrecio(){
+  const sel=document.querySelector('input[name="tipoPago"]:checked');
+  tipoPago=sel?sel.value:'sena';
+  const s=MS.svc;
+  const precioBase=MS.tarifa!==null?MS.tarifa:s.precio;
+  const monto=tipoPago==='sena'?Math.round(precioBase*0.5):precioBase;
+  const el=document.getElementById('m-pv');
+  if(MS.tarifa!==null){
+    el.innerHTML=`<s style="font-size:15px;color:var(--crf);opacity:.6">${fmt(tipoPago==='sena'?Math.round(s.precio*0.5):s.precio)}</s> ${fmt(monto)}`;
+  } else { el.textContent=fmt(monto); }
+  document.getElementById('m-pv-label').textContent=tipoPago==='sena'?'Seña a pagar ahora':'Total a pagar ahora';
+  document.getElementById('m-pagar').textContent=(tipoPago==='sena'?'Pagar seña':'Pagar el total')+' con Mercado Pago ↗';
+}
+
+// Globals que shared.js necesita encontrar declarados
+const DIA_KEY=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+let disponibilidadSemana=null;
+let reglasReserva={min_horas:24,max_dias:60};
+let blockedDays=new Set();
+let blockedRanges=[];
+let bloqueosMesCargado=null;
+let turnosMes={};
+let turnosMesCargado=null;
+
+// "Despierta" la función de Mercado Pago apenas el mail parece válido, para
+// que el pedido real no tenga que esperar a que Netlify arranque de cero.
+let mpDespertada=false;
+function despertarMP(){
+  if(mpDespertada)return;
+  mpDespertada=true;
+  fetch('/.netlify/functions/crear-preferencia-mp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({warmup:true})}).catch(()=>{});
+}
+
+const chkT=deb(async()=>{
+  const email=document.getElementById('m-email-i')?.value?.trim().toLowerCase();
+  if(!sb||!email||!email.includes('.')||!MS.svc){MS.tarifa=null;if(MS.fecha&&MS.hora)aplicarTipoPagoAPrecio();return;}
+  despertarMP();
+  const{data}=await sb.rpc('obtener_tarifa_especial',{p_email:email,p_servicio_id:MS.svc.id});
+  MS.tarifa=(data!==null&&data!==undefined)?data:null;
+  const av=document.getElementById('m-tav');
+  if(MS.tarifa!==null){
+    const pctOff=Math.round((1-(MS.tarifa/MS.svc.precio))*100);
+    av.style.display='block';
+    av.innerHTML=`✦ Tenés tarifa especial: <s style="opacity:.6">${fmt(MS.svc.precio)}</s> <strong>${fmt(MS.tarifa)}</strong> ${pctOff>0?`<span style="color:var(--ok)">(-${pctOff}%)</span>`:''}`;
+  }
+  else av.style.display='none';
+  if(MS.fecha&&MS.hora)aplicarTipoPagoAPrecio();
+
+  try{
+    const{data:datosPac}=await sb.rpc('buscar_datos_paciente',{p_email:email});
+    const pd=datosPac&&datosPac[0];
+    if(pd){
+      const nombreInput=document.getElementById('m-nombre-i');
+      const telInput=document.getElementById('m-tel-i');
+      if(pd.nombre&&!nombreInput.value.trim())nombreInput.value=pd.nombre;
+      if(pd.telefono&&!telInput.value.trim())telInput.value=pd.telefono;
+      validarNombreEnVivo();validarTelEnVivo();
+    }
+  }catch(err){console.error('Error al autocompletar',err);}
+},500);
+
+async function confirmar(soloReservar=false){
+  if(!sb){alert('Conectá a internet e intentá de nuevo.');return;}
+  if(!MS.fecha||!MS.hora){alert('Elegí un día y un horario primero.');return;}
+  const nombre=document.getElementById('m-nombre-i').value.trim();
+  const email=document.getElementById('m-email-i').value.trim().toLowerCase();
+  const telefono=document.getElementById('m-tel-i').value.trim();
+  if(!nombre||!email||!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)){alert('Completá tu nombre y un mail válido.');return;}
+  if(!telefono){alert('Completá tu número de celular.');return;}
+  if(!telefonoValido(telefono)){alert('Revisá tu número de celular. Ingresálo con código de área, ej: 11 5555 5555.');return;}
+  if(nombre.length<2){alert('Completá tu nombre completo.');return;}
+  const btn=soloReservar?document.getElementById('m-btn-asignar'):document.getElementById('m-pagar');
+  btn.disabled=true;btn.textContent='Procesando...';
+  try{
+    const{data:pacRows,error:ep0}=await sb.rpc('obtener_o_crear_paciente',{p_nombre:nombre,p_email:email,p_telefono:telefono});
+    if(ep0)throw ep0;
+    const pac=pacRows&&pacRows[0];
+    if(!pac)throw new Error('No se pudo crear el paciente');
+    const s=MS.svc;
+    const[h,mi]=MS.hora.split(':').map(Number);const fin=h*60+mi+s.duracion_min+(s.descanso_min||0);
+    const hf=String(Math.floor(fin/60)).padStart(2,'0')+':'+String(fin%60).padStart(2,'0');
+
+    const turnoIdGenerado=crypto.randomUUID();
+    const modalidadWrap=document.getElementById('modalidadWrap');
+    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
+      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
+      :s.modalidad||null;
+    // s.id sigue siendo el UUID real de "Terapia" en la base, aunque en
+    // pantalla diga "Sesión Individual" — el turno queda ligado correcto.
+    const{error:eTurno}=await sb.from('turnos').insert({
+      id:turnoIdGenerado,paciente_id:pac.id,servicio_id:s.id,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
+      estado:'pendiente',precio_cobrado:0,precio_original:s.precio,modalidad:modalidadTurno
+    });
+    if(eTurno)throw eTurno;
+    const turnoIns={id:turnoIdGenerado};
+
+    if(!soloReservar){
+      try{
+        const resp=await fetch('/.netlify/functions/crear-preferencia-mp',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({turno_id:turnoIns.id,tipo_pago:tipoPago})
+        });
+        const datosPago=await resp.json();
+        if(!resp.ok||!datosPago.init_point){throw new Error(datosPago.error||'No pudimos generar el link de pago');}
+        window.location.href=datosPago.init_point;
+        return;
+      }catch(errPago){
+        await sb.rpc('liberar_turno_pendiente',{p_turno_id:turnoIns.id});
+        throw errPago;
+      }
+    }
+
+    const[,mo,d]=MS.fecha.split('-');
+    let avisoDato='';
+    if(pac.nombre_real&&pac.nombre_real!==nombre){
+      avisoDato=`<p style="font-size:11.5px;color:var(--crf);font-style:italic;margin-top:-6px;margin-bottom:14px">Ya tenía un nombre guardado para este mail (${esc(pac.nombre_real)}) y lo mantuve así. Si necesitás corregirlo, escribime y lo actualizo con gusto.</p>`;
+    } else if(pac.telefono_actualizado){
+      avisoDato=`<p style="font-size:11.5px;color:var(--crf);font-style:italic;margin-top:-6px;margin-bottom:14px">Actualicé tu celular al que acabás de ingresar.</p>`;
+    }
+    document.getElementById('siForm').innerHTML=`<div class="m-confirm">
+      <div class="mci">⏳</div>
+      <h3>Reserva enviada</h3>
+      <p>Te confirmo tu turno y coordinamos el pago por WhatsApp (transferencia o efectivo).</p>
+      ${avisoDato}
+      <div class="m-confirm-det">
+        <div><strong>${esc(s.nombre)}</strong></div>
+        <div>${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div>
+        <div>${esc(pac.nombre_real||nombre)} · ${esc(email)}</div>
+        <div style="color:var(--crf)">Pago a coordinar</div>
+      </div>
+    </div>`;
+  }catch(err){
+    console.error(err);
+    const esSolape = err && (err.code==='23P01' || (err.message||'').includes('turnos_sin_solape') || (err.message||'').includes('exclusion'));
+    sb.from('eventos_reserva').insert({
+      tipo:'error',email:email||null,nombre:nombre||null,telefono:telefono||null,
+      servicio_id:MS.svc&&MS.svc.id,landing:'sesiones-individuales',
+      detalle:esSolape?'solape_horario':String((err&&err.message)||err).slice(0,300)
+    }).then(()=>{}).catch(()=>{});
+    if(esSolape){
+      alert('Ese horario se acaba de ocupar. Elegí otro, por favor.');
+      bloqueosMesCargado=null;
+      MS.hora=null;
+      actualizarBotonesPago();
+      if(MS.fecha)selF(MS.fecha);
+    } else {
+      alert('Hubo un problema. Intentá de nuevo.');
+    }
+    btn.disabled=false;
+    btn.textContent=soloReservar?'Asignar turno sin pagar ahora':(tipoPago==='completo'?'Pagar el total':'Pagar seña')+' con Mercado Pago ↗';
+  }
+}
+</script>
+</body>
+</html>

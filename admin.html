@@ -2606,9 +2606,10 @@ function progresoTurno(t,opts){
 
   // Cancelado: no tiene progreso, es una salida del ciclo
   if(t.estado==='cancelado'){
+    const txt=t.motivo_cancelacion==='rechazado'?'Rechazado':'Cancelado';
     return`<div class="prog prog-cancelado${opts.mini?' prog-mini':''}">
       <div class="prog-barra"><div class="prog-fill" style="width:100%"></div></div>
-      ${opts.mini?'':'<div class="prog-labels"><span class="prog-txt">Cancelado</span></div>'}
+      ${opts.mini?'':`<div class="prog-labels"><span class="prog-txt">${txt}</span></div>`}
     </div>`;
   }
 
@@ -2647,6 +2648,12 @@ function badgeTurno(t,opts){
   if(t.estado==='pagado'&&t.asistencia==='asistio'){
     clase='completado';
     texto='&#10003; Completado';
+  } else if(t.estado==='cancelado'&&t.motivo_cancelacion==='rechazado'){
+    // Mismo color que "Cancelado" (misma clase CSS) — es la misma familia
+    // de estado, solo cambia el texto para dejar claro que fue una decisión,
+    // no un abandono de pago.
+    clase='cancelado';
+    texto='Rechazado';
   } else if(t.estado==='señado'){
     const saldo=Math.max((t.precio_original||0)-(t.precio_cobrado||0),0);
     texto=`Se\u00f1a \u00b7 falta ${fmt(saldo)}`;
@@ -3106,7 +3113,7 @@ async function cargarCalendarioTurnos(){
   const hoyStr=ymd(new Date());
 
   try{
-    let q=sb.from('turnos').select('id,fecha,hora_inicio,hora_fin,precio_cobrado,precio_original,estado,asistencia,servicio_id,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre,color)')
+    let q=sb.from('turnos').select('id,fecha,hora_inicio,hora_fin,precio_cobrado,precio_original,estado,motivo_cancelacion,asistencia,servicio_id,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre,color)')
       .gte('fecha',startStr).lte('fecha',endStr).order('hora_inicio');
     if(turnosFiltroEstado!=='todos')q=q.eq('estado',turnosFiltroEstado);
     if(turnosFiltroAsistencia)q=q.eq('asistencia',turnosFiltroAsistencia);
@@ -3205,7 +3212,7 @@ function abrirDetalleTurno(id){
     accionPrincipal=`<div class="td-estado-ok">&#10003; Este turno est\u00e1 cobrado</div>
                      <button class="td-btn-ghost td-btn-danger" onclick="accionTurnoDesdeModal('${t.id}','cancelado')">Cancelar</button>`;
   } else {
-    accionPrincipal=`<div class="td-estado-cancelado">Este turno est\u00e1 cancelado</div>
+    accionPrincipal=`<div class="td-estado-cancelado">${t.motivo_cancelacion==='rechazado'?'Este turno fue rechazado':'Este turno est\u00e1 cancelado'}</div>
                      <button class="td-btn-ghost td-btn-ok" onclick="accionTurnoDesdeModal('${t.id}','confirmado')">Reactivar (confirmar)</button>`;
   }
 
@@ -3227,6 +3234,7 @@ function abrirDetalleTurno(id){
     <div class="vista-toggle td-tabs tab-mayor" id="tdTabs">
       <button class="vista-toggle-btn active" data-tdtab="datos" onclick="cambiarTdTab('datos')">Datos</button>
       <button class="vista-toggle-btn" data-tdtab="estado" onclick="cambiarTdTab('estado')">Estado y pago</button>
+      <button class="vista-toggle-btn" data-tdtab="embudo" onclick="cambiarTdTab('embudo')">C&oacute;mo lleg&oacute;</button>
     </div>
 
     <!-- PESTAÑA: Datos (ver / editar / reprogramar / eliminar) -->
@@ -3315,6 +3323,11 @@ function abrirDetalleTurno(id){
           <button class="td-asist-b ${t.asistencia==='ausente'?'act-err':''}" onclick="marcarAsistencia('${t.id}','${t.asistencia==='ausente'?'null':'ausente'}')">&#10007; No asisti&oacute;</button>
         </div>
       </div>
+    </div>
+
+    <!-- PESTAÑA: Cómo llegó (embudo de reserva — eventos_reserva) -->
+    <div class="td-tab-panel td-col" id="tdPanelEmbudo" style="display:none">
+      <div id="tdEmbudoWrap"><div class="loading-state">Cargando&hellip;</div></div>
     </div>`;
   document.getElementById('tdOverlay').classList.add('open');
 
@@ -3644,11 +3657,61 @@ function cerrarDetalleTurno(){
 
 // Cambia entre las 3 pestañas del detalle del turno (Datos / Estado y pago / Más acciones)
 function cambiarTdTab(tab){
-  ['datos','estado'].forEach(k=>{
+  ['datos','estado','embudo'].forEach(k=>{
     const panel=document.getElementById('tdPanel'+k.charAt(0).toUpperCase()+k.slice(1));
     if(panel)panel.style.display=k===tab?'block':'none';
   });
   document.querySelectorAll('#tdTabs .vista-toggle-btn').forEach(b=>b.classList.toggle('active',b.dataset.tdtab===tab));
+  if(tab==='embudo'&&tdTurnoEditandoId)cargarEmbudoTurno(tdTurnoEditandoId);
+}
+
+// ══ CÓMO LLEGÓ (embudo de reserva) ══
+// Muestra los eventos de eventos_reserva ligados a este turno (pasos alcanzados,
+// leads parciales, errores) — para entender cómo llegó a existir un turno raro
+// sin tener que adivinar. Se carga solo la primera vez que se abre la pestaña.
+const tdEmbudoCache={};
+async function cargarEmbudoTurno(turnoId){
+  const wrap=document.getElementById('tdEmbudoWrap');
+  if(!wrap)return;
+  if(tdEmbudoCache[turnoId]){renderEmbudoTurno(tdEmbudoCache[turnoId]);return;}
+  wrap.innerHTML='<div class="loading-state">Cargando&hellip;</div>';
+  try{
+    const{data,error}=await sb.rpc('obtener_eventos_turno',{p_turno_id:turnoId});
+    if(error)throw error;
+    tdEmbudoCache[turnoId]=data||[];
+    renderEmbudoTurno(data||[]);
+  }catch(err){
+    console.error(err);
+    wrap.innerHTML='<div class="empty-state">No pudimos cargar el recorrido de este turno.</div>';
+  }
+}
+
+const EMBUDO_TIPO_LABEL={
+  paso_alcanzado:'Lleg\u00f3 a un paso del formulario',
+  lead_parcial:'Complet\u00f3 sus datos, no termin\u00f3',
+  error:'Se encontr\u00f3 con un error'
+};
+
+function renderEmbudoTurno(eventos){
+  const wrap=document.getElementById('tdEmbudoWrap');
+  if(!eventos.length){
+    wrap.innerHTML=`<div class="empty-state">No encontramos eventos de reserva ligados a este turno &mdash; puede haberse creado desde el panel, o el registro no lleg\u00f3 a guardarse.</div>`;
+    return;
+  }
+  const filas=eventos.map(e=>{
+    const hora=new Date(e.creado_en).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const label=EMBUDO_TIPO_LABEL[e.tipo]||e.tipo;
+    const extra=[
+      e.paso?`paso ${e.paso}`:null,
+      e.landing?`landing: ${e.landing}`:null,
+      e.detalle?esc(e.detalle):null
+    ].filter(Boolean).join(' &middot; ');
+    return`<div style="padding:8px 0;border-top:1px solid var(--bd)">
+      <strong>${esc(hora)}</strong> &mdash; ${esc(label)}
+      ${extra?`<div style="font-size:11.5px;color:var(--crf);margin-top:2px">${extra}</div>`:''}
+    </div>`;
+  }).join('');
+  wrap.innerHTML=`<div style="font-size:11.5px;color:var(--crf);margin-bottom:8px;font-style:italic">Eventos del navegador de la persona mientras reservaba, en orden:</div>${filas}`;
 }
 
 let tdPacienteReasignado=null;
@@ -3775,7 +3838,7 @@ async function cambiarEstadoLibre(id){
   if(nuevo==='cancelado'&&!await preguntarDevolucion(turnosCache[id]))return;
   try{
     const cambios={estado:nuevo};
-    // Si pasa a pagado y el precio estaba en 0, lo materializamos
+    // Al marcar pagado: si el precio cobrado está en 0, lo materializamos
     if(nuevo==='pagado'){
       const t=turnosCache[id];
       if(t&&(!t.precio_cobrado||Number(t.precio_cobrado)===0)){
@@ -3783,6 +3846,15 @@ async function cambiarEstadoLibre(id){
         const{precioFinal}=await calcularPrecioTurno(t.servicio_id,email);
         cambios.precio_cobrado=precioFinal||t.precio_original||0;
       }
+    }
+    // Mismo criterio que en el resto del panel: si venía de "pendiente",
+    // forzarlo a cancelado es en la práctica un rechazo.
+    if(nuevo==='cancelado'&&turnosCache[id]&&turnosCache[id].estado==='pendiente'){
+      cambios.motivo_cancelacion='rechazado';
+      cambios.vence_confirmacion=null;
+    } else if(nuevo!=='cancelado'&&turnosCache[id]&&turnosCache[id].motivo_cancelacion){
+      // Si se reactiva o se mueve a otro estado, limpiamos la etiqueta vieja
+      cambios.motivo_cancelacion=null;
     }
     const{error}=await sb.from('turnos').update(cambios).eq('id',id);
     if(error)throw error;
@@ -3883,7 +3955,15 @@ async function accionTurnoDesdeModal(id,nuevoEstado){
   if(!await confirmarAccion(confirmaciones[nuevoEstado]||'\u00bfConfirmar esta acci\u00f3n?',{destructivo:nuevoEstado==='cancelado',textoConfirmar:nuevoEstado==='cancelado'?'S\u00ed, cancelar':'Confirmar'}))return;
   if(nuevoEstado==='cancelado'&&!await preguntarDevolucion(turnosCache[id]))return;
   try{
-    const{error}=await sb.from('turnos').update({estado:nuevoEstado}).eq('id',id);
+    const cambios={estado:nuevoEstado};
+    // Si el turno todavía estaba "pendiente" (nunca se confirmó), esto es un
+    // rechazo, no una cancelación real — lo marcamos distinto y liberamos
+    // vence_confirmacion para que no se confunda con un vencimiento automático.
+    if(nuevoEstado==='cancelado'&&turnosCache[id]&&turnosCache[id].estado==='pendiente'){
+      cambios.motivo_cancelacion='rechazado';
+      cambios.vence_confirmacion=null;
+    }
+    const{error}=await sb.from('turnos').update(cambios).eq('id',id);
     if(error)throw error;
     cerrarDetalleTurno();
     refrescarVistaTurnosActual();
@@ -5303,7 +5383,16 @@ async function accionTurnoDash(id,nuevoEstado){
   const item=document.getElementById('dashitem-'+id);
   if(item)item.style.opacity='.4';
   try{
-    const{error}=await sb.from('turnos').update({estado:nuevoEstado}).eq('id',id);
+    const cambios={estado:nuevoEstado};
+    // Esta función solo se usa para "Rechazar" un turno pendiente (nunca
+    // para cancelar uno ya confirmado) — lo marcamos como rechazo real, y
+    // limpiamos vence_confirmacion para que no aparezca en "Se fueron sin
+    // pagar" (ese bloque es específicamente para vencimientos automáticos).
+    if(nuevoEstado==='cancelado'){
+      cambios.motivo_cancelacion='rechazado';
+      cambios.vence_confirmacion=null;
+    }
+    const{error}=await sb.from('turnos').update(cambios).eq('id',id);
     if(error)throw error;
     cargarListas();
     cargarPeriodo();
@@ -5431,7 +5520,7 @@ async function cargarTablaTurnos(resetPagina){
 
     // count:'exact' nos da el total sin traer todas las filas
     let q=sb.from('turnos')
-      .select('id,fecha,hora_inicio,hora_fin,precio_cobrado,precio_original,estado,asistencia,servicio_id,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre)',{count:'exact'})
+      .select('id,fecha,hora_inicio,hora_fin,precio_cobrado,precio_original,estado,motivo_cancelacion,asistencia,servicio_id,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre)',{count:'exact'})
       .order('fecha',{ascending:false}).order('hora_inicio',{ascending:false})
       .range(desdeIdx, desdeIdx+TURNOS_POR_PAGINA-1);
 
@@ -5652,6 +5741,12 @@ async function accionTurno(id,nuevoEstado){
         cambios.precio_cobrado=precioFinal||t.precio_original||0;
       }
     }
+    // Si venía de "pendiente", esto es un rechazo (nunca se llegó a confirmar),
+    // no una cancelación real — mismo criterio que en el resto del panel.
+    if(nuevoEstado==='cancelado'&&estadoPrevio==='pendiente'){
+      cambios.motivo_cancelacion='rechazado';
+      cambios.vence_confirmacion=null;
+    }
     const{error}=await sb.from('turnos').update(cambios).eq('id',id);
     if(error)throw error;
     if(turnosCache[id])Object.assign(turnosCache[id],cambios);
@@ -5686,9 +5781,9 @@ async function deshacerCancelacion(id,estadoPrevio){
   const toast=document.getElementById('toastDeshacer');
   if(toast)toast.classList.remove('visible');
   try{
-    const{error}=await sb.from('turnos').update({estado:estadoPrevio}).eq('id',id);
+    const{error}=await sb.from('turnos').update({estado:estadoPrevio,motivo_cancelacion:null}).eq('id',id);
     if(error)throw error;
-    if(turnosCache[id])turnosCache[id].estado=estadoPrevio;
+    if(turnosCache[id]){turnosCache[id].estado=estadoPrevio;turnosCache[id].motivo_cancelacion=null;}
     cargarTablaTurnos();actualizarContadoresTurnos();cargarListas();
   }catch(err){console.error(err);alert('No pudimos deshacer.');}
 }
@@ -7141,7 +7236,7 @@ async function abrirFichaPaciente(id){
     const{data:pac,error:e1}=await sb.from('pacientes').select('*').eq('id',id).single();
     if(e1)throw e1;
     const{data:turnos,error:e2}=await sb.from('turnos')
-      .select('id,fecha,hora_inicio,estado,asistencia,precio_cobrado,precio_original,servicio_id,pacientes(nombre,email,telefono),servicios(nombre)')
+      .select('id,fecha,hora_inicio,estado,motivo_cancelacion,asistencia,precio_cobrado,precio_original,servicio_id,pacientes(nombre,email,telefono),servicios(nombre)')
       .eq('paciente_id',id).order('fecha',{ascending:false}).limit(20);
     if(e2)throw e2;
     // El patrón de visitas se calcula sobre TODO el historial, no solo los
@@ -7159,7 +7254,7 @@ async function abrirFichaPaciente(id){
 
     const histHTML=(turnos&&turnos.length)?turnos.map(t=>{
       const[,m,d]=t.fecha.split('-');
-      const lbl={pendiente:'Pendiente',confirmado:'Confirmado','señado':'Se\u00f1ado',pagado:'Pagado',cancelado:'Cancelado'}[t.estado]||t.estado;
+      const lbl=(t.estado==='cancelado'&&t.motivo_cancelacion==='rechazado')?'Rechazado':({pendiente:'Pendiente',confirmado:'Confirmado','señado':'Se\u00f1ado',pagado:'Pagado',cancelado:'Cancelado'}[t.estado]||t.estado);
       return`<div class="pac-hist-item"><span class="fecha">${parseInt(d)}/${m}</span><span class="svc">${esc((t.servicios&&t.servicios.nombre)||'')}</span><span>${lbl}</span></div>`;
     }).join(''):'<div class="empty-state">Todav\u00eda no tiene turnos.</div>';
 
@@ -7349,26 +7444,65 @@ const OPCIONES_HORA=(()=>{
   return arr;
 })();
 
+// Guarda en memoria los cambios ya calculados (fecha + resumen de diferencias),
+// para no tener que recalcular al abrir el modal de "ver más".
+let dispHistorialCambios=[];
+
+function fechaHistorialStr(iso){
+  const fecha=new Date(iso);
+  return fecha.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+fecha.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+}
+
 async function cargarHistorialDisponibilidad(){
   const wrap=document.getElementById('dispHistorialWrap');
   if(!wrap)return;
   try{
     const{data,error}=await sb.rpc('obtener_historial_disponibilidad');
     if(error)throw error;
-    if(!data||!data.length){wrap.innerHTML='';return;}
-    const filas=data.map(h=>{
-      const fecha=new Date(h.modificado_en);
-      const fechaStr=fecha.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+fecha.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-      const base=h.disponibilidad_base||{};
-      const resumenDias=DIAS_ORDEN.filter(d=>Array.isArray(base[d])&&base[d].length)
-        .map(d=>`${DIAS_LABEL[d].slice(0,2)} ${formatearRangos(base[d])}`).join(' &middot; ')||'todo cerrado';
-      return`<div style="padding:6px 0;border-top:1px solid var(--bd)"><strong>${esc(fechaStr)}</strong> &mdash; ${esc(resumenDias)}</div>`;
-    }).join('');
-    wrap.innerHTML=`<div style="margin-bottom:4px;font-weight:700;color:var(--crd)">&#8635; Antes de estos &uacute;ltimos 3 cambios ten\u00edas guardado:</div>${filas}`;
+    if(!data||!data.length){wrap.innerHTML='';dispHistorialCambios=[];return;}
+    // data viene del más nuevo al más viejo. Para armar el diff de cada
+    // cambio necesitamos compararlo contra el estado que vino DESPUÉS
+    // (más nuevo) — así mostramos solo lo que efectivamente cambió en cada
+    // guardado, no el día completo repetido una y otra vez.
+    const ascendente=[...data].reverse(); // más viejo primero
+    dispHistorialCambios=ascendente.map((h,i)=>{
+      const despues=(i+1<ascendente.length)?ascendente[i+1].disponibilidad_base||{}:dispBaseOriginal;
+      const diff=construirResumenCambiosDisponibilidad(h.disponibilidad_base||{},despues);
+      return{fecha:h.modificado_en,diff};
+    }).reverse(); // volvemos a dejar el más reciente primero para mostrar
+
+    if(!dispHistorialCambios.length){wrap.innerHTML='';return;}
+    const ultimo=dispHistorialCambios[0];
+    const resumenUltimo=ultimo.diff.length?ultimo.diff.join(' \u00b7 '):'sin cambios detectados';
+    wrap.innerHTML=`
+      <div><strong>${esc(fechaHistorialStr(ultimo.fecha))}</strong> &mdash; ${esc(resumenUltimo)}</div>
+      ${dispHistorialCambios.length>1?`<button type="button" onclick="abrirHistorialDisponibilidad()" style="background:none;border:none;color:var(--gold);cursor:pointer;padding:4px 0;font-size:12px;text-decoration:underline">Ver los \u00faltimos ${dispHistorialCambios.length} cambios</button>`:''}
+    `;
   }catch(err){
     console.error(err);
     wrap.innerHTML='';
   }
+}
+
+function abrirHistorialDisponibilidad(){
+  let overlay=document.getElementById('histDispOverlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='histDispOverlay';
+    overlay.className='nt-overlay';
+    document.body.appendChild(overlay);
+  }
+  const filas=dispHistorialCambios.map(c=>{
+    const resumen=c.diff.length?c.diff.map(l=>`<div>${esc(l)}</div>`).join(''):'<div style="opacity:.6">sin cambios detectados</div>';
+    return`<div style="padding:10px 0;border-top:1px solid var(--bd)"><strong>${esc(fechaHistorialStr(c.fecha))}</strong><div style="margin-top:4px;font-size:12.5px;color:var(--crd)">${resumen}</div></div>`;
+  }).join('');
+  overlay.innerHTML=`<div class="nt-modal" style="max-width:480px">
+    <div class="panel-title" style="margin-bottom:14px">Historial de cambios en Disponibilidad</div>
+    ${filas}
+    <button type="button" class="btn-nt-guardar" style="margin-top:16px" onclick="document.getElementById('histDispOverlay').classList.remove('open')">Cerrar</button>
+  </div>`;
+  overlay.onclick=e=>{if(e.target===overlay)overlay.classList.remove('open');};
+  overlay.classList.add('open');
 }
 
 async function cargarHorarioSemanal(){
@@ -7919,13 +8053,14 @@ async function descargarBackup(){
     const hoy=ymd(new Date());
 
     const{data:turnos,error:e1}=await sb.from('turnos')
-      .select('fecha,hora_inicio,hora_fin,estado,asistencia,precio_cobrado,precio_original,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre)')
+      .select('fecha,hora_inicio,hora_fin,estado,motivo_cancelacion,asistencia,precio_cobrado,precio_original,fecha_original,hora_original,pacientes(nombre,email,telefono),servicios(nombre)')
       .order('fecha');
     if(e1)throw e1;
-    const filasTurnos=[['Fecha','Hora inicio','Hora fin','Paciente','Email','Tel\u00e9fono','Servicio','Estado','Asistencia','Precio cobrado','Precio original','Fecha original (si fue reprogramado)']];
+    const filasTurnos=[['Fecha','Hora inicio','Hora fin','Paciente','Email','Tel\u00e9fono','Servicio','Estado','Motivo (si fue cancelado)','Asistencia','Precio cobrado','Precio original','Fecha original (si fue reprogramado)']];
     (turnos||[]).forEach(t=>{
       const pac=t.pacientes||{};const svc=t.servicios||{};
-      filasTurnos.push([t.fecha,t.hora_inicio||'',t.hora_fin||'',pac.nombre||'',pac.email||'',pac.telefono||'',svc.nombre||'',t.estado||'',t.asistencia||'',t.precio_cobrado||'',t.precio_original||'',t.fecha_original||'']);
+      const motivo=t.motivo_cancelacion==='rechazado'?'Rechazado por Pupi':(t.estado==='cancelado'?'Se venci\u00f3 sin pagar':'');
+      filasTurnos.push([t.fecha,t.hora_inicio||'',t.hora_fin||'',pac.nombre||'',pac.email||'',pac.telefono||'',svc.nombre||'',t.estado||'',motivo,t.asistencia||'',t.precio_cobrado||'',t.precio_original||'',t.fecha_original||'']);
     });
     descargarCSV(`turnos_pupi_${hoy}.csv`,filasTurnos);
 

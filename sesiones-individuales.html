@@ -20,109 +20,144 @@ html,body{height:100%}
 .si-hero p{font-size:14px;color:var(--crf);max-width:400px;margin-bottom:36px;line-height:1.6}
 .si-cta{border:none;position:relative;overflow:hidden;padding:19px 44px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
 .si-cta:hover{opacity:.9}
-
-/* Modal de reserva: mismo overlay/modal que el resto del sitio, pero con el
-   contenido "compacto" (calendario+datos+pago juntos, sin pasos) adentro. */
-.si-modal-overlay{position:fixed;inset:0;background:rgba(4,3,5,.78);backdrop-filter:blur(4px);z-index:900;display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
-.si-modal-overlay.open{display:flex}
-.si-modal{background:var(--bg);border:1px solid var(--bd);max-width:760px;width:100%;padding:32px;position:relative;margin:auto 0}
-.si-modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--crf);font-size:22px;cursor:pointer;line-height:1;padding:6px}
-.si-modal-head{text-align:center;margin-bottom:20px}
-.si-modal-head h2{font-size:clamp(19px,3vw,24px);margin:4px 0}
-.si-precio{font-size:14px;color:var(--gold);font-weight:700}
-.si-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:30px;align-items:start}
-@media(max-width:640px){.si-grid{grid-template-columns:1fr;gap:24px}.si-modal{padding:24px 18px}}
-.asignar-nota{font-size:11px;color:var(--crf);margin-top:8px;line-height:1.6}
-#siEstadoModal{text-align:center;color:var(--crd);font-style:italic;font-family:'Noto Serif Display',serif;padding:30px 0}
 </style>
 </head>
 <body>
 
-<!-- HERO: lo único que se ve al entrar, sin scroll -->
 <div class="si-hero">
   <span class="ey">Reservar turno</span>
   <h1>Pupi Larroude</h1>
   <p>Sesiones individuales de counseling y acompañamiento terapéutico.</p>
-  <button type="button" class="si-cta" onclick="abrirReserva()">Reservar sesión individual</button>
+  <button type="button" class="si-cta" onclick="abrirModalSvc(SVCS[0]&&SVCS[0].id)">Reservar sesión individual</button>
 </div>
 
-<!-- MODAL: se abre con el CTA, todo compacto adentro (sin pasos) -->
-<div class="si-modal-overlay" id="siOverlay" onclick="if(event.target===this)cerrarReserva()">
-  <div class="si-modal">
-    <button type="button" class="si-modal-close" onclick="cerrarReserva()">&#215;</button>
+<!-- Modal info asignación de turno -->
+<div class="info-overlay" id="infoOverlay" onclick="cerrarInfo(event)">
+  <div class="info-box">
+    <h3>Elegís el horario, yo te lo reservo</h3>
+    <p>Asignás el turno ahora sin pagar. Te confirmo en menos de 24 hs y coordinamos el pago por WhatsApp.</p>
+    <ul>
+      <li>El horario queda reservado a tu nombre</li>
+      <li>Confirmación por WhatsApp en menos de 24 hs</li>
+      <li>El pago se coordina por WhatsApp: transferencia o efectivo</li>
+      <li>Si necesitás otro horario, te ofrecemos alternativas</li>
+    </ul>
+    <p style="font-size:12px;color:var(--crf);font-style:italic;font-family:'Noto Serif Display',serif">Sin compromiso de pago hasta confirmar.</p>
+    <div class="info-box-btns" style="margin-top:20px">
+      <button onclick="cerrarInfo();confirmar(true)">Asignar mi turno</button>
+      <button onclick="cerrarInfo()">Volver</button>
+    </div>
+  </div>
+</div>
 
-    <div class="si-modal-head">
-      <h2 id="siNombre">Sesión Individual</h2>
-      <div class="si-precio" id="siPrecio"></div>
+<!-- Modal principal: mismo mecanismo de 3 pasos que el resto del sitio -->
+<div class="modal-overlay" id="overlay" onclick="cerrarSiOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-topbar">
+      <div class="modal-progress">
+        <div class="modal-step active" id="step1">1 &middot; Servicio</div>
+        <div class="modal-step" id="step2">2 &middot; Fecha</div>
+        <div class="modal-step" id="step3">3 &middot; Pago</div>
+      </div>
+      <button class="modal-close" onclick="cerrarModal()">&#215;</button>
     </div>
 
-    <p id="siEstadoModal">Cargando disponibilidad&hellip;</p>
+    <div class="modal-slides" id="mSlides">
 
-    <div id="siForm" style="display:none">
-      <div class="si-grid">
-
-        <!-- Columna izquierda: calendario + horarios -->
-        <div>
-          <div class="campo-label">Elegí un día</div>
-          <div class="cal-nav2">
-            <button type="button" onclick="chMo(-1)">&#8249;</button>
-            <span class="cal-mes2" id="m-calmes"></span>
-            <button type="button" onclick="chMo(1)">&#8250;</button>
-          </div>
-          <div class="cal-grid2" id="m-cal"></div>
-
-          <div class="campo-label" style="margin-top:20px">Horario</div>
-          <div class="h-col" id="m-hcol"><div class="h-hint">Elegí un día primero</div></div>
-
-          <!-- shared.js necesita este botón, aunque acá no se ve -->
-          <button type="button" id="m-cont2" style="display:none" disabled></button>
+      <!-- PASO 1: info del servicio -->
+      <div class="modal-slide" id="mP1">
+        <div class="m-badge-wrap">
+          <div class="m-badge" id="m-badge" style="border:1px solid var(--gold);color:var(--gold)"></div>
         </div>
+        <div class="m-nombre" id="m-nombre"></div>
+        <div class="m-desc" id="m-desc"></div>
+        <div class="m-who" id="m-who"></div>
+        <div class="m-sesiones" id="m-ses"></div>
+        <div class="m-dias" id="m-dias"></div>
+        <div class="m-nota" id="m-nota"></div>
+        <div class="m-precio-box">
+          <div class="m-precio-label">Precio</div>
+          <div class="m-precio-val" id="m-precio-p1"></div>
+        </div>
+        <button class="m-btn-next" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
+      </div>
 
-        <!-- Columna derecha: datos + pago -->
-        <div>
-          <div class="campo-label">Tus datos</div>
-          <div class="frow">
-            <input type="text" id="m-nombre-i" placeholder="Nombre" aria-label="Nombre" oninput="validarNombreEnVivo()">
-            <input type="email" id="m-email-i" placeholder="Mail" aria-label="Correo electrónico" oninput="chkT()">
+      <!-- PASO 2: calendario + horarios -->
+      <div class="modal-slide" id="mP2">
+        <div class="p2-grid">
+          <div>
+            <div class="p2-col-label">Elegí un día</div>
+            <div class="cal-nav2">
+              <button onclick="chMo(-1)">&#8249;</button>
+              <span class="cal-mes2" id="m-calmes"></span>
+              <button onclick="chMo(1)">&#8250;</button>
+            </div>
+            <div class="cal-grid2" id="m-cal"></div>
           </div>
-          <input type="tel" id="m-tel-i" placeholder="Celular (con código de área)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
-          <div class="tav" id="m-tav"></div>
-
-          <div id="modalidadWrap" style="display:none">
-            <span class="campo-label">¿Presencial u online?</span>
-            <div class="pago-opciones">
-              <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
-              <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
+          <div>
+            <div class="p2-col-label">Horarios disponibles</div>
+            <div class="h-col" id="m-hcol">
+              <div class="h-hint">Elegí un día primero</div>
             </div>
           </div>
+        </div>
+        <div class="p2-nav">
+          <button class="m-btn-back" onclick="irP(1)">&#8592; Volver</button>
+          <button class="m-btn-cont" id="m-cont2" onclick="irP(3)" disabled>Continuar &#8594;</button>
+        </div>
+      </div>
 
-          <div class="cancel-modal-box">
-            <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
-            <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver política completa</button></p>
-            <div class="cancel-modal-full" id="cancelPoliticaFull" style="display:none"><p>Cargando&hellip;</p></div>
-            <label class="cancel-modal-check">
-              <input type="checkbox" id="m-acepto-cancel" onchange="actualizarBotonesPago()">
-              Leí y acepto la política de cancelaciones y reprogramaciones
-            </label>
-          </div>
+      <!-- PASO 3: datos y pago -->
+      <div class="modal-slide" id="mP3">
+        <div class="p3-grid">
+          <div>
+            <span class="campo-label">Tus datos</span>
+            <div class="frow">
+              <input type="text" id="m-nombre-i" placeholder="Nombre" aria-label="Nombre" oninput="validarNombreEnVivo()">
+              <input type="email" id="m-email-i" placeholder="Mail" aria-label="Correo electrónico" oninput="chkT()">
+            </div>
+            <input type="tel" id="m-tel-i" placeholder="Celular (con código de área)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
+            <div class="tav" id="m-tav"></div>
 
-          <div class="p3-resumen" id="m-resumen3"></div>
-          <div class="pago-opciones">
-            <label class="pago-opcion"><input type="radio" name="tipoPago" value="sena" checked onchange="aplicarTipoPagoAPrecio()"> Seña (50%)</label>
-            <label class="pago-opcion"><input type="radio" name="tipoPago" value="completo" onchange="aplicarTipoPagoAPrecio()"> Pago completo</label>
+            <div id="modalidadWrap" style="display:none">
+              <span class="campo-label">¿Presencial u online?</span>
+              <div class="pago-opciones">
+                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
+                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
+              </div>
+            </div>
+
+            <div class="cancel-modal-box">
+              <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
+              <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver política completa</button></p>
+              <div class="cancel-modal-full" id="cancelPoliticaFull" style="display:none"><p>Cargando&hellip;</p></div>
+              <label class="cancel-modal-check">
+                <input type="checkbox" id="m-acepto-cancel" onchange="document.getElementById('m-pagar').disabled=!this.checked;document.querySelector('.m-btn-reservar').disabled=!this.checked">
+                Leí y acepto la política de cancelaciones y reprogramaciones
+              </label>
+            </div>
           </div>
-          <div class="precio-final">
-            <div><div class="precio-label" id="m-pv-label">Seña a pagar ahora</div><div class="precio-val" id="m-pv"></div></div>
-          </div>
-          <button class="m-btn-pagar" id="m-pagar" onclick="confirmar()" disabled>Pagar seña con Mercado Pago &nearr;</button>
-          <div class="asignar-box">
-            <div class="asignar-divider"><span>o si preferís</span></div>
-            <button class="m-btn-reservar" id="m-btn-asignar" onclick="confirmar(true)" disabled>Asignar turno sin pagar ahora</button>
-            <p class="asignar-nota">Te confirmo por WhatsApp en menos de 24 hs. El pago se coordina por transferencia o efectivo.</p>
+          <div>
+            <div class="p3-resumen" id="m-resumen3"></div>
+            <div class="pago-opciones">
+              <label class="pago-opcion"><input type="radio" name="tipoPago" value="sena" checked onchange="aplicarTipoPagoAPrecio()"> Seña (50%)</label>
+              <label class="pago-opcion"><input type="radio" name="tipoPago" value="completo" onchange="aplicarTipoPagoAPrecio()"> Pago completo</label>
+            </div>
+            <div class="precio-final">
+              <div><div class="precio-label" id="m-pv-label">Seña a pagar ahora</div><div class="precio-val" id="m-pv"></div></div>
+            </div>
+            <button class="m-btn-pagar" id="m-pagar" onclick="confirmar()" disabled>Pagar seña con Mercado Pago &nearr;</button>
+            <div class="asignar-box">
+              <div class="asignar-divider"><span>o si preferís</span></div>
+              <button class="m-btn-reservar" onclick="mostrarInfoAsignar()" disabled>Asignar turno sin pagar ahora</button>
+            </div>
           </div>
         </div>
-
+        <div style="margin-top:12px;text-align:center">
+          <button class="m-btn-back" onclick="irP(2)" style="width:auto">&#8592; Volver</button>
+        </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -136,25 +171,12 @@ const SBK='sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj';
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 let sb=null,SVCS=[];
 let MS={svc:null,m:new Date().getMonth(),y:new Date().getFullYear(),fecha:null,hora:null,tarifa:null};
-let tipoPago='sena';
-let servicioListo=false;
 
-function abrirReserva(){
-  document.getElementById('siOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  if(!servicioListo)cargarServicio();
-}
-function cerrarReserva(){
-  document.getElementById('siOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
-
-async function cargarServicio(){
+async function init(){
   rdy(async()=>{
     sb=window.supabase.createClient(SBU,SBK);
     cargarPoliticaCancelacion();
 
-    // Mensaje de vuelta de Mercado Pago (mismo comportamiento que el resto del sitio)
     const pago=new URLSearchParams(location.search).get('pago');
     if(pago){
       const mensajes={
@@ -163,72 +185,47 @@ async function cargarServicio(){
         fallido:{titulo:'El pago no se completó',texto:'Podés intentar de nuevo, o escribirme por WhatsApp si preferís coordinar de otra forma.'}
       };
       const m=mensajes[pago];
-      if(m){alert(`${m.titulo}\n\n${m.texto}`);history.replaceState(null,'',location.pathname);abrirReserva();}
+      if(m){alert(`${m.titulo}\n\n${m.texto}`);history.replaceState(null,'',location.pathname);}
     }
 
-    // El servicio se llama "Terapia" en la base y está marcado como inactivo
-    // (fue el que se discontinuó en general) — a propósito NO filtramos por
-    // activo acá, porque esta página es la única forma de seguir reservándolo
-    // para pacientes puntuales. De cara al público lo mostramos como
-    // "Sesión Individual" (ver activarServicio).
+    // El servicio se llama "Terapia" en la base y está inactivo (fue el que se
+    // discontinuó en general) — a propósito NO filtramos por activo acá,
+    // porque esta página es la única forma de seguir reservándolo para
+    // pacientes puntuales. De cara al público se muestra como "Sesión
+    // Individual" (ver más abajo, apenas llega el dato).
     const{data,error}=await sb.from('servicios')
       .select('id,nombre,descripcion,para_quien,tipo,precio,duracion_min,duracion_texto,descanso_min,sesiones_paquete,modalidad,icono,precio_nota')
       .eq('nombre','Terapia').limit(1);
 
     if(error||!data||!data.length){
-      document.getElementById('siEstadoModal').textContent='No pudimos cargar el servicio en este momento. Escribime por WhatsApp si el problema sigue.';
+      SVCS=[];
       return;
     }
-    activarServicio(data[0]);
+    data[0].nombre='Sesión Individual'; // nombre público — en la base sigue siendo "Terapia"
+    SVCS=data;
   });
 }
 
-function activarServicio(svc){
-  svc.nombre='Sesión Individual'; // nombre público — en la base sigue siendo "Terapia"
-  servicioListo=true;
-  SVCS=[svc];
-  MS={...MS,svc,fecha:null,hora:null,tarifa:null};
-  document.getElementById('siNombre').textContent=svc.nombre;
-  document.getElementById('siPrecio').textContent=fmt(svc.precio);
-  const modWrap=document.getElementById('modalidadWrap');
-  if(modWrap)modWrap.style.display=svc.modalidad==='ambas'?'block':'none';
-  document.getElementById('siEstadoModal').style.display='none';
-  document.getElementById('siForm').style.display='block';
-  renderCal();
-}
+// ── Modal (mismas funciones que usan las otras páginas del sitio) ──
+const overlay=document.getElementById('overlay');
+const mSlides=document.getElementById('mSlides');
+let pasoActual=1;
 
-// Habilita los botones de pago recién cuando hay fecha+hora elegidas Y se
-// aceptó la política — así nunca se puede intentar pagar algo incompleto.
-function actualizarBotonesPago(){
-  const listo=!!(MS.fecha&&MS.hora&&document.getElementById('m-acepto-cancel').checked);
-  document.getElementById('m-pagar').disabled=!listo;
-  document.getElementById('m-btn-asignar').disabled=!listo;
-}
+function truncarTextoModal(txt,max){return txt.length>max?txt.slice(0,max-1)+'…':txt;}
 
-// selF ya viene de shared.js — la envolvemos para que, al elegir una fecha
-// nueva (que resetea la hora elegida), los botones de pago se desactiven
-// de nuevo hasta que se elija un horario otra vez.
-const selFBase=selF;
-selF=async function(f){
-  await selFBase(f);
-  actualizarBotonesPago();
-};
-
-// Redefine selH (shared.js define una versión base): además de marcar el
-// horario elegido, acá mismo actualiza el resumen y el precio — no hay un
-// paso separado al que "avanzar", todo está siempre a la vista.
-function selH(h){
-  MS.hora=h;
-  document.querySelectorAll('.hslot2').forEach(el=>el.classList.toggle('s',el.textContent===h));
-  document.getElementById('m-cont2').disabled=false;
-  poblarP3();
-  aplicarTipoPagoAPrecio();
-  actualizarBotonesPago();
-  if(sb&&MS.svc&&MS.svc.id){
-    sb.from('eventos_reserva').insert({tipo:'paso_alcanzado',paso:3,servicio_id:MS.svc.id,landing:'sesiones-individuales'}).then(()=>{}).catch(()=>{});
+function actualizarEtiquetasPasos(){
+  const el1=document.getElementById('step1');
+  if(el1)el1.textContent=(pasoActual>1&&MS.svc&&MS.svc.nombre)?`1 · ${truncarTextoModal(MS.svc.nombre,20)}`:'1 · Servicio';
+  const el2=document.getElementById('step2');
+  if(el2){
+    if(pasoActual>2&&MS.fecha&&MS.hora){
+      const[,mo,d]=MS.fecha.split('-');
+      el2.textContent=`2 · ${d}/${mo} ${MS.hora}`;
+    } else { el2.textContent='2 · Fecha'; }
   }
 }
 
+let tipoPago='sena';
 function aplicarTipoPagoAPrecio(){
   const sel=document.querySelector('input[name="tipoPago"]:checked');
   tipoPago=sel?sel.value:'sena';
@@ -243,6 +240,70 @@ function aplicarTipoPagoAPrecio(){
   document.getElementById('m-pagar').textContent=(tipoPago==='sena'?'Pagar seña':'Pagar el total')+' con Mercado Pago ↗';
 }
 
+function irP(n){
+  if(n===3&&(!MS.fecha||!MS.hora))return;
+  pasoActual=n;
+  mSlides.style.transform=`translateX(-${(n-1)*33.333}%)`;
+  document.getElementById('modal').classList.toggle('p3-wide',n===3);
+  [1,2,3].forEach(i=>{
+    const el=document.getElementById('step'+i);
+    el.classList.toggle('active',i===n);
+    el.classList.toggle('done',i<n);
+  });
+  actualizarEtiquetasPasos();
+  const ps=['mP1','mP2','mP3'];
+  setTimeout(()=>document.getElementById(ps[n-1])?.scrollTo(0,0),60);
+  if(n===3){
+    poblarP3();
+    aplicarTipoPagoAPrecio();
+    if(sb&&MS.svc&&MS.svc.id){
+      sb.from('eventos_reserva').insert({tipo:'paso_alcanzado',paso:3,servicio_id:MS.svc.id,landing:'sesiones-individuales'}).then(()=>{}).catch(()=>{});
+    }
+  }
+}
+
+function abrirModalSvc(id){
+  const svc=SVCS.find(s=>s.id===id);
+  if(!svc){alert('No pudimos cargar el servicio en este momento. Escribime por WhatsApp si el problema sigue.');return;}
+  MS={...MS,svc,fecha:null,hora:null,tarifa:null};
+  const modWrap=document.getElementById('modalidadWrap');
+  if(modWrap)modWrap.style.display=svc.modalidad==='ambas'?'block':'none';
+  poblarP1({},svc);
+  abrirOverlay();
+}
+
+function abrirOverlay(){
+  irP(1);
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+  renderCal();
+}
+
+function poblarP1(m,svc){
+  const s=svc||MS.svc;
+  const cc='var(--gold)';
+  document.getElementById('m-badge').style.cssText=`border:1px solid ${cc};color:${cc}`;
+  document.getElementById('m-badge').innerHTML=m.badge||'Sesión individual';
+  document.getElementById('m-nombre').innerHTML=s.nombre||'';
+  document.getElementById('m-desc').innerHTML=s.descripcion||'';
+  document.getElementById('m-who').innerHTML=m.who||s.para_quien||'';
+  const ses=document.getElementById('m-ses');
+  const nSes=m.ses||s.sesiones_paquete;
+  ses.innerHTML=nSes
+    ?`<div class="m-sq" style="border-color:${cc};color:${cc}">${nSes} sesiones</div><div class="m-sq time">${m.sesLabel||`sesiones de ${s.duracion_min} min`}</div>`
+    :`<div class="m-sq" style="border-color:${cc};color:${cc}">1 sesión</div><div class="m-sq time">${m.min||s.duracion_min} min</div>`;
+  const MODALIDAD_TXT={presencial:'Presencial',online:'Online',ambas:'Online / Pres.'};
+  const modalidades=m.mod||(s.modalidad==='ambas'?['Online','Presencial']:[MODALIDAD_TXT[s.modalidad]||'Presencial']);
+  document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+  document.getElementById('m-nota').innerHTML=m.nota||'';
+  document.getElementById('m-precio-p1').textContent=fmt(s.precio);
+}
+
+function mostrarInfoAsignar(){document.getElementById('infoOverlay').classList.add('open');}
+function cerrarInfo(e){if(!e||e.target===document.getElementById('infoOverlay'))document.getElementById('infoOverlay').classList.remove('open');}
+function cerrarModal(){overlay.classList.remove('open');document.body.style.overflow='';}
+function cerrarSiOverlay(e){if(e.target===overlay)cerrarModal();}
+
 // Globals que shared.js necesita encontrar declarados
 const DIA_KEY=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 let disponibilidadSemana=null;
@@ -253,8 +314,6 @@ let bloqueosMesCargado=null;
 let turnosMes={};
 let turnosMesCargado=null;
 
-// "Despierta" la función de Mercado Pago apenas el mail parece válido, para
-// que el pedido real no tenga que esperar a que Netlify arranque de cero.
 let mpDespertada=false;
 function despertarMP(){
   if(mpDespertada)return;
@@ -264,7 +323,7 @@ function despertarMP(){
 
 const chkT=deb(async()=>{
   const email=document.getElementById('m-email-i')?.value?.trim().toLowerCase();
-  if(!sb||!email||!email.includes('.')||!MS.svc){MS.tarifa=null;if(MS.fecha&&MS.hora)aplicarTipoPagoAPrecio();return;}
+  if(!sb||!email||!email.includes('.')||!MS.svc){MS.tarifa=null;updPrecio();return;}
   despertarMP();
   const{data}=await sb.rpc('obtener_tarifa_especial',{p_email:email,p_servicio_id:MS.svc.id});
   MS.tarifa=(data!==null&&data!==undefined)?data:null;
@@ -275,7 +334,7 @@ const chkT=deb(async()=>{
     av.innerHTML=`✦ Tenés tarifa especial: <s style="opacity:.6">${fmt(MS.svc.precio)}</s> <strong>${fmt(MS.tarifa)}</strong> ${pctOff>0?`<span style="color:var(--ok)">(-${pctOff}%)</span>`:''}`;
   }
   else av.style.display='none';
-  if(MS.fecha&&MS.hora)aplicarTipoPagoAPrecio();
+  updPrecio();
 
   try{
     const{data:datosPac}=await sb.rpc('buscar_datos_paciente',{p_email:email});
@@ -290,9 +349,12 @@ const chkT=deb(async()=>{
   }catch(err){console.error('Error al autocompletar',err);}
 },500);
 
+function updPrecio(){
+  if(MS.svc&&document.getElementById('m-pv-label'))aplicarTipoPagoAPrecio();
+}
+
 async function confirmar(soloReservar=false){
   if(!sb){alert('Conectá a internet e intentá de nuevo.');return;}
-  if(!MS.fecha||!MS.hora){alert('Elegí un día y un horario primero.');return;}
   const nombre=document.getElementById('m-nombre-i').value.trim();
   const email=document.getElementById('m-email-i').value.trim().toLowerCase();
   const telefono=document.getElementById('m-tel-i').value.trim();
@@ -300,7 +362,7 @@ async function confirmar(soloReservar=false){
   if(!telefono){alert('Completá tu número de celular.');return;}
   if(!telefonoValido(telefono)){alert('Revisá tu número de celular. Ingresálo con código de área, ej: 11 5555 5555.');return;}
   if(nombre.length<2){alert('Completá tu nombre completo.');return;}
-  const btn=soloReservar?document.getElementById('m-btn-asignar'):document.getElementById('m-pagar');
+  const btn=soloReservar?document.querySelector('.m-btn-reservar'):document.getElementById('m-pagar');
   btn.disabled=true;btn.textContent='Procesando...';
   try{
     const{data:pacRows,error:ep0}=await sb.rpc('obtener_o_crear_paciente',{p_nombre:nombre,p_email:email,p_telefono:telefono});
@@ -348,7 +410,7 @@ async function confirmar(soloReservar=false){
     } else if(pac.telefono_actualizado){
       avisoDato=`<p style="font-size:11.5px;color:var(--crf);font-style:italic;margin-top:-6px;margin-bottom:14px">Actualicé tu celular al que acabás de ingresar.</p>`;
     }
-    document.getElementById('siForm').innerHTML=`<div class="m-confirm">
+    document.getElementById('mP3').innerHTML=`<div class="m-confirm">
       <div class="mci">⏳</div>
       <h3>Reserva enviada</h3>
       <p>Te confirmo tu turno y coordinamos el pago por WhatsApp (transferencia o efectivo).</p>
@@ -359,7 +421,9 @@ async function confirmar(soloReservar=false){
         <div>${esc(pac.nombre_real||nombre)} · ${esc(email)}</div>
         <div style="color:var(--crf)">Pago a coordinar</div>
       </div>
+      <button class="m-btn-next" style="margin-top:4px" onclick="cerrarModal()">Cerrar</button>
     </div>`;
+    ['step1','step2','step3'].forEach(id=>document.getElementById(id).classList.add('done'));
   }catch(err){
     console.error(err);
     const esSolape = err && (err.code==='23P01' || (err.message||'').includes('turnos_sin_solape') || (err.message||'').includes('exclusion'));
@@ -371,16 +435,17 @@ async function confirmar(soloReservar=false){
     if(esSolape){
       alert('Ese horario se acaba de ocupar. Elegí otro, por favor.');
       bloqueosMesCargado=null;
-      MS.hora=null;
-      actualizarBotonesPago();
+      irP(2);
       if(MS.fecha)selF(MS.fecha);
     } else {
       alert('Hubo un problema. Intentá de nuevo.');
     }
     btn.disabled=false;
-    btn.textContent=soloReservar?'Asignar turno sin pagar ahora':(tipoPago==='completo'?'Pagar el total':'Pagar seña')+' con Mercado Pago ↗';
+    btn.textContent=soloReservar?'Solo reservar (sin pagar ahora)':(tipoPago==='completo'?'Pagar el total':'Pagar seña')+' con Mercado Pago ↗';
   }
 }
+
+init();
 </script>
 </body>
 </html>

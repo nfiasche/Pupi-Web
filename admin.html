@@ -1583,6 +1583,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
         <span class="svc-guardado-ok" id="cfgReglasOk">&#10003; Guardado</span>
         </div>
       </div>
+
+      <div class="panel panel-liviano" style="margin-top:24px">
+        <div class="panel-title">Google Calendar &mdash; qu&eacute; bloquea disponibilidad</div>
+        <p class="cfg-ayuda">Adem&aacute;s de tus turnos, el sistema respeta lo que tengas ocupado en los calendarios que tildes ac&aacute; (se sincroniza solo cada 1 hora, de 8 a 21 hs).</p>
+        <div id="gcalEstadoSync" style="font-size:11.5px;color:var(--crf);margin-bottom:14px;font-style:italic">Cargando&hellip;</div>
+        <div id="gcalListaWrap" style="max-height:280px;overflow-y:auto"><div class="loading-state">Cargando&hellip;</div></div>
+        <button class="btn-nt-guardar" style="max-width:220px;margin-top:16px" onclick="sincronizarCalendariosGoogleAhora()" id="gcalSyncBtn">Sincronizar ahora</button>
+      </div>
     </div>
 
     <!-- ══ VISTA PACIENTES ══ -->
@@ -2778,7 +2786,7 @@ function cambiarVista(vista){
       cargarIngresosRecurrentes();
     });
   }
-  if(vista==='disponibilidad'){cargarHorarioSemanal();cargarBloqueos();}
+  if(vista==='disponibilidad'){cargarHorarioSemanal();cargarBloqueos();cargarCalendariosGoogle();}
   if(vista==='config')cargarConfig();
   if(vista==='usuarios')cargarUsuarios();
   if(vista==='disponibilidad')cargarConfig(); // las reglas de reserva viven acá ahora
@@ -3120,6 +3128,11 @@ async function cargarCalendarioTurnos(){
     const{data,error}=await q;
     if(error)throw error;
 
+    const{data:bloqueosGoogle}=await sb.from('google_horarios_ocupados')
+      .select('fecha,hora_inicio,hora_fin').gte('fecha',startStr).lte('fecha',endStr);
+    const bloqPorDia={};
+    (bloqueosGoogle||[]).forEach(b=>{(bloqPorDia[b.fecha]=bloqPorDia[b.fecha]||[]).push(b);});
+
     let turnos=data||[];
     const hayBusquedaMes=!!turnosBusqueda;
     if(hayBusquedaMes){
@@ -3156,6 +3169,13 @@ async function cargarCalendarioTurnos(){
         return`<div class="admin-cal-evento ev-${t.estado}${claseBusqueda}" onclick="event.stopPropagation();abrirDetalleTurno('${t.id}')" title="${esc(hora+' '+(pac.nombre||'')+' \u00b7 '+(svc.nombre||''))}">${dot}${hora} ${esc(pac.nombre||'(sin nombre)')}${asistMarca}</div>`;
       }).join('');
       const masHTML=items.length>MAX_VISIBLES?`<div class="admin-cal-mas" onclick="event.stopPropagation();abrirDiaTurnos('${ds}',true)">+${items.length-MAX_VISIBLES} m\u00e1s</div>`:'';
+      // Horarios que Google Calendar tiene ocupados este día — gris, sin
+      // detalle (a propósito, para no saturar el tablero con dos fuentes
+      // de eventos mezcladas). El detalle real queda en el hover.
+      const bloqDia=(bloqPorDia[ds]||[]).filter(b=>
+        !items.some(t=>t.hora_inicio&&t.hora_inicio.slice(0,5)===b.hora_inicio.slice(0,5))
+      );
+      const bloqGoogleHTML=bloqDia.length?`<div class="admin-cal-evento" style="background:var(--bg4);color:var(--crf);border:1px dashed var(--bd)" title="Bloqueado por tu Google Calendar: ${esc(bloqDia.map(b=>`${b.hora_inicio.slice(0,5)}\u2013${b.hora_fin.slice(0,5)}`).join(', '))}">&#128274; ${bloqDia.length===1?'1 horario bloqueado':bloqDia.length+' horarios bloqueados'}</div>`:'';
       // Puntos de color por estado (solo se ven en mobile, donde el texto no entra)
       const puntosHTML=items.length?`<div class="admin-cal-puntos">${items.slice(0,4).map(t=>`<span class="cal-punto ev-${t.estado}"></span>`).join('')}</div>`:'';
       // En mobile, tocar el día abre su lista si tiene turnos
@@ -3163,7 +3183,7 @@ async function cargarCalendarioTurnos(){
       html+=`<div class="admin-cal-day${esHoy}${sinTurnos}"${clickDia}>
         <span class="admin-cal-day-add" onclick="event.stopPropagation();abrirModalNuevoTurno('${ds}')" title="Agregar turno este d\u00eda">&#43;</span>
         <span class="admin-cal-num">${d}</span>
-        <div class="admin-cal-eventos">${eventosHTML}${masHTML}</div>
+        <div class="admin-cal-eventos">${eventosHTML}${masHTML}${bloqGoogleHTML}</div>
         ${puntosHTML}
       </div>`;
     }
@@ -7503,6 +7523,83 @@ function abrirHistorialDisponibilidad(){
   </div>`;
   overlay.onclick=e=>{if(e.target===overlay)overlay.classList.remove('open');};
   overlay.classList.add('open');
+}
+
+// ══ Google Calendar — qué calendarios bloquean disponibilidad ══
+function tiempoDesde(iso){
+  if(!iso)return'Todav\u00eda no se sincroniz\u00f3 nunca';
+  const min=Math.round((Date.now()-new Date(iso).getTime())/60000);
+  if(min<1)return'\u00daltima actualizaci\u00f3n: reci\u00e9n';
+  if(min<60)return`\u00daltima actualizaci\u00f3n: hace ${min} min`;
+  const horas=Math.round(min/60);
+  return`\u00daltima actualizaci\u00f3n: hace ${horas} h`;
+}
+
+async function cargarCalendariosGoogle(){
+  const wrap=document.getElementById('gcalListaWrap');
+  const estadoEl=document.getElementById('gcalEstadoSync');
+  if(!wrap)return;
+  try{
+    const[{data:calendarios,error:e1},{data:estado,error:e2}]=await Promise.all([
+      sb.rpc('obtener_calendarios_google'),
+      sb.rpc('obtener_estado_sync_google')
+    ]);
+    if(e1)throw e1;
+    if(e2)throw e2;
+    estadoEl.textContent=tiempoDesde(estado&&estado[0]&&estado[0].ultima_sync);
+    const err=estado&&estado[0]&&estado[0].ultimo_error;
+    const errWrap=document.getElementById('gcalError');
+    if(err){
+      if(!errWrap){
+        estadoEl.insertAdjacentHTML('afterend',`<div id="gcalError" style="font-size:11.5px;color:var(--err);background:var(--err-bg);border-left:2px solid var(--err);padding:8px 10px;margin-bottom:12px">&#9888; Hubo un problema en la \u00faltima sincronizaci\u00f3n: ${esc(err)}</div>`);
+      } else { errWrap.textContent=`\u26a0 Hubo un problema en la \u00faltima sincronizaci\u00f3n: ${err}`; }
+    } else if(errWrap){ errWrap.remove(); }
+    if(!calendarios||!calendarios.length){
+      wrap.innerHTML='<p style="font-size:12.5px;color:var(--crf);font-style:italic">Todav\u00eda no hay calendarios cargados \u2014 apret\u00e1 "Sincronizar ahora" para traerlos de Google.</p>';
+      return;
+    }
+    wrap.innerHTML=calendarios.map(c=>`
+      <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--bd);cursor:pointer">
+        <input type="checkbox" ${c.bloquea?'checked':''} onchange="toggleCalendarioGoogle('${esc(c.calendar_id)}',this.checked)">
+        <span>${esc(c.nombre)}</span>
+        ${c.es_propio?'':'<span style="font-size:10px;color:var(--crf);border:1px solid var(--bd);padding:1px 6px">suscripto</span>'}
+      </label>
+    `).join('');
+  }catch(err){
+    console.error(err);
+    wrap.innerHTML='<p style="font-size:12.5px;color:var(--crf)">No pudimos cargar los calendarios.</p>';
+  }
+}
+
+async function toggleCalendarioGoogle(calendarId,bloquea){
+  try{
+    const{error}=await sb.rpc('guardar_tilde_calendario_google',{p_calendar_id:calendarId,p_bloquea:bloquea});
+    if(error)throw error;
+  }catch(err){
+    console.error(err);
+    alert('No pudimos guardar el cambio. Intent\u00e1 de nuevo.');
+    cargarCalendariosGoogle(); // vuelve a cargar para deshacer el tilde visualmente
+  }
+}
+
+async function sincronizarCalendariosGoogleAhora(){
+  const btn=document.getElementById('gcalSyncBtn');
+  btn.disabled=true;btn.textContent='Sincronizando\u2026';
+  try{
+    const resp=await fetch('/.netlify/functions/sync-calendarios-ocupados',{method:'POST'});
+    const datos=await resp.json();
+    if(datos&&datos.motivo==='no_conectado'){
+      alert('Todav\u00eda no conectaste Google Calendar. Anda a Configuraci\u00f3n para conectarlo.');
+    } else if(!datos||datos.ok===false){
+      alert('Hubo un problema al sincronizar. Intent\u00e1 de nuevo en un momento.');
+    }
+    await cargarCalendariosGoogle();
+  }catch(err){
+    console.error(err);
+    alert('No pudimos sincronizar. Revis\u00e1 tu conexi\u00f3n e intent\u00e1 de nuevo.');
+  }finally{
+    btn.disabled=false;btn.textContent='Sincronizar ahora';
+  }
 }
 
 async function cargarHorarioSemanal(){

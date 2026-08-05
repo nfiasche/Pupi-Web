@@ -3,3 +3,10 @@
 
 [functions]
   directory = "netlify/functions"
+
+# Sincroniza los horarios ocupados de Google Calendar cada hora, de 8 a 21hs
+# (hora de Buenos Aires = UTC-3, sin horario de verano). En UTC eso es de
+# 11 a 23hs más la vuelta a las 0hs (=21hs ART). No corre de noche para no
+# gastar llamados de más sin necesidad.
+[functions."sync-calendarios-ocupados"]
+  schedule = "0 11-23,0 * * *"

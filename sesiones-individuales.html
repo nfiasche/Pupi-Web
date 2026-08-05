@@ -26,7 +26,7 @@ html,body{height:100%}
    sugiere lo contrario) — sin esto el modal no se ve como popup real. ══ */
 .modal{
   background:var(--bg);border:1px solid var(--bd);
-  width:100%;max-width:580px;
+  width:100%;max-width:680px;
   position:relative;
   transform:translateY(16px) scale(.98);
   transition:transform .32s cubic-bezier(.4,0,.2,1);
@@ -276,6 +276,15 @@ function aplicarTipoPagoAPrecio(){
   } else { el.textContent=fmt(monto); }
   document.getElementById('m-pv-label').textContent=tipoPago==='sena'?'Seña a pagar ahora':'Total a pagar ahora';
   document.getElementById('m-pagar').textContent=(tipoPago==='sena'?'Pagar seña':'Pagar el total')+' con Mercado Pago ↗';
+  // Si el monto a pagar es $0 (ej. tarifa especial al 100%), no tiene
+  // sentido ofrecer pagar con Mercado Pago — se oculta el botón y queda
+  // "Asignar turno" como único camino, que ya funciona bien sin pago.
+  const sinCosto=monto===0;
+  document.getElementById('m-pagar').style.display=sinCosto?'none':'';
+  const divisor=document.querySelector('.asignar-divider');
+  if(divisor)divisor.style.display=sinCosto?'none':'';
+  const btnAsignar=document.getElementById('m-btn-asignar')||document.querySelector('.m-btn-reservar');
+  if(btnAsignar)btnAsignar.textContent=sinCosto?'Confirmar turno (sin costo)':'Asignar turno sin pagar ahora';
 }
 
 function irP(n){

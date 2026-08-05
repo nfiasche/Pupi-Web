@@ -15,7 +15,7 @@ exports.handler = async () => {
     client_id: CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     response_type: "code",
-    scope: "https://www.googleapis.com/auth/calendar.events",
+    scope: "https://www.googleapis.com/auth/calendar",
     access_type: "offline",
     prompt: "consent",
   });

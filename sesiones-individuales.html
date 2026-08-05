@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reservar Sesión Individual — Pupi Larroude</title>
 <meta name="theme-color" content="#0c0a09">
+<link rel="manifest" href="turnero-manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMGMwYTA5Ii8+PHRleHQgeD0iMzMiIHk9IjQ3IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZm9udC1zaXplPSIzOCIgZmlsbD0iI2M5OGE0YiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UDwvdGV4dD48L3N2Zz4=">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +22,12 @@ html,body{height:100%}
 .si-hero p{font-size:14px;color:var(--crf);max-width:400px;margin-bottom:36px;line-height:1.6}
 .si-cta{border:none;position:relative;overflow:hidden;padding:19px 44px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
 .si-cta:hover{opacity:.9}
+.cday2.a:hover{border-color:var(--gold);color:var(--cr)}
+.cday2.a.baja:hover{border-color:var(--rust)}
+.cday2.s{background:var(--gold);color:var(--bg);font-weight:700;border-color:var(--gold)}
+.si-instalar{margin-top:28px;max-width:340px}
+.btn-instalar-turnero{width:100%;background:none;border:1px solid var(--bd);color:var(--crd);padding:12px 20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .18s,color .18s;display:none}
+.btn-instalar-turnero:hover{border-color:var(--gold);color:var(--gold)}
 
 /* ══ Lo que faltaba: estas reglas viven en el <style> propio de index.html,
    NO en shared.css (a pesar de lo que dice un comentario ahí adentro que
@@ -66,6 +74,9 @@ html,body{height:100%}
   <h1>Pupi Larroude</h1>
   <p>Sesiones individuales de counseling y acompañamiento terapéutico.</p>
   <button type="button" class="si-cta" onclick="abrirModalSvc(SVCS[0]&&SVCS[0].id)">Reservar sesión individual</button>
+  <div class="si-instalar">
+    <button type="button" class="btn-instalar-turnero" id="btnInstalarApp" onclick="instalarComoApp()">📲 ¿Volvés seguido? Instalá la app</button>
+  </div>
 </div>
 
 <!-- Modal info asignación de turno -->
@@ -110,13 +121,14 @@ html,body{height:100%}
         <div class="m-desc" id="m-desc"></div>
         <div class="m-who" id="m-who"></div>
         <div class="m-sesiones" id="m-ses"></div>
+        <span class="campo-label m-dia-label" id="m-dia-pregunta" style="display:none">&#191;Presencial u online?</span>
         <div class="m-dias" id="m-dias"></div>
         <div class="m-nota" id="m-nota"></div>
         <div class="m-precio-box">
           <div class="m-precio-label">Precio</div>
           <div class="m-precio-val" id="m-precio-p1"></div>
         </div>
-        <button class="m-btn-next" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
+        <button class="m-btn-next" id="m-btn-p1" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
       </div>
 
       <!-- PASO 2: calendario + horarios -->
@@ -156,14 +168,6 @@ html,body{height:100%}
             <input type="tel" id="m-tel-i" placeholder="Celular (con código de área)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
 
-            <div id="modalidadWrap" style="display:none">
-              <span class="campo-label">¿Presencial u online?</span>
-              <div class="pago-opciones">
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
-              </div>
-            </div>
-
             <div class="cancel-modal-box">
               <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
               <p>Hay tolerancia de 15 minutos y condiciones para reprogramar. <button type="button" class="cancel-modal-toggle" onclick="togglePoliticaCancel(this)" aria-expanded="false">Ver política completa</button></p>
@@ -202,6 +206,27 @@ html,body{height:100%}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
 <script src="assets/shared.js"></script>
 <script>
+// ── Instalar como app (Android/Chrome ofrece un prompt nativo; iOS no, se hace a mano) ──
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const btn=document.getElementById('btnInstalarApp');
+  if(btn)btn.style.display='block';
+});
+async function instalarComoApp(){
+  if(!deferredInstallPrompt)return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+  const btn=document.getElementById('btnInstalarApp');
+  if(btn)btn.style.display='none';
+}
+window.addEventListener('appinstalled',()=>{
+  const btn=document.getElementById('btnInstalarApp');
+  if(btn)btn.style.display='none';
+});
+
 // ── Config y estado global (mismos nombres que usa shared.js) ──
 const SBU='https://yjzurrjofrxrrejvlmmo.supabase.co';
 const SBK='sb_publishable__cJMItvCjv2OO_VvVoOgWg_ZOmGPfIj';
@@ -313,8 +338,7 @@ function abrirModalSvc(id){
   const svc=SVCS.find(s=>s.id===id);
   if(!svc){alert('No pudimos cargar el servicio en este momento. Escribime por WhatsApp si el problema sigue.');return;}
   MS={...MS,svc,fecha:null,hora:null,tarifa:null};
-  const modWrap=document.getElementById('modalidadWrap');
-  if(modWrap)modWrap.style.display=svc.modalidad==='ambas'?'block':'none';
+  resetModalidadP1(svc.modalidad);
   poblarP1({},svc);
   abrirOverlay();
 }
@@ -341,7 +365,14 @@ function poblarP1(m,svc){
     :`<div class="m-sq" style="border-color:${cc};color:${cc}">1 sesión</div><div class="m-sq time">${m.min||s.duracion_min} min</div>`;
   const MODALIDAD_TXT={presencial:'Presencial',online:'Online',ambas:'Online / Pres.'};
   const modalidades=m.mod||(s.modalidad==='ambas'?['Online','Presencial']:[MODALIDAD_TXT[s.modalidad]||'Presencial']);
-  document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+  const preguntaEl=document.getElementById('m-dia-pregunta');
+  if(s.modalidad==='ambas'){
+    if(preguntaEl)preguntaEl.style.display='block';
+    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'${d.toLowerCase()}')">${d}</button>`).join('');
+  } else {
+    if(preguntaEl)preguntaEl.style.display='none';
+    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+  }
   document.getElementById('m-nota').innerHTML=m.nota||'';
   document.getElementById('m-precio-p1').textContent=fmt(s.precio);
 }
@@ -421,10 +452,7 @@ async function confirmar(soloReservar=false){
     const hf=String(Math.floor(fin/60)).padStart(2,'0')+':'+String(fin%60).padStart(2,'0');
 
     const turnoIdGenerado=crypto.randomUUID();
-    const modalidadWrap=document.getElementById('modalidadWrap');
-    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
-      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
-      :s.modalidad||null;
+    const modalidadTurno=MS.modalidad||s.modalidad||null;
     // s.id sigue siendo el UUID real de "Terapia" en la base, aunque en
     // pantalla diga "Sesión Individual" — el turno queda ligado correcto.
     const{error:eTurno}=await sb.from('turnos').insert({

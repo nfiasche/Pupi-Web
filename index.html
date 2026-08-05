@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pupi Larroude — Counselor &amp; Constelaciones Familiares</title>
-<meta name="description" content="Sesiones de constelaciones familiares, counseling y acompañamiento terapéutico. Más de 25 años ayudando a mujeres a atravesar cambios. Reservá tu turno online.">
+<meta name="description" content="Constelaciones familiares, counseling y sesiones de sanación energética en Palermo y online. Más de veinte años acompañando procesos de cambio. Reservá tu turno.">
 <meta name="keywords" content="constelaciones familiares, counseling, terapia, Buenos Aires, acompañamiento terapéutico, Pupi Larroude">
 <meta name="author" content="Pupi Larroude">
 <meta name="robots" content="index, follow">
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pupilarroude.netlify.app/">
 <meta property="og:title" content="Pupi Larroude — Counselor & Constelaciones Familiares">
-<meta property="og:description" content="Sesiones de constelaciones familiares, counseling y acompañamiento terapéutico. Más de 25 años ayudando a mujeres a atravesar cambios. Reservá tu turno online.">
+<meta property="og:description" content="Constelaciones familiares, counseling y sesiones de sanación energética en Palermo y online. Más de veinte años acompañando procesos de cambio. Reservá tu turno.">
 <meta property="og:image" content="https://pupilarroude.netlify.app/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -24,7 +24,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Pupi Larroude — Counselor & Constelaciones Familiares">
-<meta name="twitter:description" content="Sesiones de constelaciones familiares, counseling y acompañamiento terapéutico. Más de 25 años ayudando a mujeres a atravesar cambios. Reservá tu turno online.">
+<meta name="twitter:description" content="Constelaciones familiares, counseling y sesiones de sanación energética en Palermo y online. Más de veinte años acompañando procesos de cambio. Reservá tu turno.">
 <meta name="twitter:image" content="https://pupilarroude.netlify.app/assets/og-image.jpg">
 
 <meta name="theme-color" content="#0c0a09">
@@ -372,8 +372,9 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 /* Acceso al panel — a propósito casi invisible, para que un visitante común
    no lo note, pero Pupi sepa que siempre está en el mismo lugar */
 .acceso-panel{
+  position:fixed;top:0;left:0;z-index:60;
   color:var(--bds);text-decoration:none;font-size:16px;line-height:1;
-  padding:10px 14px;margin:-10px -14px;
+  padding:14px 16px;
   transition:color .3s ease;
 }
 .acceso-panel:hover,.acceso-panel:focus{color:var(--crf)}
@@ -506,11 +507,12 @@ input:focus{outline:none;border-color:var(--gold)}
 </style>
 </head>
 <body>
+<a href="admin.html" class="acceso-panel" title="Panel" aria-label="Panel de administraci&oacute;n">&middot;</a>
 <noscript>
   <style>.rev{opacity:1!important;transform:none!important}</style>
   <div style="background:#c98a4b;color:#0c0a09;text-align:center;padding:14px 20px;font-family:Montserrat,sans-serif;font-size:13px;font-weight:600">
     Para reservar un turno necesit&aacute;s tener JavaScript activado en tu navegador.
-    Mientras tanto, escrib&iacute;nos directo:
+    Mientras tanto, escrib&iacute;me directo:
     <a href="https://wa.me/5491158059979" style="color:#0c0a09;text-decoration:underline;font-weight:700">WhatsApp +54 9 11 5805-9979</a>
   </div>
 </noscript>
@@ -538,8 +540,8 @@ input:focus{outline:none;border-color:var(--gold)}
       <span class="row2">Larroude</span>
     </h1>
 
-    <p class="hero-frase">&ldquo;Nos aferramos al sufrimiento<br>porque el bienestar exige <span class="ac">compromiso.</span>&rdquo;</p>
-    <p class="hero-meta-sub">M&aacute;s de 20 a&ntilde;os acompa&ntilde;ando personas</p>
+    <p class="hero-frase">&ldquo;Hay un momento en que lo que ten&iacute;as ya no alcanza.<br>Ah&iacute; empieza <span class="ac">mi trabajo.</span>&rdquo;</p>
+    <p class="hero-meta-sub">M&aacute;s de veinte a&ntilde;os acompa&ntilde;ando personas</p>
 
     <div class="hero-cta">
       <a href="#servicios" class="bp">Ver servicios &#8594;</a>
@@ -596,7 +598,7 @@ input:focus{outline:none;border-color:var(--gold)}
     <div class="svh rev">
       <div class="ey">Lo que ofrezco</div>
       <h2>Encontr&aacute; el espacio que necesit&aacute;s hoy</h2>
-      <p>Desde una sola sesi&oacute;n hasta un proceso de semanas.</p>
+      <p>Desde una sola sesi&oacute;n hasta un proceso de varios meses. Eleg&iacute; por d&oacute;nde empezar.</p>
     </div>
     <div class="sv-grid" id="svGrid">
       <div style="color:var(--crf);text-align:center;font-style:italic;font-family:'Noto Serif Display',serif;font-size:15px;padding:16px;grid-column:1/-1">Cargando&hellip;</div>
@@ -608,13 +610,13 @@ input:focus{outline:none;border-color:var(--gold)}
 <!-- ⑤ TESTIMONIOS SLIDER -->
 <section class="ts" id="experiencias">
   <div class="w">
-    <div class="tsh rev"><div class="ey">Experiencias</div><h2>Ellas ya dieron el primer paso</h2></div>
+    <div class="tsh rev"><div class="ey">Experiencias</div><h2>Ya dieron el primer paso</h2></div>
     <div class="rev">
       <div class="slider-wrap">
         <div class="slider-track" id="slTrack">
-          <div class="slide"><div class="tc"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="tq">&ldquo;Llegu&eacute; sin saber bien qu&eacute; necesitaba. En la primera sesi&oacute;n algo se movi&oacute; que tres a&ntilde;os de terapia convencional no hab&iacute;an podido mover.&rdquo;</p><div class="tqn">Marcela G. &middot; Sesiones para el Alma</div></div></div>
+          <div class="slide"><div class="tc"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="tq">&ldquo;Llegu&eacute; sin saber bien qu&eacute; necesitaba. En la primera sesi&oacute;n algo se movi&oacute; que llevaba a&ntilde;os sin poder tocar.&rdquo;</p><div class="tqn">Roxana R. &middot; Sesiones para el Alma</div></div></div>
           <div class="slide"><div class="tc"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="tq">&ldquo;El proceso de Constelaciones me mostr&oacute; un patr&oacute;n que repet&iacute;a desde siempre sin verlo. Desde ah&iacute; algo cambi&oacute; de ra&iacute;z.&rdquo;</p><div class="tqn">Laura M. &middot; Constelaciones Familiares</div></div></div>
-          <div class="slide"><div class="tc"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="tq">&ldquo;Umbral fue el espacio que no sab&iacute;a que exist&iacute;a. Es acompa&ntilde;amiento real de alguien que realmente estuvo ah&iacute;.&rdquo;</p><div class="tqn">Valeria R. &middot; Programa Umbral</div></div></div>
+          <div class="slide"><div class="tc"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="tq">&ldquo;Umbral fue el espacio que no sab&iacute;a que exist&iacute;a. Es acompa&ntilde;amiento de alguien que realmente estuvo ah&iacute;.&rdquo;</p><div class="tqn">Valeria R. &middot; Programa Umbral</div></div></div>
           <div class="slide"><div class="tc"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="tq">&ldquo;Las Sesiones V&eacute;rtice me dieron algo que anduve buscando mucho tiempo: claridad concreta. Sal&iacute; con un plan que realmente us&eacute;.&rdquo;</p><div class="tqn">Daniela P. &middot; Sesiones V&eacute;rtice</div></div></div>
         </div>
       </div>
@@ -631,7 +633,7 @@ input:focus{outline:none;border-color:var(--gold)}
 <section class="qt rev">
   <div class="wn">
     <blockquote>&ldquo;Hay un momento en la vida de una mujer que no aparece en ning&uacute;n calendario. No tiene fecha. No avisa. Pero cuando llega &mdash; <span class="ac">todo cambia.</span>&rdquo;</blockquote>
-    <cite>Pupi Larroude &middot; Umbral</cite>
+    <cite>Pupi Larroude</cite>
   </div>
 </section>
 
@@ -641,7 +643,7 @@ input:focus{outline:none;border-color:var(--gold)}
     <div class="trh rev">
       <span class="ey">Reservar</span>
       <h2>Eleg&iacute; tu encuentro</h2>
-      <p>Ya sab&eacute;s lo que quer&eacute;s. Ac&aacute; lo agend&aacute;s.</p>
+      <p>Eleg&iacute;s el d&iacute;a y la hora. El resto lo coordinamos por WhatsApp.</p>
     </div>
     <div class="tr-list rev" id="tr-list">
       <div style="color:var(--crf);text-align:center;font-style:italic;font-family:'Noto Serif Display',serif;font-size:15px;padding:16px">Cargando&hellip;</div>
@@ -682,7 +684,6 @@ input:focus{outline:none;border-color:var(--gold)}
     <div class="footer-bottom">
       <span>&copy; 2026 Pupi Larroude &middot; Todos los derechos reservados</span>
       <span style="color:var(--crf);font-size:10px">Hecho a medida por: Nach!</span>
-      <a href="admin.html" class="acceso-panel" title="Panel" aria-label="Panel de administraci&oacute;n">&middot;</a>
     </div>
   </div>
 </footer>
@@ -731,13 +732,14 @@ input:focus{outline:none;border-color:var(--gold)}
         <div class="m-desc" id="m-desc"></div>
         <div class="m-who" id="m-who"></div>
         <div class="m-sesiones" id="m-ses"></div>
+        <span class="campo-label m-dia-label" id="m-dia-pregunta" style="display:none">&#191;Presencial u online?</span>
         <div class="m-dias" id="m-dias"></div>
         <div class="m-nota" id="m-nota"></div>
         <div class="m-precio-box">
           <div class="m-precio-label">Precio</div>
           <div class="m-precio-val" id="m-precio-p1"></div>
         </div>
-        <button class="m-btn-next" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
+        <button class="m-btn-next" id="m-btn-p1" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
       </div>
 
       <!-- PASO 2: calendario + horarios side by side -->
@@ -776,14 +778,6 @@ input:focus{outline:none;border-color:var(--gold)}
             </div>
             <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
-
-            <div id="modalidadWrap" style="display:none">
-              <span class="campo-label">&#191;Presencial u online?</span>
-              <div class="pago-opciones">
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
-              </div>
-            </div>
 
             <div class="cancel-modal-box">
               <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
@@ -1086,8 +1080,7 @@ function abrirModal(key){
 function abrirModalSvc(id){
   const svc=SVCS.find(s=>s.id===id);if(!svc)return;
   MS={...MS,svc,fecha:null,hora:null,tarifa:null};
-  const modWrap=document.getElementById('modalidadWrap');
-  if(modWrap)modWrap.style.display=svc.modalidad==='ambas'?'block':'none';
+  resetModalidadP1(svc.modalidad);
   const n=svc.nombre.toLowerCase();
   const key=n.includes('alma')?'alma':n.includes('rtice')?'vertice':n.includes('constelacion')?'constelaciones':null;
   poblarP1(key,(key&&META[key])||{},svc);
@@ -1117,7 +1110,14 @@ function poblarP1(key,m,svc){
     ?`<div class="m-sq" style="border-color:${cc};color:${cc}">${nSes} sesiones</div><div class="m-sq time">${m.sesLabel||`sesiones de ${s.duracion_min} min`}</div>`
     :`<div class="m-sq" style="border-color:${cc};color:${cc}">1 sesi&oacute;n</div><div class="m-sq time">${m.min||s.duracion_min} min</div>`;
   const modalidades=m.mod||(s.modalidad==='ambas'?['Online','Presencial']:[MODALIDAD_TXT[s.modalidad]||'Presencial']);
-  document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+  const preguntaEl=document.getElementById('m-dia-pregunta');
+  if(s.modalidad==='ambas'){
+    if(preguntaEl)preguntaEl.style.display='block';
+    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'${d.toLowerCase()}')">${d}</button>`).join('');
+  } else {
+    if(preguntaEl)preguntaEl.style.display='none';
+    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+  }
   document.getElementById('m-nota').innerHTML=m.nota||(s.tipo==='paquete'?'Pod\u00e9s agendar la primera sesi\u00f3n ahora. Las siguientes las coordinamos por WhatsApp al confirmar el pago.':'');
   const p=s.precio>0?s.precio:(PRECIOS[key]||0);
   document.getElementById('m-precio-p1').textContent=fmt(p);
@@ -1219,10 +1219,7 @@ async function confirmar(soloReservar=false){
     // el pago real por su cuenta). Si es un servicio tipo paquete, el paquete
     // en sí se crea del lado del servidor cuando el pago se confirma, no acá.
     const turnoIdGenerado=crypto.randomUUID();
-    const modalidadWrap=document.getElementById('modalidadWrap');
-    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
-      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
-      :s.modalidad||null;
+    const modalidadTurno=MS.modalidad||s.modalidad||null;
     const{error:eTurno}=await sb.from('turnos').insert({
       id:turnoIdGenerado,paciente_id:pac.id,servicio_id:s.id,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
       estado:'pendiente',precio_cobrado:0,precio_original:s.precio,modalidad:modalidadTurno

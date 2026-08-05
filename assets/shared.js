@@ -143,21 +143,26 @@ async function fetchTurnosMes(y,m){
   }catch(err){console.error('Error al cargar turnos del mes',err);}
 }
 
-// ¿Queda al menos un horario libre ese día, para el servicio actual? Repite
-// la misma lógica de superposición que usa selF(), pero sin tener que
-// esperar a que la persona haga click para descubrir que no hay nada.
-function diaTieneHorarioLibre(fecha){
+// Cuántos horarios libres quedan ese día, para el servicio actual. Repite
+// la misma lógica de superposición Y de antelación mínima que usa selF() —
+// antes esta función no chequeaba la antelación mínima, así que un día de
+// mañana podía verse "disponible" en la grilla y no tener nada real al
+// abrirlo. Devuelve un número (no boolean) para poder avisar cuando queda
+// poco, no solo cuando no queda nada.
+function horariosLibresDia(fecha){
   const slots=slotsDelDia(fecha);
-  if(!slots.length)return false;
+  if(!slots.length)return 0;
   const duracion=(MS&&MS.svc&&MS.svc.duracion_min)||60;
   const ocupados=turnosMes[fecha]||[];
   const bloqueosDia=blockedRanges.filter(r=>r.fecha===fecha);
-  return slots.some(t=>{
+  const limiteMin=new Date(Date.now()+(reglasReserva.min_horas||0)*3600000);
+  return slots.filter(t=>{
     const finSlot=sumarMinutos(t,duracion);
     if(ocupados.some(row=>seSuperponen(t,finSlot,row.hora_inicio,row.hora_fin)))return false;
     if(bloqueosDia.some(r=>seSuperponen(t,finSlot,r.hora_inicio,r.hora_fin)))return false;
-    return true;
-  });
+    const slotDate=new Date(fecha+'T'+t+':00');
+    return slotDate>=limiteMin;
+  }).length;
 }
 
 
@@ -174,15 +179,26 @@ async function renderCal(intentos){
   const maxFecha=new Date(today.getTime()+reglasReserva.max_dias*86400000);
   let c=DOW.map(d=>`<div class="cal-dow2">${d}</div>`).join('');
   for(let i=0;i<sd;i++)c+=`<div class="cday2 e"></div>`;
-  let hayDiaLibre=false;
+  let hayDiaLibre=false,hayDiaBaja=false;
+  const UMBRAL_BAJA=3; // menos de esta cantidad de horarios libres = aviso de poca disponibilidad
   for(let d2=1;d2<=dim;d2++){
     const o=new Date(y,m,d2);const dw=o.getDay();
     const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d2).padStart(2,'0')}`;
     const diaKey=DIA_KEY[dw];
     const diaCerrado=!disponibilidadSemana||!Array.isArray(disponibilidadSemana[diaKey])||!disponibilidadSemana[diaKey].length;
-    const sinHorarioLibre=!diaCerrado&&!(o<minFecha||o>maxFecha)&&!blockedDays.has(ds)&&!diaTieneHorarioLibre(ds);
-    if(o<minFecha||o>maxFecha||diaCerrado||blockedDays.has(ds)||sinHorarioLibre)c+=`<div class="cday2 d">${d2}</div>`;
-    else{hayDiaLibre=true;c+=`<div class="cday2 a${fecha===ds?' s':''}" onclick="selF('${ds}')">${d2}</div>`;}
+    const fueraDeRango=o<minFecha||o>maxFecha;
+    const libres=(!diaCerrado&&!fueraDeRango&&!blockedDays.has(ds))?horariosLibresDia(ds):0;
+    const sinHorarioLibre=!diaCerrado&&!fueraDeRango&&!blockedDays.has(ds)&&libres===0;
+    if(fueraDeRango||diaCerrado||blockedDays.has(ds)||sinHorarioLibre){
+      c+=`<div class="cday2 d">${d2}</div>`;
+    } else{
+      hayDiaLibre=true;
+      const esSeleccionado=fecha===ds;
+      const esBaja=libres>0&&libres<UMBRAL_BAJA&&!esSeleccionado;
+      if(esBaja)hayDiaBaja=true;
+      const tit=esBaja?' title="Quedan pocos horarios"':'';
+      c+=`<div class="cday2 a${esBaja?' baja':''}${esSeleccionado?' s':''}" onclick="selF('${ds}')"${tit}>${d2}</div>`;
+    }
   }
   // Si ningún día de este mes tiene un horario libre, salta solo al próximo
   // mes que sí tenga — hasta 12 meses hacia adelante, para no colgarse si
@@ -193,6 +209,14 @@ async function renderCal(intentos){
   }
   document.getElementById('m-calmes').textContent=`${MES[MS.m]} ${MS.y}`;
   document.getElementById('m-cal').innerHTML=c;
+  let leyenda=document.getElementById('m-cal-leyenda');
+  if(!leyenda){
+    leyenda=document.createElement('div');
+    leyenda.id='m-cal-leyenda';
+    leyenda.className='cal-leyenda2';
+    document.getElementById('m-cal').insertAdjacentElement('afterend',leyenda);
+  }
+  leyenda.innerHTML=hayDiaBaja?'<span class="cal-leyenda-dot"></span> Quedan pocos horarios':'';
 }
 
 async function selF(f){
@@ -284,11 +308,33 @@ function validarTelEnVivo(){
 function poblarP3(){
   const s=MS.svc;const[,mo,d]=MS.fecha.split('-');
   const pr=MS.tarifa!==null?MS.tarifa:s.precio;
+  const modLinea=MS.modalidad?`<div class="p3-det">${MS.modalidad==='online'?'Online':'Presencial'}</div>`:'';
   document.getElementById('m-resumen3').innerHTML=`
-    <div><div class="p3-svc">${esc(s.nombre)}</div><div class="p3-det">${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div></div>
+    <div><div class="p3-svc">${esc(s.nombre)}</div><div class="p3-det">${d} de ${MES[parseInt(mo)-1].toLowerCase()}, ${MS.hora} hs</div>${modLinea}</div>
     <div class="p3-precio-r">${fmt(s.precio)}</div>`;
   document.getElementById('m-pv').textContent=fmt(pr);
 }
+
+/* ── Selección de modalidad (Paso 1) ──
+   Para servicios con las dos modalidades, la elección se hace acá —
+   no hay default, hay que tocar una opción a propósito. El Paso 3 ya
+   no pregunta, solo muestra lo elegido (ver poblarP3). */
+function elegirModalidad(el,valor){
+  MS.modalidad=valor;
+  el.parentElement.querySelectorAll('.m-dia-btn').forEach(b=>b.classList.toggle('sel',b===el));
+  const btn=document.getElementById('m-btn-p1');
+  if(btn)btn.disabled=false;
+}
+
+// Se llama cada vez que se abre el modal (o se cambia de servicio), para
+// que no quede pegada la elección de una sesión anterior.
+function resetModalidadP1(svcModalidad){
+  MS.modalidad=null;
+  document.querySelectorAll('.m-dia-btn').forEach(b=>b.classList.remove('sel'));
+  const btn=document.getElementById('m-btn-p1');
+  if(btn)btn.disabled=(svcModalidad==='ambas');
+}
+
 
 
 

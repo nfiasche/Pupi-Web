@@ -74,8 +74,11 @@ exports.handler = async (event) => {
         if (resTarifa.ok) {
           const tarifaEspecial = await resTarifa.json();
           // Solo la usamos si es un descuento real (nunca para cobrar de más
-          // si por algún motivo diera un número mayor al de lista).
-          if (tarifaEspecial !== null && tarifaEspecial !== undefined && Number(tarifaEspecial) < precioBase) {
+          // si por algún motivo diera un número mayor al de lista). Excepción:
+          // si el precio de lista es $0 (servicios como "Terapia", que no
+          // tienen precio propio y dependen siempre de la tarifa especial
+          // por paciente), ese $0 no es un techo real — se usa la tarifa tal cual.
+          if (tarifaEspecial !== null && tarifaEspecial !== undefined && (precioBase === 0 || Number(tarifaEspecial) < precioBase)) {
             precioBase = Number(tarifaEspecial);
           }
         } else {

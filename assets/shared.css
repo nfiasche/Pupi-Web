@@ -35,6 +35,10 @@
 .cancel-modal-toggle:hover{color:var(--gold)}
 .cancel-modal-toggle{background:none;border:none;padding:0;margin-left:2px;color:var(--stone);font-size:11.5px;text-decoration:underline;cursor:pointer;font-family:inherit}
 .cday2.a{border-color:var(--bd)}
+.cday2.a.baja{border-color:var(--rust);color:var(--rust)}
+.cday2.a.baja:hover{background:var(--rust);color:var(--bg)}
+.cal-leyenda2{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:10px;color:var(--crf);letter-spacing:.02em;min-height:14px}
+.cal-leyenda-dot{width:7px;height:7px;border-radius:50%;background:var(--rust);flex-shrink:0}
 .cday2.e,.cday2.d{color:var(--crf);opacity:.22;cursor:not-allowed}
 .cday2{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:1px solid transparent;color:var(--crd);font-family:'Montserrat',sans-serif;transition:all .15s}
 .d1{transition-delay:.12s}
@@ -73,6 +77,7 @@
 .m-btn-cont{flex:1;background:var(--gold);color:var(--bg);border:none;padding:12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .18s}
 .m-btn-next:hover{opacity:.85}
 .m-btn-next{width:100%;background:var(--gold);color:var(--bg);border:none;padding:13px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .18s}
+.m-btn-next:disabled{opacity:.35;cursor:not-allowed}
 .m-btn-pagar:disabled{opacity:.32;cursor:not-allowed}
 .m-btn-pagar:hover{opacity:.86}
 .m-btn-reservar:hover{border-color:var(--crd);color:var(--cr)}
@@ -84,6 +89,10 @@
 .m-desc{font-size:13px;color:var(--crd);line-height:1.74;margin-bottom:10px}
 .m-dias{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
 .m-dia{font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;border:1px solid var(--bd);color:var(--crf);padding:3px 7px}
+.m-dia-btn{background:none;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .15s}
+.m-dia-btn:hover{border-color:var(--gold);color:var(--gold)}
+.m-dia-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+.m-dia-label{margin-bottom:7px}
 .m-nombre{font-family:'Noto Serif Display',serif;font-size:24px;margin-bottom:8px}
 .m-precio-box{display:flex;justify-content:space-between;align-items:center;background:var(--bg3);border:1px solid var(--bd);padding:14px 16px;margin-bottom:20px}
 .m-precio-label{font-size:10px;color:var(--crf);text-transform:uppercase;letter-spacing:.08em;font-weight:700}

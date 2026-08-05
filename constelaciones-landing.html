@@ -228,6 +228,8 @@
 .cal-nav2 button:hover{border-color:var(--stone);color:var(--stone)}
 .cday2.a:hover{border-color:var(--stone);color:var(--cr)}
 .cday2.s{background:var(--stone);color:var(--bg);font-weight:700;border-color:var(--stone)}
+.m-dia-btn:hover{border-color:var(--stone);color:var(--stone)}
+.m-dia-btn.sel{background:var(--stone);border-color:var(--stone);color:var(--bg)}
 .hslot2:hover{border-color:var(--stone);color:var(--stone);background:var(--bg4);transform:translateY(-1px)}
 .hslot2.s{background:linear-gradient(135deg,#a19b8d,#87816f);border-color:var(--stone);color:#18160f;font-weight:700;box-shadow:0 3px 14px rgba(138,132,120,.35);transform:translateY(-1px)}
 input:focus{outline:none;border-color:var(--stone)}
@@ -563,10 +565,14 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
         <div class="m-desc">V&iacute;nculos con la familia de origen, con la pareja, con los hijos. Duelos que no terminan de cerrar. Eso que se repite sin que sepas bien por qu&eacute;.</div>
         <div class="m-who">Para hombres y mujeres que sienten que se repite algo que no es solo suyo.</div>
         <div class="m-sesiones"><div class="m-sq" data-vsync="sesiones">3 encuentros</div><div class="m-sq time" data-vsync="duracion-cu">90 min c/u</div></div>
-        <div class="m-dias"><span class="m-dia">Online</span><span class="m-dia">Presencial</span></div>
+        <span class="campo-label m-dia-label">&#191;Presencial u online?</span>
+        <div class="m-dias" id="m-dias">
+          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'online')">Online</button>
+          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'presencial')">Presencial</button>
+        </div>
         <div class="m-nota">Pod&eacute;s agendar tu primer encuentro ahora. Los siguientes son quincenales y los coordinamos por WhatsApp al confirmar el pago.</div>
         <div class="m-precio-box"><div class="m-precio-label">Inversi&oacute;n</div><div class="m-precio-val" id="m-precio-p1">$ 270.000</div></div>
-        <button class="m-btn-next" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
+        <button class="m-btn-next" id="m-btn-p1" onclick="irP(2)" disabled>Elegir fecha y horario &#8594;</button>
       </div>
       <!-- Paso 2: calendario + horarios -->
       <div class="modal-slide" id="mP2">
@@ -597,14 +603,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
             </div>
             <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
-
-            <div id="modalidadWrap" style="display:none">
-              <span class="campo-label">&#191;Presencial u online?</span>
-              <div class="pago-opciones">
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
-              </div>
-            </div>
 
             <div class="cancel-modal-box">
               <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
@@ -896,8 +894,7 @@ const mSlides=document.getElementById('mSlides');
 function abrirModalConstelaciones(){
   MS.fecha=null;MS.hora=null;MS.tarifa=null;
   document.getElementById('m-precio-p1').textContent=fmt(MS.svc.precio);
-  const modWrap=document.getElementById('modalidadWrap');
-  if(modWrap)modWrap.style.display=MS.svc.modalidad==='ambas'?'block':'none';
+  resetModalidadP1('ambas');
   irP(1);
   overlay.classList.add('open');
   document.body.style.overflow='hidden';
@@ -1055,10 +1052,7 @@ async function confirmar(soloAsignar=false){
     // El turno siempre nace "pendiente" — recién pasa a confirmado/pagado
     // cuando corresponde (WhatsApp lo confirma a mano, o Mercado Pago avisa
     // el pago real por su cuenta). Nunca se marca solo por haber llegado hasta acá.
-    const modalidadWrap=document.getElementById('modalidadWrap');
-    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
-      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
-      :s.modalidad||null;
+    const modalidadTurno=MS.modalidad||s.modalidad||null;
 
     const turnoIdGenerado=crypto.randomUUID();
     const{error:eTurno}=await sb.from('turnos').insert({

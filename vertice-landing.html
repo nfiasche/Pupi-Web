@@ -169,6 +169,8 @@
 .momento-tag{font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;background:transparent;border:1px solid rgba(42,34,25,.18);color:#4a4238;padding:4px 9px}
 .cday2.a:hover{border-color:var(--lav);color:var(--cr)}
 .cday2.s{background:var(--lav);color:var(--bg);font-weight:700;border-color:var(--lav)}
+.m-dia-btn:hover{border-color:var(--lav);color:var(--lav)}
+.m-dia-btn.sel{background:var(--lav);border-color:var(--lav);color:var(--bg)}
 .hslot2.s{background:linear-gradient(135deg,#a5a2d4,#8f8cc0);border-color:var(--lav);color:#12101a;font-weight:700;box-shadow:0 3px 14px rgba(148,145,196,.35);transform:translateY(-1px)}
 .pago-opcion:has(input:checked){border-color:var(--lav);color:var(--cr)}
 .pago-opcion input{accent-color:var(--lav)}
@@ -564,10 +566,14 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
         <div class="m-desc">Carta natal, revoluci&oacute;n solar, Dise&ntilde;o Humano y decodificaci&oacute;n con numerolog&iacute;a pitag&oacute;rica. Un proceso de claridad, con inicio y cierre reales.</div>
         <div class="m-who">Para hombres y mujeres que necesitan claridad concreta y dejar de dar vueltas.</div>
         <div class="m-sesiones"><div class="m-sq" data-vsync="sesiones">4 encuentros</div><div class="m-sq time" data-vsync="duracion-cu">90 min c/u</div></div>
-        <div class="m-dias"><span class="m-dia">Online</span><span class="m-dia">Presencial</span></div>
+        <span class="campo-label m-dia-label">&#191;Presencial u online?</span>
+        <div class="m-dias" id="m-dias">
+          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'online')">Online</button>
+          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'presencial')">Presencial</button>
+        </div>
         <div class="m-nota">Pod&eacute;s agendar tu primer encuentro ahora. Los siguientes son quincenales y los coordinamos por WhatsApp al confirmar el pago.</div>
         <div class="m-precio-box"><div class="m-precio-label">Inversi&oacute;n</div><div class="m-precio-val" id="m-precio-p1">$ 280.000</div></div>
-        <button class="m-btn-next" onclick="irP(2)">Elegir fecha y horario &#8594;</button>
+        <button class="m-btn-next" id="m-btn-p1" onclick="irP(2)" disabled>Elegir fecha y horario &#8594;</button>
       </div>
       <!-- Paso 2: calendario + horarios -->
       <div class="modal-slide" id="mP2">
@@ -598,14 +604,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
             </div>
             <input type="tel" id="m-tel-i" placeholder="Celular (con c&oacute;digo de &aacute;rea)" aria-label="Celular con código de área" style="width:100%;margin-bottom:14px" oninput="validarTelEnVivo()">
             <div class="tav" id="m-tav"></div>
-
-            <div id="modalidadWrap" style="display:none">
-              <span class="campo-label">&#191;Presencial u online?</span>
-              <div class="pago-opciones">
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="presencial" checked> Presencial</label>
-                <label class="pago-opcion"><input type="radio" name="modalidadElegida" value="online"> Online</label>
-              </div>
-            </div>
 
             <div class="cancel-modal-box">
               <div class="cancel-modal-titulo">Cancelaciones y reprogramaciones</div>
@@ -782,8 +780,7 @@ const mSlides=document.getElementById('mSlides');
 function abrirModalVertice(){
   MS.fecha=null;MS.hora=null;MS.tarifa=null;
   document.getElementById('m-precio-p1').textContent=fmt(MS.svc.precio);
-  const modWrap=document.getElementById('modalidadWrap');
-  if(modWrap)modWrap.style.display=MS.svc.modalidad==='ambas'?'block':'none';
+  resetModalidadP1('ambas');
   irP(1);
   overlay.classList.add('open');
   document.body.style.overflow='hidden';
@@ -933,10 +930,7 @@ async function confirmar(soloAsignar=false){
     // cuando corresponde (WhatsApp lo confirma a mano, o Mercado Pago avisa
     // el pago real por su cuenta). Nunca se marca solo por haber llegado hasta acá.
     const turnoIdGenerado=crypto.randomUUID();
-    const modalidadWrap=document.getElementById('modalidadWrap');
-    const modalidadTurno=(modalidadWrap&&modalidadWrap.style.display!=='none')
-      ?(document.querySelector('input[name="modalidadElegida"]:checked')||{}).value||null
-      :s.modalidad||null;
+    const modalidadTurno=MS.modalidad||s.modalidad||null;
     const{error:eTurno}=await sb.from('turnos').insert({
       id:turnoIdGenerado,paciente_id:pac.id,servicio_id:svcId,fecha:MS.fecha,hora_inicio:MS.hora,hora_fin:hf,
       estado:'pendiente',precio_cobrado:0,precio_original:s.precio,modalidad:modalidadTurno

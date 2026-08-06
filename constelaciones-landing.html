@@ -228,8 +228,6 @@
 .cal-nav2 button:hover{border-color:var(--stone);color:var(--stone)}
 .cday2.a:hover{border-color:var(--stone);color:var(--cr)}
 .cday2.s{background:var(--stone);color:var(--bg);font-weight:700;border-color:var(--stone)}
-.m-dia-btn:hover{border-color:var(--stone);color:var(--stone)}
-.m-dia-btn.sel{background:var(--stone);border-color:var(--stone);color:var(--bg)}
 .hslot2:hover{border-color:var(--stone);color:var(--stone);background:var(--bg4);transform:translateY(-1px)}
 .hslot2.s{background:linear-gradient(135deg,#a19b8d,#87816f);border-color:var(--stone);color:#18160f;font-weight:700;box-shadow:0 3px 14px rgba(138,132,120,.35);transform:translateY(-1px)}
 input:focus{outline:none;border-color:var(--stone)}
@@ -486,7 +484,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 
     <!-- Botón que abre el modal de reserva de 3 pasos -->
     <div style="max-width:580px;margin:0 auto 20px">
-      <button class="btn-primary" style="width:100%;justify-content:center;padding:16px" onclick="abrirModalConstelaciones()">Reservar mi lugar &#8594;</button>
+      <button class="btn-primary" id="reservar-btn" style="width:100%;justify-content:center;padding:16px" disabled>Cargando&hellip;</button>
     </div>
 
   </div>
@@ -566,9 +564,9 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
         <div class="m-who">Para hombres y mujeres que sienten que se repite algo que no es solo suyo.</div>
         <div class="m-sesiones"><div class="m-sq" data-vsync="sesiones">3 encuentros</div><div class="m-sq time" data-vsync="duracion-cu">90 min c/u</div></div>
         <span class="campo-label m-dia-label">&#191;Presencial u online?</span>
-        <div class="m-dias" id="m-dias">
-          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'online')">Online</button>
-          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'presencial')">Presencial</button>
+        <div class="pago-opciones" id="m-dias">
+          <label class="pago-opcion"><input type="radio" name="modalidadP1" value="online" onchange="elegirModalidad(this)"> Online</label>
+          <label class="pago-opcion"><input type="radio" name="modalidadP1" value="presencial" onchange="elegirModalidad(this)"> Presencial</label>
         </div>
         <div class="m-nota">Pod&eacute;s agendar tu primer encuentro ahora. Los siguientes son quincenales y los coordinamos por WhatsApp al confirmar el pago.</div>
         <div class="m-precio-box"><div class="m-precio-label">Inversi&oacute;n</div><div class="m-precio-val" id="m-precio-p1">$ 270.000</div></div>
@@ -842,15 +840,7 @@ let MS={svc:{nombre:'Constelaciones familiares',tipo:'paquete',precio:PRECIO_CON
 rdy(async()=>{
   sb=window.supabase.createClient(SB_URL,SB_KEY);
   cargarPoliticaCancelacion();
-  const{data}=await sb.from('servicios').select('id,precio,duracion_min,descanso_min,modalidad,sesiones_paquete').ilike('nombre','%onstelacion%').maybeSingle();
-  if(data){
-    svcId=data.id;MS.svc.id=data.id;
-    if(data.precio>0)MS.svc.precio=data.precio;
-    if(data.duracion_min>0)MS.svc.duracion_min=data.duracion_min;
-    if(data.descanso_min!=null)MS.svc.descanso_min=data.descanso_min;
-    if(data.modalidad)MS.svc.modalidad=data.modalidad;
-    sincronizarConstelaciones(data);
-  }
+  cargarServicioConstelaciones();
 
   // Si vuelve de Mercado Pago, le avisamos qué pasó — el turno en sí lo
   // termina de confirmar el aviso de pago del lado del servidor, no esto
@@ -868,6 +858,39 @@ rdy(async()=>{
     }
   }
 });
+
+// El botón arranca deshabilitado ("Cargando…") y solo se activa cuando el
+// id real del servicio llegó de la base — antes quedaba clickeable desde
+// el vamos con un MS.svc hardcodeado, y si esta consulta fallaba (sin
+// reintento ni aviso), la persona completaba TODO el formulario y recién
+// se enteraba al final, con un error genérico. Ahora no llega a arrancar
+// sin el dato real, y si falla, reintenta antes de rendirse.
+async function cargarServicioConstelaciones(intento){
+  intento=intento||0;
+  const btn=document.getElementById('reservar-btn');
+  const{data,error}=await sb.from('servicios').select('id,precio,duracion_min,descanso_min,modalidad,sesiones_paquete').ilike('nombre','%onstelacion%').maybeSingle();
+
+  if(error||!data){
+    if(intento<2){setTimeout(()=>cargarServicioConstelaciones(intento+1),1500);return;}
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='Reintentar';
+      btn.onclick=()=>{btn.disabled=true;btn.textContent='Cargando\u2026';cargarServicioConstelaciones(0);};
+    }
+    return;
+  }
+  svcId=data.id;MS.svc.id=data.id;
+  if(data.precio>0)MS.svc.precio=data.precio;
+  if(data.duracion_min>0)MS.svc.duracion_min=data.duracion_min;
+  if(data.descanso_min!=null)MS.svc.descanso_min=data.descanso_min;
+  if(data.modalidad)MS.svc.modalidad=data.modalidad;
+  sincronizarConstelaciones(data);
+  if(btn){
+    btn.disabled=false;
+    btn.textContent='Reservar mi lugar \u2192';
+    btn.onclick=()=>abrirModalConstelaciones();
+  }
+}
 
 // Sincroniza los datos duros de la landing de Constelaciones con la base (fuente única de verdad)
 function sincronizarConstelaciones(s){

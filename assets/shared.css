@@ -89,9 +89,6 @@
 .m-desc{font-size:13px;color:var(--crd);line-height:1.74;margin-bottom:10px}
 .m-dias{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
 .m-dia{font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;border:1px solid var(--bd);color:var(--crf);padding:3px 7px}
-.m-dia-btn{background:none;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .15s}
-.m-dia-btn:hover{border-color:var(--gold);color:var(--gold)}
-.m-dia-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--bg)}
 .m-dia-label{margin-bottom:7px}
 .m-nombre{font-family:'Noto Serif Display',serif;font-size:24px;margin-bottom:8px}
 .m-precio-box{display:flex;justify-content:space-between;align-items:center;background:var(--bg3);border:1px solid var(--bd);padding:14px 16px;margin-bottom:20px}
@@ -159,6 +156,7 @@
 .wa-flotante.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 .w{max-width:1080px;margin:0 auto;padding:0 32px}
 /* Botones */ .btn-primary{ display:inline-flex;align-items:center;gap:8px; background:var(--gold);color:var(--bg);border:none; padding:14px 30px;font-family:'Montserrat',sans-serif; font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase; text-decoration:none;cursor:pointer; transition:opacity .18s,transform .18s,box-shadow .18s; position:relative;overflow:hidden; }
+.btn-primary:disabled{opacity:.4;cursor:default;pointer-events:none}
 /* Capa de desenfoque sobre el contenido del hero — responde al scroll via JS */ 
 /* Contenido del hero — sobre la niebla */ 
 /* DEFINICIÓN */ .def{padding:100px 0;text-align:center;border-top:1px solid var(--bds)}

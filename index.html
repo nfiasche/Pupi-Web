@@ -1111,12 +1111,15 @@ function poblarP1(key,m,svc){
     :`<div class="m-sq" style="border-color:${cc};color:${cc}">1 sesi&oacute;n</div><div class="m-sq time">${m.min||s.duracion_min} min</div>`;
   const modalidades=m.mod||(s.modalidad==='ambas'?['Online','Presencial']:[MODALIDAD_TXT[s.modalidad]||'Presencial']);
   const preguntaEl=document.getElementById('m-dia-pregunta');
+  const diasEl=document.getElementById('m-dias');
   if(s.modalidad==='ambas'){
     if(preguntaEl)preguntaEl.style.display='block';
-    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'${d.toLowerCase()}')">${d}</button>`).join('');
+    diasEl.className='pago-opciones';
+    diasEl.innerHTML=modalidades.map(d=>`<label class="pago-opcion"><input type="radio" name="modalidadP1" value="${d.toLowerCase()}" onchange="elegirModalidad(this)"> ${d}</label>`).join('');
   } else {
     if(preguntaEl)preguntaEl.style.display='none';
-    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+    diasEl.className='m-dias';
+    diasEl.innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
   }
   document.getElementById('m-nota').innerHTML=m.nota||(s.tipo==='paquete'?'Pod\u00e9s agendar la primera sesi\u00f3n ahora. Las siguientes las coordinamos por WhatsApp al confirmar el pago.':'');
   const p=s.precio>0?s.precio:(PRECIOS[key]||0);

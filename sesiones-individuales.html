@@ -22,6 +22,8 @@ html,body{height:100%}
 .si-hero p{font-size:14px;color:var(--crf);max-width:400px;margin-bottom:36px;line-height:1.6}
 .si-cta{border:none;position:relative;overflow:hidden;padding:19px 44px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1a1206;background:var(--gold);cursor:pointer}
 .si-cta:hover{opacity:.9}
+.si-cta:disabled{opacity:.4;cursor:default}
+.pago-opcion input{accent-color:var(--gold)}
 .cday2.a:hover{border-color:var(--gold);color:var(--cr)}
 .cday2.a.baja:hover{border-color:var(--rust)}
 .cday2.s{background:var(--gold);color:var(--bg);font-weight:700;border-color:var(--gold)}
@@ -73,7 +75,7 @@ html,body{height:100%}
   <span class="ey">Reservar turno</span>
   <h1>Pupi Larroude</h1>
   <p>Sesiones individuales de counseling y acompañamiento terapéutico.</p>
-  <button type="button" class="si-cta" onclick="abrirModalSvc(SVCS[0]&&SVCS[0].id)">Reservar sesión individual</button>
+  <button type="button" class="si-cta" id="si-cta-btn" disabled>Cargando&hellip;</button>
   <div class="si-instalar">
     <button type="button" class="btn-instalar-turnero" id="btnInstalarApp" onclick="instalarComoApp()">📲 ¿Volvés seguido? Instalá la app</button>
   </div>
@@ -256,17 +258,39 @@ async function init(){
     // porque esta página es la única forma de seguir reservándolo para
     // pacientes puntuales. De cara al público se muestra como "Sesión
     // Individual" (ver más abajo, apenas llega el dato).
-    const{data,error}=await sb.from('servicios')
-      .select('id,nombre,descripcion,para_quien,tipo,precio,duracion_min,duracion_texto,descanso_min,sesiones_paquete,modalidad,icono,precio_nota')
-      .eq('nombre','Terapia').limit(1);
-
-    if(error||!data||!data.length){
-      SVCS=[];
-      return;
-    }
-    data[0].nombre='Sesión Individual'; // nombre público — en la base sigue siendo "Terapia"
-    SVCS=data;
+    cargarServicio();
   });
+}
+
+// El botón arranca deshabilitado ("Cargando…") y solo se activa cuando el
+// servicio llegó de verdad — antes el botón ya era clickeable desde el
+// primer instante, así que en una conexión lenta (o el navegador interno
+// de WhatsApp) alguien podía tocarlo antes de tener el dato y chocarse con
+// un cartel sin salida. Si falla, reintenta solo un par de veces antes de
+// ofrecer un botón de "Reintentar" en vez de dejarlo muerto.
+async function cargarServicio(intento){
+  intento=intento||0;
+  const btn=document.getElementById('si-cta-btn');
+  const{data,error}=await sb.from('servicios')
+    .select('id,nombre,descripcion,para_quien,tipo,precio,duracion_min,duracion_texto,descanso_min,sesiones_paquete,modalidad,icono,precio_nota')
+    .eq('nombre','Terapia').limit(1);
+
+  if(error||!data||!data.length){
+    if(intento<2){setTimeout(()=>cargarServicio(intento+1),1500);return;}
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='Reintentar';
+      btn.onclick=()=>{btn.disabled=true;btn.textContent='Cargando\u2026';cargarServicio(0);};
+    }
+    return;
+  }
+  data[0].nombre='Sesión Individual';
+  SVCS=data;
+  if(btn){
+    btn.disabled=false;
+    btn.textContent='Reservar sesión individual';
+    btn.onclick=()=>abrirModalSvc(SVCS[0]&&SVCS[0].id);
+  }
 }
 
 // ── Modal (mismas funciones que usan las otras páginas del sitio) ──
@@ -366,12 +390,15 @@ function poblarP1(m,svc){
   const MODALIDAD_TXT={presencial:'Presencial',online:'Online',ambas:'Online / Pres.'};
   const modalidades=m.mod||(s.modalidad==='ambas'?['Online','Presencial']:[MODALIDAD_TXT[s.modalidad]||'Presencial']);
   const preguntaEl=document.getElementById('m-dia-pregunta');
+  const diasEl=document.getElementById('m-dias');
   if(s.modalidad==='ambas'){
     if(preguntaEl)preguntaEl.style.display='block';
-    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'${d.toLowerCase()}')">${d}</button>`).join('');
+    diasEl.className='pago-opciones';
+    diasEl.innerHTML=modalidades.map(d=>`<label class="pago-opcion"><input type="radio" name="modalidadP1" value="${d.toLowerCase()}" onchange="elegirModalidad(this)"> ${d}</label>`).join('');
   } else {
     if(preguntaEl)preguntaEl.style.display='none';
-    document.getElementById('m-dias').innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
+    diasEl.className='m-dias';
+    diasEl.innerHTML=modalidades.map(d=>`<span class="m-dia">${d}</span>`).join('');
   }
   document.getElementById('m-nota').innerHTML=m.nota||'';
   document.getElementById('m-precio-p1').textContent=fmt(s.precio);

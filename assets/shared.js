@@ -55,7 +55,7 @@ function slotsDelDia(fecha){
     const finMin=hf*60+mf;
     while(h*60+m+duracion<=finMin){
       slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
-      m+=60;if(m>=60){m-=60;h++;}
+      m+=30;if(m>=60){m-=60;h++;}
     }
   });
   return slots;
@@ -180,7 +180,7 @@ async function renderCal(intentos){
   let c=DOW.map(d=>`<div class="cal-dow2">${d}</div>`).join('');
   for(let i=0;i<sd;i++)c+=`<div class="cday2 e"></div>`;
   let hayDiaLibre=false,hayDiaBaja=false;
-  const UMBRAL_BAJA=3; // menos de esta cantidad de horarios libres = aviso de poca disponibilidad
+  const UMBRAL_BAJA=4; // esta cantidad de horarios libres o menos = aviso de poca disponibilidad
   for(let d2=1;d2<=dim;d2++){
     const o=new Date(y,m,d2);const dw=o.getDay();
     const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d2).padStart(2,'0')}`;
@@ -194,7 +194,7 @@ async function renderCal(intentos){
     } else{
       hayDiaLibre=true;
       const esSeleccionado=fecha===ds;
-      const esBaja=libres>0&&libres<UMBRAL_BAJA&&!esSeleccionado;
+      const esBaja=libres>0&&libres<=UMBRAL_BAJA&&!esSeleccionado;
       if(esBaja)hayDiaBaja=true;
       const tit=esBaja?' title="Quedan pocos horarios"':'';
       c+=`<div class="cday2 a${esBaja?' baja':''}${esSeleccionado?' s':''}" onclick="selF('${ds}')"${tit}>${d2}</div>`;
@@ -318,10 +318,11 @@ function poblarP3(){
 /* ── Selección de modalidad (Paso 1) ──
    Para servicios con las dos modalidades, la elección se hace acá —
    no hay default, hay que tocar una opción a propósito. El Paso 3 ya
-   no pregunta, solo muestra lo elegido (ver poblarP3). */
-function elegirModalidad(el,valor){
-  MS.modalidad=valor;
-  el.parentElement.querySelectorAll('.m-dia-btn').forEach(b=>b.classList.toggle('sel',b===el));
+   no pregunta, solo muestra lo elegido (ver poblarP3). Son radios reales
+   (misma clase que Seña/Pago completo) para que se note que es una
+   elección — un chip suelto pasaba de largo. */
+function elegirModalidad(radioEl){
+  MS.modalidad=radioEl.value;
   const btn=document.getElementById('m-btn-p1');
   if(btn)btn.disabled=false;
 }
@@ -330,7 +331,7 @@ function elegirModalidad(el,valor){
 // que no quede pegada la elección de una sesión anterior.
 function resetModalidadP1(svcModalidad){
   MS.modalidad=null;
-  document.querySelectorAll('.m-dia-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('input[name="modalidadP1"]').forEach(r=>{r.checked=false;});
   const btn=document.getElementById('m-btn-p1');
   if(btn)btn.disabled=(svcModalidad==='ambas');
 }

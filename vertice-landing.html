@@ -169,8 +169,6 @@
 .momento-tag{font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;background:transparent;border:1px solid rgba(42,34,25,.18);color:#4a4238;padding:4px 9px}
 .cday2.a:hover{border-color:var(--lav);color:var(--cr)}
 .cday2.s{background:var(--lav);color:var(--bg);font-weight:700;border-color:var(--lav)}
-.m-dia-btn:hover{border-color:var(--lav);color:var(--lav)}
-.m-dia-btn.sel{background:var(--lav);border-color:var(--lav);color:var(--bg)}
 .hslot2.s{background:linear-gradient(135deg,#a5a2d4,#8f8cc0);border-color:var(--lav);color:#12101a;font-weight:700;box-shadow:0 3px 14px rgba(148,145,196,.35);transform:translateY(-1px)}
 .pago-opcion:has(input:checked){border-color:var(--lav);color:var(--cr)}
 .pago-opcion input{accent-color:var(--lav)}
@@ -474,7 +472,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 
     <!-- Botón que abre el modal de reserva de 3 pasos (igual al del index, scopeado a Vértice) -->
     <div style="max-width:580px;margin:0 auto 56px">
-      <button class="btn-primary" style="width:100%;justify-content:center;padding:16px" onclick="abrirModalVertice()">Reservar mi lugar &#8594;</button>
+      <button class="btn-primary" id="reservar-btn" style="width:100%;justify-content:center;padding:16px" disabled>Cargando&hellip;</button>
     </div>
 
     <!-- CALIFICACIÓN — filtro de cierre -->
@@ -567,9 +565,9 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
         <div class="m-who">Para hombres y mujeres que necesitan claridad concreta y dejar de dar vueltas.</div>
         <div class="m-sesiones"><div class="m-sq" data-vsync="sesiones">4 encuentros</div><div class="m-sq time" data-vsync="duracion-cu">90 min c/u</div></div>
         <span class="campo-label m-dia-label">&#191;Presencial u online?</span>
-        <div class="m-dias" id="m-dias">
-          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'online')">Online</button>
-          <button type="button" class="m-dia m-dia-btn" onclick="elegirModalidad(this,'presencial')">Presencial</button>
+        <div class="pago-opciones" id="m-dias">
+          <label class="pago-opcion"><input type="radio" name="modalidadP1" value="online" onchange="elegirModalidad(this)"> Online</label>
+          <label class="pago-opcion"><input type="radio" name="modalidadP1" value="presencial" onchange="elegirModalidad(this)"> Presencial</label>
         </div>
         <div class="m-nota">Pod&eacute;s agendar tu primer encuentro ahora. Los siguientes son quincenales y los coordinamos por WhatsApp al confirmar el pago.</div>
         <div class="m-precio-box"><div class="m-precio-label">Inversi&oacute;n</div><div class="m-precio-val" id="m-precio-p1">$ 280.000</div></div>
@@ -730,15 +728,7 @@ let MS={svc:{nombre:'Sesiones V\u00e9rtice',tipo:'paquete',precio:PRECIO_VERTICE
 rdy(async()=>{
   sb=window.supabase.createClient(SB_URL,SB_KEY);
   cargarPoliticaCancelacion();
-  const{data}=await sb.from('servicios').select('id,precio,duracion_min,descanso_min,modalidad,sesiones_paquete').ilike('nombre','%rtice%').maybeSingle();
-  if(data){
-    svcId=data.id;MS.svc.id=data.id;
-    if(data.precio>0)MS.svc.precio=data.precio;
-    if(data.duracion_min>0)MS.svc.duracion_min=data.duracion_min;
-    if(data.descanso_min!=null)MS.svc.descanso_min=data.descanso_min;
-    if(data.modalidad)MS.svc.modalidad=data.modalidad;
-    sincronizarVertice(data);
-  }
+  cargarServicioVertice();
 
   const pago=new URLSearchParams(location.search).get('pago');
   if(pago){
@@ -754,6 +744,39 @@ rdy(async()=>{
     }
   }
 });
+
+// El botón arranca deshabilitado ("Cargando…") y solo se activa cuando el
+// id real del servicio llegó de la base — antes quedaba clickeable desde
+// el vamos con un MS.svc hardcodeado, y si esta consulta fallaba (sin
+// reintento ni aviso), la persona completaba TODO el formulario y recién
+// se enteraba al final, con un error genérico. Ahora no llega a arrancar
+// sin el dato real, y si falla, reintenta antes de rendirse.
+async function cargarServicioVertice(intento){
+  intento=intento||0;
+  const btn=document.getElementById('reservar-btn');
+  const{data,error}=await sb.from('servicios').select('id,precio,duracion_min,descanso_min,modalidad,sesiones_paquete').ilike('nombre','%rtice%').maybeSingle();
+
+  if(error||!data){
+    if(intento<2){setTimeout(()=>cargarServicioVertice(intento+1),1500);return;}
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='Reintentar';
+      btn.onclick=()=>{btn.disabled=true;btn.textContent='Cargando\u2026';cargarServicioVertice(0);};
+    }
+    return;
+  }
+  svcId=data.id;MS.svc.id=data.id;
+  if(data.precio>0)MS.svc.precio=data.precio;
+  if(data.duracion_min>0)MS.svc.duracion_min=data.duracion_min;
+  if(data.descanso_min!=null)MS.svc.descanso_min=data.descanso_min;
+  if(data.modalidad)MS.svc.modalidad=data.modalidad;
+  sincronizarVertice(data);
+  if(btn){
+    btn.disabled=false;
+    btn.textContent='Reservar mi lugar \u2192';
+    btn.onclick=()=>abrirModalVertice();
+  }
+}
 
 // Sincroniza los datos duros de la landing de Vértice con la base (fuente única de verdad)
 function sincronizarVertice(s){

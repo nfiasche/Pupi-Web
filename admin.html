@@ -983,7 +983,6 @@ body.zoom-grande .fin-chips{grid-template-columns:1fr}
 .disp-rango-fila{display:flex;align-items:center;gap:8px}
 .disp-rango-fila select.disp-inicio,.disp-rango-fila select.disp-fin{background:var(--bg4);border:1px solid var(--bd);color:var(--cr);padding:8px 10px;font-size:12.5px;font-family:'Montserrat',sans-serif;width:110px;cursor:pointer}
 .disp-rango-fila select.disp-inicio:disabled,.disp-rango-fila select.disp-fin:disabled{opacity:.35;cursor:not-allowed}
-.disp-inicio-fijo{background:var(--bg3);border:1px solid var(--bds);color:var(--crd);padding:8px 10px;font-size:12.5px;font-family:'Montserrat',sans-serif;width:110px;box-sizing:border-box;text-align:center}
 .disp-guion{color:var(--crf)}
 .disp-spacer{width:24px;display:inline-block}
 .btn-disp-quitar{background:none;border:1px solid var(--bd);color:var(--crf);width:24px;height:24px;cursor:pointer;font-size:13px;flex-shrink:0;transition:border-color .15s,color .15s}
@@ -7586,7 +7585,7 @@ async function sincronizarCalendariosGoogleAhora(){
   const btn=document.getElementById('gcalSyncBtn');
   btn.disabled=true;btn.textContent='Sincronizando\u2026';
   try{
-    const resp=await fetch('/.netlify/functions/sync-calendarios-ocupados',{method:'POST'});
+    const resp=await fetch('/.netlify/functions/sync-calendarios-ahora',{method:'POST'});
     const datos=await resp.json();
     if(datos&&datos.motivo==='no_conectado'){
       alert('Todav\u00eda no conectaste Google Calendar. Anda a Configuraci\u00f3n para conectarlo.');
@@ -7626,11 +7625,14 @@ function renderHorarioSemanal(){
     const abierto=Array.isArray(rangos)&&rangos.length>0&&!dispCerrados.has(dia);
     const filas=(abierto?rangos:[{inicio:'09:00',fin:'18:00'}]).map((r,i)=>{
       // El inicio del primer rango del día se elige libremente. El de
-      // cualquier rango siguiente queda fijo en el fin del anterior — así
-      // es imposible dejar un hueco o pisar el rango de antes por accidente.
-      const inicioHtml=i===0
-        ?`<select class="disp-inicio" ${abierto?'':'disabled'} onchange="onCambioRango('${dia}')">${OPCIONES_HORA.map(h=>`<option value="${h}" ${h===r.inicio?'selected':''}>${h}</option>`).join('')}</select>`
-        :`<span class="disp-inicio-fijo" title="Empieza apenas termina el rango anterior">${r.inicio}</span><input type="hidden" class="disp-inicio" value="${r.inicio}">`;
+      // cualquier rango siguiente no puede ser anterior al fin del rango
+      // de antes (evita pisarlo), pero sí puede quedar más tarde — así se
+      // puede dejar un hueco a propósito (ej. corte de almuerzo).
+      const minInicio=i>0?rangos[i-1].fin:null;
+      let inicio=r.inicio;
+      if(minInicio&&inicio<minInicio)inicio=minInicio; // por si el rango anterior se corrió para adelante y lo dejó pisando
+      const opcionesInicio=minInicio?OPCIONES_HORA.filter(h=>h>=minInicio):OPCIONES_HORA;
+      const inicioHtml=`<select class="disp-inicio" ${abierto?'':'disabled'} onchange="onCambioRango('${dia}')">${opcionesInicio.map(h=>`<option value="${h}" ${h===inicio?'selected':''}>${h}</option>`).join('')}</select>`;
       return`
       <div class="disp-rango-fila" data-dia="${dia}" data-idx="${i}">
         ${inicioHtml}
@@ -7657,7 +7659,10 @@ function renderHorarioSemanal(){
 function onCambioRango(dia){
   const rangos=leerRangosDelDOM(dia);
   for(let i=1;i<rangos.length;i++){
-    rangos[i].inicio=rangos[i-1].fin;
+    // Ya no forzamos que arranque justo donde termina el anterior — solo
+    // corregimos si quedó pisándolo (ej. estiraron el rango de antes hacia
+    // adelante). Si el hueco sigue siendo válido, se respeta tal cual.
+    if(rangos[i].inicio<rangos[i-1].fin)rangos[i].inicio=rangos[i-1].fin;
   }
   dispBaseActual[dia]=rangos;
   renderHorarioSemanal();

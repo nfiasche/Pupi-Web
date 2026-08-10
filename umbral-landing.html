@@ -35,7 +35,6 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/shared.css">
 <style>
-.nota-revision{position:fixed;bottom:88px;right:20px;z-index:999;background:var(--bg4);border:1px solid var(--gold);padding:12px 16px;max-width:260px;font-size:11px;color:var(--crd);line-height:1.6;font-family:'Montserrat',sans-serif}
 /* NAV — sticky, se afina al scrollear */
 .nav-bar{position:sticky;top:0;z-index:50;background:transparent;transition:background .3s ease,box-shadow .3s ease}
 /* ══ HERO ══ */
@@ -273,11 +272,6 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   </div>
 </noscript>
 
-<div class="nota-revision" id="notaRevision">
-  <strong>&#9888; Para Pupi:</strong> Los textos marcados (*) son sugeridos por IA. Revisalos y ajust&aacute;los a tu voz antes de publicar. El resto es tu texto original.
-  <button onclick="document.getElementById('notaRevision').style.display='none'">Cerrar</button>
-</div>
-
 <div class="sello-inscripcion" id="selloInscripcion" style="display:none"></div>
 
 <div class="nav-bar" id="navBar"><div class="w"><nav>
@@ -299,7 +293,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
     <div class="thresh-dot d3" style="top:100%"></div>
   </div>
   <div class="hero-inner">
-    <span class="ey"><span class="texto-sugerido">Programa por temporadas</span></span>
+    <span class="ey">Programa por temporadas</span>
     <h1 class="hero-titulo">UMBRAL</h1>
     <p class="hero-sub">&ldquo;Lo que el mundo llama el final,<br>las mujeres que saben lo llaman: <em>por fin.</em>&rdquo;</p>
     <div class="hero-divider"></div>
@@ -319,7 +313,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   <div class="w">
     <div class="ey">Para qui&eacute;n es</div>
     <h2>&iquest;Es para vos?</h2>
-    <p class="pq-kicker"><span class="texto-sugerido">Sent&iacute;s que una etapa termin&oacute; &mdash; y que lo que viene todav&iacute;a no tiene nombre.</span></p>
+    <p class="pq-kicker">Sent&iacute;s que una etapa termin&oacute; &mdash; y que lo que viene todav&iacute;a no tiene nombre.</p>
     <div class="pq-texto-wrap">
       <div class="pq-text">
         <p>Hay un momento en la vida de una mujer que no aparece en ning&uacute;n calendario. No tiene fecha. No avisa.</p>
@@ -341,7 +335,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
   <div class="w">
     <div class="ey">La propuesta</div>
     <h2>Qu&eacute; es Umbral</h2>
-    <p class="prop-intro">Un programa de acompa&ntilde;amiento profundo &mdash; <em>no un curso, no una charla</em>. <span class="texto-sugerido">Cada dos semanas te encontr&aacute;s en vivo con el c&iacute;rculo; entre encuentro y encuentro, un mail semanal y tu workbook te acompa&ntilde;an a tu ritmo.</span> Herramientas terap&eacute;uticas, sist&eacute;micas y corporales, al servicio de una sola cosa: que vos te encontr&eacute;s con quien realmente sos.</p>
+    <p class="prop-intro">Un programa de acompa&ntilde;amiento profundo &mdash; <em>no un curso, no una charla</em>. Cada dos semanas te encontr&aacute;s en vivo con el c&iacute;rculo; entre encuentro y encuentro, un mail semanal y tu workbook te acompa&ntilde;an a tu ritmo. Herramientas terap&eacute;uticas, sist&eacute;micas y corporales, al servicio de una sola cosa: que vos te encontr&eacute;s con quien realmente sos.</p>
     <div class="prop-box">
     <div class="prop-grid">
       <div class="prop-item">
@@ -412,7 +406,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
         <div style="position:relative;z-index:1">
           <div class="mod-label">M&oacute;dulo II &middot; Agosto</div>
           <div class="mod-title">&iquest;Qui&eacute;n soy ahora?</div>
-          <p class="mod-text mod-text-corta"><span class="texto-sugerido">Paramos en el presente: el cuerpo, los v&iacute;nculos, y la identidad que eleg&iacute;s sostener.</span></p>
+          <p class="mod-text mod-text-corta">Paramos en el presente: el cuerpo, los v&iacute;nculos, y la identidad que eleg&iacute;s sostener.</p>
           <div id="modDetalle2" style="display:none">
             <p class="mod-text">Paramos en el presente. El cuerpo, los v&iacute;nculos, el entorno que resiste el cambio. Aprendemos a observar sin juzgar, a pedir desde el amor propio y a movernos en el mundo con una identidad que elegimos.</p>
             <div class="mod-tools">
@@ -431,7 +425,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
         <div style="position:relative;z-index:1">
           <div class="mod-label">M&oacute;dulo III &middot; Septiembre-Octubre</div>
           <div class="mod-title">&iquest;Qui&eacute;n quiero ser?</div>
-          <p class="mod-text mod-text-corta"><span class="texto-sugerido">Miramos hacia adelante: el proyecto propio, el legado, y un cierre que marca el final del proceso.</span></p>
+          <p class="mod-text mod-text-corta">Miramos hacia adelante: el proyecto propio, el legado, y un cierre que marca el final del proceso.</p>
           <div id="modDetalle3" style="display:none">
             <p class="mod-text">Miramos hacia adelante. La transformaci&oacute;n como proyecto propio, el legado al linaje, la vida cotidiana plena. Y el cierre: una carta al yo del futuro, el c&iacute;rculo de reconocimiento y el trabajo constelatorio con las tres figuras.</p>
             <div class="mod-tools">
@@ -521,7 +515,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
       <p class="cta-frase">&ldquo;Esto no termina hoy.<br>Lo que empieza hoy<br>es la mujer que <em>elegiste ser.</em>&rdquo;</p>
       <div id="umbralCtaDinamico">
         <p class="cta-sub cta-sub-cerrado">Temporada en curso &middot; inscripciones cerradas</p>
-        <p class="cta-cerrado-msg"><span class="texto-sugerido">Esta temporada ya est&aacute; en marcha. Dejame tu contacto y te aviso apenas se abra la pr&oacute;xima &mdash; alrededor del <strong>21 de agosto</strong>.</span></p>
+        <p class="cta-cerrado-msg">Esta temporada ya est&aacute; en marcha. Dejame tu contacto y te aviso apenas se abra la pr&oacute;xima &mdash; alrededor del <strong>21 de agosto</strong>.</p>
         <a href="https://wa.me/5491158059979?text=Hola%20Pupi%2C%20quiero%20anotarme%20en%20la%20lista%20de%20espera%20de%20Umbral" target="_blank" rel="noopener" class="btn-wa-cta btn-wa-cta-ghost">
           Anotarme en lista de espera
         </a>

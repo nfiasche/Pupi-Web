@@ -117,8 +117,6 @@
 .nlinks a{color:var(--crd);text-decoration:none;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;transition:color .2s}
 .nlinks{display:flex;gap:30px}
 .nlogo{font-size:11px;letter-spacing:.22em;font-weight:700;text-decoration:none;color:var(--cr);transition:font-size .35s ease}
-.nota-revision button{background:none;border:none;color:var(--crf);cursor:pointer;font-size:11px;font-family:'Montserrat',sans-serif;text-decoration:underline;margin-top:6px;display:block}
-.nota-revision strong{color:var(--gold)}
 .p2-col-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--crd);margin-bottom:12px}
 .p2-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .p2-nav{display:flex;gap:8px;margin-top:20px}
@@ -141,8 +139,6 @@
 .pupi-tray-label{font-size:12px;color:var(--crd)}
 .rev.in{opacity:1;transform:translateY(0)}
 .tav{background:var(--ok-bg);border:1px solid rgba(122,155,110,.25);padding:9px 12px;font-size:12px;color:var(--ok);margin-bottom:12px;display:none;line-height:1.5}
-.texto-sugerido::after{content:'*';color:var(--gold);font-size:10px;vertical-align:super;margin-left:2px;font-family:'Montserrat',sans-serif;font-weight:700}
-.texto-sugerido{border-bottom:1px dashed var(--rust);padding-bottom:1px}
 .tl-punto-label{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--crd);font-weight:700;white-space:nowrap}
 .tl-punto-num,.tl-punto-min{display:none}
 .tl-punto-ring{display:none}

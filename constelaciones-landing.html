@@ -57,7 +57,7 @@
 .hero-def{
   font-family:'Noto Serif Display',serif;font-style:italic;
   font-size:clamp(15px,1.9vw,19px);line-height:1.6;
-  color:var(--crd);max-width:460px;margin:0 auto 40px;
+  color:var(--crd);max-width:460px;margin:0 auto clamp(20px,5vw,40px);
 }
 /* "CONSTELACIONES" es más largo que VÉRTICE/UMBRAL/ALMA — arranca más chico
    de base en mobile, no depende solo del script de auto-ajuste.
@@ -180,7 +180,7 @@
   }
 }
 /* CÓMO ES EL PROCESO — 3 tarjetas separadas, en oscuro */
-.momentos{padding:100px 0;background:var(--bg3);border-top:1px solid var(--bds)}
+.momentos{padding:clamp(60px,10vw,100px) 0;background:var(--bg3);border-top:1px solid var(--bds)}
 .momentos h2{font-size:clamp(22px,3vw,38px);margin:12px 0 40px;letter-spacing:.02em}
 .momento-card{background:var(--bg4);border:1px solid var(--bd);border-top:2px solid var(--stone);padding:32px 28px;position:relative;display:flex;flex-direction:column}
 .momento-numero{font-family:'Noto Serif Display',serif;font-size:40px;font-weight:600;color:var(--stone);line-height:1;margin-bottom:6px}
@@ -219,7 +219,7 @@
 @media(max-width:700px){
   .momentos-grid{grid-template-columns:1fr}
 }
-.inv-box{background:var(--bg3);border:1px solid var(--bd);border-top:2px solid var(--stone);padding:36px 40px;max-width:580px;margin:0 auto 40px;text-align:left}
+.inv-box{background:var(--bg3);border:1px solid var(--bd);border-top:2px solid var(--stone);padding:36px 40px;max-width:580px;margin:0 auto clamp(20px,5vw,40px);text-align:left}
 .inv-box-titulo{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);font-weight:700;margin-bottom:20px}
 .inv-lista li::before{content:'→';color:var(--stone);flex-shrink:0;font-weight:700}
 .modal-step.active{color:var(--stone);border-bottom-color:var(--stone)}
@@ -253,7 +253,7 @@ input:focus{outline:none;border-color:var(--stone)}
 .info-box ul{font-size:13px;color:var(--crd);line-height:1.9;list-style:none;margin-bottom:18px}
 .pupi-img-wrap{width:100%;aspect-ratio:3/4;max-height:460px;overflow:hidden;border:1px solid var(--bd);position:sticky;top:40px}
 .m-btn-reservar{width:100%;background:none;border:1px solid var(--bd);color:var(--crd);padding:12px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color .18s,color .18s}
-.pupi-grid{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:start}
+.pupi-grid{display:grid;grid-template-columns:clamp(220px,30%,360px) 1fr;gap:clamp(32px,5vw,56px);align-items:start;max-width:900px;margin:0 auto}
 .m-btn-pagar{width:100%;background:var(--gold);color:var(--bg);border:none;padding:14px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .18s}
 nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bds);position:relative;z-index:10;transition:padding .35s ease,border-color .3s ease}
 .hero-titulo{ font-family:'Noto Serif Display',serif; font-size:clamp(46px,14vw,190px); font-weight:600; line-height:.88; letter-spacing:.045em; margin-right:-.045em; color:var(--gold); margin-bottom:32px; max-width:100%; white-space:nowrap; overflow-wrap:normal; word-break:normal; }
@@ -267,7 +267,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .pupi-tray-num{font-family:'Noto Serif Display',serif;font-size:40px;color:var(--gold)}
 .modal-step{flex:1;padding:12px 16px;text-align:center;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--crf);border-bottom:2px solid transparent;transition:color .25s,border-color .25s;font-family:'Montserrat',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .modal-progress{display:flex;flex:1}
-.dx h2{font-size:clamp(18px,2.4vw,28px);line-height:1.22;letter-spacing:.04em;margin:12px 0 36px;max-width:340px}
+.dx h2{font-size:clamp(18px,2.4vw,28px);line-height:1.22;letter-spacing:.04em;margin:12px 0 36px;max-width:clamp(250px,90%,340px)}
 .pupi-bio{font-size:14px;color:var(--crd);line-height:1.84;margin-bottom:28px}
 .pupi-text h2{font-size:clamp(22px,2.8vw,34px);margin:10px 0 6px}
 .pupi-tag{border:1px dashed var(--bd);color:var(--crf);font-size:10px;letter-spacing:.06em;padding:5px 10px;text-transform:uppercase;font-weight:600;position:relative;cursor:help;transition:color .18s}
@@ -493,7 +493,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 </main>
 <footer style="background:var(--bg2);border-top:1px solid var(--bds);padding:52px 0 32px">
   <div class="w">
-    <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px">
+    <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:clamp(24px,4vw,40px);margin-bottom:48px">
       <div>
         <span style="font-size:12px;letter-spacing:.2em;font-weight:700;display:block;margin-bottom:12px">PUPI LARROUDE</span>
         <p style="font-size:12px;color:var(--crf);line-height:1.8;max-width:200px">Counselor, Consteladora Familiar y Mentora. M&aacute;s de 20 a&ntilde;os acompa&ntilde;ando en Buenos Aires y online.</p>

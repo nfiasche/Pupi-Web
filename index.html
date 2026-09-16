@@ -215,7 +215,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 .cx-body strong{color:var(--cr);font-weight:500}
 /* ══ QUIEN SOY ══ */
 .qs{padding:96px 0;background:var(--bg3);border-top:1px solid var(--bds);border-bottom:1px solid var(--bds)}
-.qsg{display:grid;grid-template-columns:290px 1fr;gap:56px;align-items:start}
+.qsg{display:grid;grid-template-columns:290px 1fr;gap:clamp(32px,5vw,56px);align-items:start}
 .qsimg-wrap{width:100%;aspect-ratio:3/4;max-height:420px;overflow:hidden;border:1px solid var(--bd);position:sticky;top:40px}
 .qsimg{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(18%) contrast(1.05)}
 .qst h2{font-size:clamp(21px,2.5vw,31px);line-height:1.22;margin:10px 0 20px}
@@ -362,7 +362,7 @@ nav{padding:24px 0;display:flex;justify-content:space-between;align-items:center
 }
 /* ══ FOOTER ══ */
 .footer{background:var(--bg2);border-top:1px solid var(--bds);padding:52px 0 32px}
-.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:clamp(24px,4vw,40px);margin-bottom:48px}
 .footer-brand .nlogo{font-size:12px;letter-spacing:.2em;font-weight:700;margin-bottom:12px;display:block}
 .footer-brand p{font-size:12px;color:var(--crf);line-height:1.8;max-width:200px}
 .footer-col h4{font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:16px}
@@ -455,7 +455,7 @@ input:focus{outline:none;border-color:var(--gold)}
 .info-overlay
 .info-box{
   background:var(--bg);border:1px solid var(--bd);
-  max-width:420px;width:100%;padding:32px 30px;
+  max-width:clamp(280px,90%,420px);width:100%;padding:32px 30px;
   transform:translateY(12px);transition:transform .3s ease;
 }
 .info-box ul{font-size:13px;color:var(--crd);line-height:1.9;padding-left:0;list-style:none;margin-bottom:18px}
@@ -490,10 +490,10 @@ input:focus{outline:none;border-color:var(--gold)}
 .precio-label{font-size:10px;color:var(--crf);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 .nav-toggle:hover{border-color:var(--gold);color:var(--gold)}
 .pupi-img-wrap{width:100%;aspect-ratio:3/4;max-height:460px;overflow:hidden;border:1px solid var(--bd);position:sticky;top:40px}
-.pupi-grid{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:start}
+.pupi-grid{display:grid;grid-template-columns:320px 1fr;gap:clamp(32px,5vw,56px);align-items:start}
 .hero-titulo{ font-family:'Noto Serif Display',serif; font-size:clamp(46px,14vw,190px); font-weight:600; line-height:.88; letter-spacing:.045em; margin-right:-.045em; color:var(--gold); margin-bottom:32px; max-width:100%; white-space:nowrap; overflow-wrap:normal; word-break:normal; }
 .hero-inner .ey{margin-bottom:28px;display:block}
-.inv-box{background:var(--bg3);border:1px solid var(--bd);border-top:2px solid var(--lav);padding:36px 40px;max-width:580px;margin:0 auto 40px;text-align:left}
+.inv-box{background:var(--bg3);border:1px solid var(--bd);border-top:2px solid var(--lav);padding:36px 40px;max-width:580px;margin:0 auto clamp(20px,5vw,40px);text-align:left}
 .pupi-cargo{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--crf);margin-bottom:24px}
 .pupi-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
 .pupi-tray{display:inline-flex;align-items:baseline;gap:10px;border-top:1px solid var(--bds);padding-top:20px}
@@ -501,7 +501,7 @@ input:focus{outline:none;border-color:var(--gold)}
 .cancel-modal-box{background:var(--bg3);border:1px solid var(--bd);border-left:2px solid var(--rust);padding:16px 18px;margin-bottom:16px}
 .inv-lista li::before{content:'→';color:var(--lav);flex-shrink:0;font-weight:700}
 .inv-box-titulo{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lav);font-weight:700;margin-bottom:20px}
-.dx h2{font-size:clamp(18px,2.4vw,28px);line-height:1.22;letter-spacing:.04em;margin:12px 0 36px;max-width:340px}
+.dx h2{font-size:clamp(18px,2.4vw,28px);line-height:1.22;letter-spacing:.04em;margin:12px 0 36px;max-width:clamp(250px,90%,340px)}
 .pupi-bio{font-size:14px;color:var(--crd);line-height:1.84;margin-bottom:28px}
 .pupi-text h2{font-size:clamp(22px,2.8vw,34px);margin:10px 0 6px}
 </style>

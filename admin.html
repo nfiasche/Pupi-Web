@@ -4920,7 +4920,7 @@ function renderResolver(pasarLista,porCobrar,vencidos,preciosRaros,sinPago){
     const verTodos=resolverExpandido.sinPago;
     const visibles=verTodos?sinPago:sinPago.slice(0,4);
     html+=`<div class="resolver-grupo g-urgente">
-      <div class="resolver-grupo-tit"><span class="rg-ico">&#8987;</span> Se fueron sin pagar <span class="rg-n">${sinPago.length}</span></div>
+      <div class="resolver-grupo-tit"><span class="rg-ico">&#8987;</span> Reservas vencidas sin pago <span class="rg-n">${sinPago.length}</span></div>
       ${visibles.map(t=>itemResolver(t,'sinpago')).join('')}
       ${!verTodos&&sinPago.length>4?linkVerMas(sinPago.length-4,'sinPago'):''}
     </div>`;
